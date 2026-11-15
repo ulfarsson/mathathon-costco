@@ -2,6 +2,8 @@
 \usepackage{graphicx, xcolor, amsmath, amssymb, amsthm} % Required for inserting images
 \usepackage{tikz}
 \usepackage{hyperref}
+\usepackage{xurl} % long URLs in the bibliography may break, after /, _ and - only
+\def\UrlBreaks{\do\/\do\_\do\-}
 \usetikzlibrary{positioning, arrows.meta, decorations.markings}
 
 % distance to H-freeness
@@ -33,18 +35,18 @@ Henning Arn\'or Skeggi \'Ulfarsson, Reykjavik University}
 
 \maketitle
 
-Team formation TODO
+\paragraph{Team formation.} We formed the team through the Caltech Mathathon Discord server, since we found that we are all interested in combinatorics.
 
-Problem selection TODO
+\paragraph{Problem selection.} Saksham suggested that we study OpenAI's preprint \emph{Polynomial removal fails for ordered binary matrices}~\cite{openai}, which disproves a conjecture, going back to a question from 2007, about the relationship between the number of changes needed to remove all copies of a smaller matrix from a larger one and the number of copies. We found this problem interesting because of the structure of the counterexample: a $66 \times 66$ matrix carefully constructed to give control over how it can appear in a family of larger matrices. We wanted to understand how the counterexample escapes earlier proof attempts, and to see whether we could extend it to a family of counterexamples.
 
-Use of LLMs during our work. Most of the work was carried out in Opus 5.5.
-This involved literature search, summarizing and giving examples from existing work, looking for extensions, both in terms of new counterexamples as well as
-matrices that have polynomial removal. We briefly used Fable 5.2 for searching for smaller counterexamples. Opus 5.5 and GPT-6.1 Sol was used to orchistrate Lean formalization, in the sense that those agents set up the proofs and prompts for agents running in the Open Math environment. Kimi 3.1 Pro on the Ultramath setting carried out the Lean formalization. Opus 5.5 was also used to formalize a subset of our result in Agda, but we do not include that work here.
+\paragraph{Use of LLMs.} Most of the work was carried out with Opus 5.5.
+This involved literature search, summarizing and giving examples from existing work, and looking for extensions, both new counterexamples and
+matrices that have polynomial removal. We briefly used Fable 5.2 to search for smaller counterexamples. Opus 5.5 and GPT-6.1 Sol were used to orchestrate the Lean formalization, in the sense that those agents set up the proofs and prompts for agents running in the Open Math environment. Kimi 3.1 Pro, in the Ultramath setting, carried out the Lean formalization. Opus 5.5 was also used to formalize a special case of our results in Agda, but we do not include that work here.
 
 In the writing of this report and the accompanying slides we used Opus 5.5 with some help from DeepSeek V4.1 Flash and Kimi 3.1 Pro in the Open Math environment.
 
 All work that was turned in was created at the event. Prior to the event we
-read the literature, with help from LLMs
+read the literature, with help from LLMs.
 
 %Running list of models used
 %\begin{itemize}
@@ -66,9 +68,14 @@ read the literature, with help from LLMs
 %    \end{itemize}
 %\end{itemize}
 
-\section*{Introduction and Results}
-Let $H$ be a $k \times k$ binary matrix. An (\emph{ordered}) \emph{copy} of $H$ in a larger $n \times n$ binary matrix $A$ is a choice of rows $1 \le r_1 < \dots < r_k \le n$ and columns $1 \le c_1 < \dots < c_k \le n$ such that $A(r_i, c_j) = H(i, j)$ for all $i, j$. Notice that this requires both the $0$s and the $1$s of $H$ to be in the correct positions. When such a copy exists we say that $A$ \emph{contains} $H$ (\emph{as an ordered copy}); otherwise $A$ is \emph{$H$-free}.                                                                                                                                                       \begin{example}\label{ex:copies}                                                            Let                                                                                         \[
-    H = \begin{pmatrix} 1 & 0 \\1 & 1 \end{pmatrix}                                        \qquad\text{and}\qquad
+\section*{Introduction, Motivation, and Results}
+Let $H$ be a $k \times k$ binary matrix. An (\emph{ordered}) \emph{copy} of $H$ in a larger $n \times n$ binary matrix $A$ is a choice of rows $1 \le r_1 < \dots < r_k \le n$ and columns $1 \le c_1 < \dots < c_k \le n$ such that $A(r_i, c_j) = H(i, j)$ for all $i, j$. Notice that this requires both the $0$s and the $1$s of $H$ to be in the correct positions. When such a copy exists we say that $A$ \emph{contains} $H$ (\emph{as an ordered copy}); otherwise $A$ is \emph{$H$-free}.
+
+\begin{example}\label{ex:copies}
+Let
+\[
+    H = \begin{pmatrix} 1 & 0 \\1 & 1 \end{pmatrix}
+    \qquad\text{and}\qquad
     A = \begin{pmatrix}
     \boxed{1} & 0 & \boxed{0} \\
     \boxed{1} & 1 & \boxed{1} \\
@@ -113,20 +120,24 @@ Let $H$ be a $k \times k$ binary matrix. An (\emph{ordered}) \emph{copy} of $H$ 
  The polynomial ordered binary matrix-removal conjecture was:
  
 \begin{conjecture}\label{conj:poly-removal}
-For every $k \times k$ binary matrix $H$, there are constant $c, C > 0$, depending only on $H$, such that for every $n$, every $n\times n$ binary matrix $A$ and every $\epsilon \in (0,1]$: if $\dist_H(A) \ge \epsilon$, then $N_H(A) \ge c\epsilon^C n^{2k}$. In other words, if at least $\epsilon n^2$ entries of $A$ need to be changed to remove all copies of $H$, then
+For every $k \times k$ binary matrix $H$, there are constants $c, C > 0$, depending only on $H$, such that for every $n$, every $n\times n$ binary matrix $A$ and every $\epsilon \in (0,1]$: if $\dist_H(A) \ge \epsilon$, then $N_H(A) \ge c\epsilon^C n^{2k}$. In other words, if at least $\epsilon n^2$ entries of $A$ need to be changed to remove all copies of $H$, then
 $A$ contains at least $c\epsilon^Cn^{2k}$ copies of $H$.
 \end{conjecture}
 
-This question was first raised by Alon, Fischer, and Newman in 2007~\cite{AFN}, and Alon and Ben-Eliezer posed it for finite families of patterns in 2020~\cite{ABE}. A weaker removal lemma does hold for this problem, but $\delta^{-1}$ grows like a wowzer-type function of $\epsilon^{-1}$, instead of polynomial Alon, Ben-Eliezer and Fischer 2017~\cite{ABF17}. In Gishboliner and Shapira's survey, they mentioned polynomial removal as a key open problem, and the OpenAI preprint shows it fails for a specific $66 \times 66$ matrix $H$. Later, Wang reduced it to a $4 \times 4$ counterexample \cite{wang}, and thereafter Shea reduced it to a $3 \times 3$ one \cite{shea}. \\
+Copies, $N_H(A)$ and $D_H(A)$ are defined in the same way for a $k \times l$ pattern $H$, and for such a pattern we read the conjecture with $n^{k+l}$ in place of $n^{2k}$. A pattern for which the conjecture fails is a \emph{counterexample}.
 
-In this paper, we give a conceptual, human-readable exposition of the key theorem from Alon and Ben-Eliezer, and how OpenAI's counterexample works in the context of that framework. Additionally, our novel contributions are two structural theorems about which patterns satisfy the conjecture:
+The question behind Conjecture~\ref{conj:poly-removal} was first raised by Alon, Fischer, and Newman in 2007~\cite{AFN}, and Alon and Ben-Eliezer posed it for finite families of patterns in 2020~\cite{ABE}. Alon, Ben-Eliezer and Fischer~\cite{ABF17} proved a weaker removal lemma in 2017: every $n \times n$ matrix that is $\epsilon$-far from being $H$-free contains at least $\delta n^{2k}$ copies of $H$, where $\delta > 0$ depends only on $\epsilon$ and $H$. But in their proof $\delta^{-1}$ grows like a wowzer-type function of $\epsilon^{-1}$, not polynomially. Gishboliner and Shapira's survey~\cite{GS} lists polynomial removal for ordered matrices as one of the key open problems, and OpenAI's preprint~\cite{openai} showed that it fails for a specific $66 \times 66$ matrix $H$. Smaller counterexamples followed within weeks: a $5 \times 5$ one in a draft of the ProveIt project~\cite{proveit}, a $4 \times 4$ one with a Lean proof by Erebos Labs~\cite{erebos}, the same $4 \times 4$ pattern on arXiv by Wang~\cite{wang}, and a claimed $3 \times 3$ one by Shea~\cite{shea}, in a manuscript that has not been refereed. In the other direction, Lupini~\cite{Lupini} proved that the $2 \times 2$ identity matrix satisfies the conjecture. 
+
+\subsection*{Motivation}
+Removal lemmas have been a central topic in extremal combinatorics, and they are the engine behind property testing. Specifically, polynomial removal for ordered matrices has been a central open problem for nearly two decades \cite{AFN,ABE,GS}. After much progress in other settings, OpenAI's counterexample settled it in the negative for ordered matrices, and smaller counterexamples followed within weeks, at least one of them found with the help of AI~\cite{shea}.
+
+The constructions of these counterexamples are often hard to read, due to a tangle of anchors, modes, and recursive subparts. Moreover, it is not well known why OpenAI's counterexample escapes the earlier approach of Alon and Ben-Eliezer~\cite{ABE}, who proved polynomial removal for matrices with many pairwise disjoint copies of the pattern. We believed that it was important to give an intuitive, human-readable exposition, which we do here.
+
+Secondly, counterexamples have so far been found one pattern at a time. We give the first infinite families of counterexamples, and new infinite families of patterns that satisfy the conjecture. (Some infinite families of the second kind were known before: by a theorem of Alon and Ben-Eliezer~\cite[Theorem~1.5]{ABE}, every pattern whose rows are all equal, or whose columns are all equal, satisfies it.) Specifically, our novel contributions are two structural theorems about which patterns satisfy the conjecture:
 \begin{itemize}
-    \item \textit{Duplication}: Theorem 3 shows that repeating a row or column consecutively does not change whether the matrix satisfies the conjecture. 
-    \item \textit{Direct Sum}: Theorem 2 shows that if $H$ is a counterexample, doing direct sum with any matrix $Z$ under certain conditions will lead to $H'$, which is another counterexample.
+    \item \textit{Direct sums}: Theorem~\ref{thm:direct} and Corollary~\ref{cor:direct} show that if $H$ is a counterexample with no all-zero row or column, then so is the direct sum $\begin{pmatrix} H & 0 \\ 0 & Z \end{pmatrix}$ for every $Z$ with pairwise distinct rows or pairwise distinct columns.
+    \item \textit{Duplication}: Theorem~\ref{thm:dup} shows that repeating a row or a column next to itself does not change whether a pattern satisfies the conjecture.
 \end{itemize}
-We can achieve some results with these reduction-type theorems. Combined with the counterexamples by OpenAI, Shea, Wang, and we give the first infinite family of counterexamples. Additionally, combined with Lupini's result \cite{Lupini}, we also get an infinite family of patterns that satisfy the conjecture. 
-
-
 
 
 \section*{The approach of Alon and Ben-Eliezer, and how $A_h$ escapes it}
@@ -136,8 +147,8 @@ We can achieve some results with these reduction-type theorems. Combined with th
   with $1/\delta$ polynomial in $1/\epsilon$ \cite[Theorem~1.2]{ABE}. So the
   conjecture would follow if every matrix that is $\epsilon$-far from being
   $H$-free contained $\tau n^2$ pairwise disjoint copies of $H$, with $1/\tau$
-  polynomial in $1/\epsilon$. For OpenAI's $66 \times 66$ pattern $H$, the host
-  matrices $A_h$ show that this fails:
+  polynomial in $1/\epsilon$. For OpenAI's $66 \times 66$ pattern $H$, its host
+  matrices $A_h$, described below, show that this fails:
   \begin{enumerate}
   \item $A_h$ is $\epsilon$-far from being $H$-free for $\epsilon = (386h+2)^{-2}$:
   every $H$-free matrix differs from $A_h$ in at least $m^2 = \epsilon n^2$
@@ -297,10 +308,10 @@ moves it one step back (c).}
   hitting every copy is cheap, but removing the copies is not.
 
 
-\section{OpenAI's counterexample}
+\section*{OpenAI's counterexample}
 \label{sec:tour}
 
-\subsection{The pattern}
+\subsection*{The pattern}
 
 With $s=64$ and $e_1,e_2$ the first two standard basis vectors of
 $\mathbb R^{s}$,
@@ -316,13 +327,14 @@ where $S(u,v)=\mathbf 1[u\neq v]$, except that the $32\times5$ block in rows
 $33,\dots,64$ and columns $60,\dots,64$ is overwritten with the $32$ binary
 words of length five in lexicographic order.
 
-Call $S$ the \emph{anchor}, the border vectors the \emph{signature slots},
+Call $S$ the \emph{anchor}, the border vectors $e_1, e_2$ and
+$e_1^{\mathsf T}, e_2^{\mathsf T}$ the \emph{marks},
 and the lower-right corner $P$ the \emph{body}. All of the mechanism is in
-the body; the anchor and the signatures are an addressing scheme, there to
+the body; the anchor and the marks are an addressing scheme, there to
 control which pairs of lines in the host the body's constraint applies to.
 Sixty-four of the $66$ indices are address, two are content.
 
-\subsection{The host}
+\subsection*{The host}
 
 Every row of $A_h$ carries a \emph{label}, every column carries a label, and
 $A_h(r,c)$ depends on nothing but the pair of labels. There are three label
@@ -331,13 +343,17 @@ families on each axis:
 \item $6h\cdot64$ \emph{anchor} labels $(t,u)$, where $t$ runs over $6h$
 \emph{modes} and $u\in\{1,\dots,64\}$;
 \item one \emph{dummy} label $*$;
-\item $2h+1$ \emph{variable} labels $(\sigma,i,p)$ with a sign
+\item \emph{variable} labels $(\sigma,i,p)$ with a sign
 $\sigma\in\{+,-\}$, a depth $0\le i\le h$ and a node index
 $p\in\{0,\dots,2^i-1\}$ --- subject to one identification: at depth $h$ the
 two signs name the same label, the \emph{leaf} label $p$.
 \end{itemize}
-Each label is carried by exactly $m$ rows and $m$ columns, so
-$n=(386h+2)m$. The names come from a binary tree because we need labels with
+Each anchor label and the dummy label is carried by $m$ rows and $m$ columns,
+and each variable label of depth $i$ by $2^{h-i}$ rows and $2^{h-i}$ columns,
+so a leaf label is carried by a single row and a single column. The variable
+labels of one sign and one depth $i<h$ together take $m$ rows and $m$ columns,
+and so do the $m$ leaf labels. These are $2h+1$ sets, so
+$n=(6h\cdot64+1+2h+1)m=(386h+2)m$. The names come from a binary tree because we need labels with
 a parent map $\pi(p)=\lfloor p/2\rfloor$ and a nested layout order; no row
 \emph{is} a node, and nothing in $A_h$ \emph{is} a tree. Figure~\ref{fig:map}
 gives the lookup table.
@@ -378,6 +394,7 @@ gives the lookup table.
   \end{array}$};
 \node[align=center] at (7.9,-7.1) {so the leaf diagonal is all ones};
 \node[align=center] at (2.0,-8.2) {$e_2^{\mathsf T}$ or $0$};
+\node[align=center] at (4.5,-8.2) {$1$};
 \node[align=center] at (7.9,-8.2) {$1$};
 \end{tikzpicture}
 
@@ -401,21 +418,29 @@ gives the lookup table.
 \end{tikzpicture}
 
 \caption{\label{fig:map}%
-}
+Top: the entries of $A_h$, by the labels of their row and column; between two
+variable labels, every pair not listed is $0$. Against the anchor of mode $t$,
+the rows and columns in the first set that $t$ designates carry
+$e_1^{\mathsf T}$ or $e_1$, those in the second set carry $e_2^{\mathsf T}$ or
+$e_2$, and all others carry $0$ (see \eqref{eq:modes}). Bottom: the order of
+the variable rows and columns for $h=2$; $L_p$ is the leaf label $p$, and the
+width of each box is proportional to the number of rows or columns its labels
+take.}
 \end{figure}
 
-Labels are laid out on each axis in the order shown in the lower panel of
-Figure~\ref{fig:map}: anchors first on both axes, then $C_*$ on the column
-axis and $R_*$ last on the row axis, with the variable labels in between by
-the recursion
+Labels are laid out on each axis as follows. The anchor labels come first on
+both axes, mode by mode. On the column axis $C_*$ comes next, followed by the
+variable labels; on the row axis the variable labels come next, followed by
+$R_*$. The variable labels are ordered by the recursion
 \[
 \begin{array}{llll}
 \text{rows at node }(i,p): & R_i^-(p), & \text{subtree }2p,\ \text{subtree }2p{+}1, & R_i^+(p)\\[2pt]
 \text{cols at node }(i,p): & C_i^+(p), & \text{subtree }2p,\ \text{subtree }2p{+}1, & C_i^-(p)
 \end{array}
 \]
---- the same recursion on both axes with the signs swapped. Its one
-consequence, for $p,q$ at depth $i$ and $a,b$ at depth $i-1$, is
+--- the same recursion on both axes with the signs swapped (the lower panel of
+Figure~\ref{fig:map} shows the result for $h=2$). The consequence we need, for
+$p,q$ at depth $i$ and $a,b$ at depth $i-1$, is
 \begin{equation}\label{eq:orders}
 \begin{aligned}
   R_i^+(p)<R_{i-1}^+(a)&\iff\pi(p)\le a, &
@@ -426,7 +451,7 @@ consequence, for $p,q$ at depth $i$ and $a,b$ at depth $i-1$, is
 \end{equation}
 so order conditions, like entries, are comparisons of node indices.
 
-\subsection{How the two fit together}
+\subsection*{How the two fit together}
 
 Each of the $6h$ modes designates two row sets and two column sets:
 \begin{equation}\label{eq:modes}
@@ -439,38 +464,36 @@ Each of the $6h$ modes designates two row sets and two column sets:
 \end{array}
 \qquad 1\le i\le h,\ d\in\{0,1\},
 \end{equation}
-where $R_i^\sigma$ is all rows labelled $(\sigma,i,\cdot)$ and the subscript
+where $R_i^\sigma$ is the set of all rows labeled $(\sigma,i,\cdot)$ and the subscript
 $d$ restricts to $p\equiv d\pmod2$. These are the sets referred to by the
-blue regions of Figure~\ref{fig:map}. A copy of $H$ in $A_h$ is then
+blue regions of Figure~\ref{fig:map}. A copy of $H$ in $A_h$ consists of the
+following (item~1 is \cite[Corollary~4.5]{openai}):
 \begin{enumerate}\itemsep1pt
 \item one row and one column from each of the $64$ anchor groups of a single
-mode $t$, realising the block $S$ of \eqref{eq:H};
+mode $t$, realizing the block $S$ of \eqref{eq:H};
 \item rows $r_1<r_2$ with $r_j\in\mathsf R_j(t)$ and columns $c_1<c_2$ with
-$c_j\in\mathsf C_j(t)$, these being exactly the lines whose signatures are
-$e_j$;
+$c_j\in\mathsf C_j(t)$, these being exactly the lines whose marks against
+the anchor of mode $t$ are $e_j$;
 \item such that $A_h$ restricted to $\{r_1,r_2\}\times\{c_1,c_2\}$ equals
 $P$.
 \end{enumerate}
 Items 1--2 are addressing; item 3 is the content, and by \eqref{eq:orders}
-it is a question about the threshold table phrased in node indices. Each
+it is a question about the table in Figure~\ref{fig:map}, phrased in node indices. Each
 mode asks one such question, and $A_h$ is built so that the answer is
 negative in every case but one, at the leaf diagonal. 
 
-\subsection*{Proof}
+% \subsection*{Proof}   (an empty heading in the draft: put it back with the proof)
 
 
 
 
-\newpage
+\clearpage % prints the figures waiting to be placed before the next section
 \section*{Extending to an infinite family of counterexamples}
-\textbf{What follows is Claude's proof for infinite family of counterexamples, which I have not read through in detail yet, but Claude is confident it is correct.\\
-Henning: I had my Claude review it and it believes it. I've slightly updated it} \\
-
 We show that a counterexample $H$ with no all-zero row and no all-zero column can be enlarged
 into many new counterexamples by attaching a second pattern $Z$ diagonally.
 
 \medskip
-\noindent\textbf{Setup.} Let $H$ be a $k \times l$ binary matrix and let $Z$ be a $p \times q$
+\noindent\textbf{Setup.} Let $H$ be a $k \times l$ binary matrix with $k, l \ge 1$, and let $Z$ be a $p \times q$
 binary matrix with $p, q \ge 1$. Define
 \[
 H' = \begin{pmatrix} H & 0 \\ 0 & Z \end{pmatrix}
@@ -507,12 +530,12 @@ $H' = \begin{pmatrix} H & 0 \\ 0 & Z \end{pmatrix}$ for every such $Z$.
 The condition on $Z$ holds automatically when $Z$ has a single row or a single column. Taking
 $Z = (1)$ adds one new row and one new column with a $1$ in the corner.
 
-\section{Proof of the theorem}
+\subsection*{Proof of the theorem}
 
 Call the first $k$ rows and the first $l$ columns of $H'$ its \emph{$H$-rows} and
 \emph{$H$-columns}, and the others its \emph{$Z$-rows} and \emph{$Z$-columns}.
 
-\subsection*{Step 1: in every copy of $H'$, the $H$-part lies in the old part}
+\subsubsection*{Step 1: in every copy of $H'$, the $H$-part lies in the old part}
 
 Let $X$ be any $n \times n$ binary matrix and
 $M = \begin{pmatrix} X & 0 \\ 0 & \widehat{Z} \end{pmatrix}$. Take a copy of $H'$ in $M$ on rows
@@ -538,7 +561,7 @@ Finally suppose $c_l$ is new. Column $l$ of $H$ contains a $1$, say in row $i \l
 $M(r_i, c_l) = 1$. But $r_i$ is old, and an old row has $1$s only in old columns, a
 contradiction. Hence $c_1, \dots, c_l$ are old.
 
-\subsection*{Step 2: the count, and $D_{H'}(A^+) \le D_H(A)$}
+\subsubsection*{Step 2: the count, and $D_{H'}(A^+) \le D_H(A)$}
 
 By Step 1 with $X = A$, every copy of $H'$ in $A^+$ consists of a copy of $H$ in $A$ together
 with $p$ more rows and $q$ more columns, for which there are at most $m^{p+q}$ choices. Hence
@@ -548,7 +571,7 @@ Next, change $D_H(A)$ entries of $A$ to get an $H$-free matrix $A_0$, and leave 
 $A^+$ unchanged. By Step 1 with $X = A_0$, the result has no copy of $H'$. Hence
 $D_{H'}(A^+) \le D_H(A)$.
 
-\subsection*{Step 3: $D_{H'}(A^+) \ge D_H(A)$}
+\subsubsection*{Step 3: $D_{H'}(A^+) \ge D_H(A)$}
 
 Let $B$ be any $m \times m$ binary matrix with no copy of $H'$. Let $E_0$, $E_1$, $E_2$ be the
 numbers of entries where $B$ differs from $A^+$ in the old-old block, in the two mixed blocks,
@@ -604,7 +627,7 @@ likely. In a formal proof it can be replaced by double counting: sum the inequal
 ``$\mathbf{1}[\text{good}]\cdot D \le E_0 + W$'' over all picks.
 \end{remark}
 
-\section{Proof of the corollary}
+\subsection*{Proof of the corollary}
 
 Fix $c', C' > 0$; we must find a host showing that $c'$ and $C'$ do not work for $H'$. Put
 $s = 1 + pq$, $C = C'$ and $c = c'\, s^{k+l-2C'}$. Since $H$ is a counterexample, there are $n$, an $n \times n$ matrix $A$
@@ -614,11 +637,11 @@ Let $m = sn$ and $\epsilon' = \epsilon/s^2 \in (0,1]$. By the theorem,
 \dist_{H'}(A^+) = \frac{D_H(A)}{(sn)^2} \ge \frac{\epsilon}{s^2} = \epsilon'
 \]
 and, using $n = m/s$ and $\epsilon = s^2 \epsilon'$,
-\[
-N_{H'}(A^+) \le m^{p+q} N_H(A) < c\,\epsilon^{C} n^{k+l} m^{p+q}
-= c\, s^{2C}(\epsilon')^{C}\, s^{-(k+l)}\, m^{(k+p)+(l+q)}
+\begin{align*}
+N_{H'}(A^+) &\le m^{p+q} N_H(A) < c\,\epsilon^{C} n^{k+l} m^{p+q}\\
+&= c\, s^{2C}(\epsilon')^{C}\, s^{-(k+l)}\, m^{(k+p)+(l+q)}
 = c'\,(\epsilon')^{C'}\, m^{(k+p)+(l+q)} .
-\]
+\end{align*}
 So $c'$ and $C'$ fail for $H'$ on the host $A^+$. As $c'$ and $C'$ were arbitrary, $H'$ is a
 counterexample. \qed
 
@@ -627,7 +650,7 @@ If ``counterexample'' is read in the stronger form, with hosts of arbitrarily la
 for a fixed $\epsilon$, the same proof applies: $m = sn$ grows with $n$, and $\epsilon/s^2$ is
 fixed.
 
-\section{Variant: appending zero rows or zero columns}
+\subsection*{Variant: appending zero rows or zero columns}
 
 Let $H'$ be $H$ with $q \ge 1$ all-zero columns appended on the right, and let
 $A^+ = \begin{pmatrix} A & 0 \\ 0 & 0 \end{pmatrix}$ have size $m = (1+q)n$. Then again
@@ -643,7 +666,7 @@ bad rows by zeros. No event ``good'' is needed, and one gets $D \le E_0 + E_1$ d
 \end{itemize}
 The same holds for appending $p$ all-zero rows at the bottom, by exchanging rows and columns.
 
-\section{Remarks}
+\subsection*{Remarks}
 
 \begin{itemize}
 \item \emph{Symmetries.} Swapping $0$s and $1$s, reversing the order of the rows, reversing the
@@ -667,24 +690,16 @@ would give, for instance,
 \]
 
 \item \emph{Sub-patterns do not help.} Every $Z$ with pairwise distinct rows, including patterns
-for which polynomial removal is known to hold such as the $2 \times 2$ identity, appears as a
+for which polynomial removal is known to hold such as the $2 \times 2$ identity~\cite{Lupini}, appears as a
 diagonal block of a counterexample.
-
-\item \emph{Credit.} For identity matrices this is Lupini's padding lemma (Zenodo record
-23618367, Lemma ``Identity padding''): $I_k = \operatorname{diag}(I_\ell, I_p)$, with each new
-diagonal $1$ blown up to an $n \times n$ block of ones, so $H = I_\ell$ and $Z = I_p$. Step 3
-follows his argument. The observation here is that his proof needs only that $H$ has no
-all-zero row or column, and that the attached block can be an arbitrary $Z$ with pairwise
-distinct rows or columns.
 
 \item \emph{Checks.} Both statements of the theorem and of the variant were verified by exact
 computation on small hosts: $120$ direct sums with $2 \times 2$ patterns $H$ and
 $Z \in \{(1), (0), (1\ 0), (0\ 1)^{T}, (1\ 1)\}$ ($41$ of them with $D_H(A) > 0$), and $80$
-zero-column variants, with no failure (\texttt{scratch/direct-sum/check.py}). These checks are a
-sanity test, not part of the proof. A Lean proof of the theorem and the corollary, with
-$H$ rectangular as here, is in \texttt{lean/OrderedRemoval/Statements.lean}. The folder
-\texttt{lean-unconditional/} combines it with OpenAI's Lean proof for their $66 \times 66$
-example (Apache-2.0, credited there).
+zero-column variants, with no failure. These checks are a sanity test, not part of the
+proof. The theorem, the variant, both corollaries, and the infinite family obtained by
+attaching $Z = (1)$ again and again are proved in Lean~4 with Mathlib, with no \texttt{sorry}
+and only the standard axioms. The duplication theorem below is not formalized.
 \end{itemize}
 
 \section*{An infinite family of examples}
@@ -696,9 +711,10 @@ $R=\operatorname{red}(H)$, of size $k_0\times l_0$. For example,
 \[
  \operatorname{red}\begin{pmatrix}1&1&0\\1&1&0\\0&0&1\end{pmatrix}=\begin{pmatrix}1&0\\0&1\end{pmatrix}.
 \]
-(For a pattern that is not square, read the conjecture with $n^{k+l}$ in place of $n^{2k}$.)
 
-\textbf{Theorem.} $H$ satisfies the conjecture if and only if $\operatorname{red}(H)$ does.
+\begin{theorem}[Duplication]\label{thm:dup}
+$H$ satisfies the conjecture if and only if $\operatorname{red}(H)$ does.
+\end{theorem}
 
 \medskip
 The proof rests on two facts.
@@ -710,8 +726,8 @@ Let $H'$ be $H$ with column $j$ written twice in a row. Then for every $n\times 
 \]
 The same holds for a repeated row.
 
-\emph{Proof.} Take an $n \times n$ matrix. Fix some $k$ rows and the $l-1$ columns of a copy of $H$; call this a \emph{frame}. Let $x$
-be the number of columns that complete the frame to a copy of $H$. The frame gives $x$ copies of $H$ and
+\emph{Proof.} Fix the $k$ rows of a copy of $H$ in $B$ and its $l-1$ columns other than the $j$th; call these a \emph{frame}. Let $x$
+be the number of columns that complete the frame to a copy of $H$, as its $j$th column. The frame gives $x$ copies of $H$ and
 $\binom{x}{2}$ copies of $H'$, since the two equal columns of $H'$ can be any two of these $x$ columns. There are
 at most $n^{k+l-1}$ frames, and $\binom{x}{2}$ is convex in $x$, so the bound follows from Jensen's inequality.
 $\square$
@@ -727,7 +743,7 @@ with a constant $q\times q$ block. Then
 
 \emph{Proof of (a).} Inside a copy of $H$ in $A^{(q)}$, keep one row and one column for each row and column of
 $R$. This is a copy of $R$. Two of its rows cannot come from the same block of $q$ equal rows: then two
-neighbouring rows of $R$ would be equal. The same holds for columns. So the copy of $R$ comes from a copy of $R$
+neighboring rows of $R$ would be equal. The same holds for columns. So the copy of $R$ comes from a copy of $R$
 in $A$, and each copy of $R$ in $A$ is counted at most $q^{k_0+l_0}(qn)^{k+l-k_0-l_0}$ times.
 
 \emph{Proof of (b).} Change at most $\frac12q^2D_R(A)$ entries of $A^{(q)}$ and call the result $B'$. We show
@@ -735,7 +751,7 @@ that $B'$ still contains $H$. Pick one row from each block of rows and one colum
 at random. The picked rows and columns form an $n\times n$ matrix $B$. Each changed entry is picked with
 probability $1/q^2$, so on average $B$ differs from $A$ in at most $D_R(A)/2$ entries. Hence with probability
 at least $\frac12$ it differs in fewer than $D_R(A)$ entries, and then $B$ contains a copy of $R$. A given
-copy of $R$ in $B'$ is picked with probability $q^{-(k_0+l_0)}$, so
+copy of $R$ in $B'$ is picked with probability at most $q^{-(k_0+l_0)}$, so
 \[
  N_R(B')\ \ge\ \tfrac12\,q^{k_0+l_0}.
 \]
@@ -744,29 +760,34 @@ $B'$. Applying Fact~1 once for each repeated row or column, the same is true for
 particular $B'$ contains $H$. $\square$
 
 \medskip
-\emph{Proof of the Theorem.}
+\emph{Proof of Theorem~\ref{thm:dup}.}
 
-\emph{If $R$ satisfies the conjecture, so does $H$.} Let $\operatorname{dist}_H(A)\ge\epsilon$. Since $H$
-contains $R$, every $R$-free matrix is $H$-free, so $\operatorname{dist}_R(A)\ge\epsilon$ and $A$ has at least
+\emph{If $R$ satisfies the conjecture, so does $H$.} Let $\dist_H(A)\ge\epsilon$. Since $H$
+contains $R$, every $R$-free matrix is $H$-free, so $\dist_R(A)\ge\epsilon$ and $A$ has at least
 $c\,\epsilon^Cn^{k_0+l_0}$ copies of $R$. Applying Fact~1 once for each repeated row or column gives at least
 $c'\epsilon^{C'}n^{k+l}$ copies of $H$. (This needs $n$ larger than a fixed power of $1/\epsilon$; for smaller
 $n$ use $N_H(A)\ge1$ and a larger $C'$.)
 
 \emph{If $R$ fails the conjecture, so does $H$.} Let $c',C'>0$ be given. Since $R$ fails, there is a matrix
-$A$ with $\operatorname{dist}_R(A)\ge\epsilon_0$ and fewer than $c'2^{-C'}\epsilon_0^{C'}n^{k_0+l_0}$ copies of
+$A$ with $\dist_R(A)\ge\epsilon_0$ and fewer than $c'2^{-C'}\epsilon_0^{C'}n^{k_0+l_0}$ copies of
 $R$. By Fact~2, for large $q$ the matrix $A^{(q)}$ satisfies
-$\operatorname{dist}_H(A^{(q)})\ge\epsilon_0/2=:\epsilon$ and has fewer than $c'\epsilon^{C'}(qn)^{k+l}$ copies
+$\dist_H(A^{(q)})\ge\epsilon_0/2=:\epsilon$ and has fewer than $c'\epsilon^{C'}(qn)^{k+l}$ copies
 of $H$. So no constants $c',C'$ work for $H$. $\square$
 
 \medskip
 \textbf{Examples.}
 \begin{itemize}
-\item Any pattern made of two all-ones blocks in opposite corners and zeros elsewhere reduces to the
- $2\times2$ identity (or its mirror image), so it satisfies the conjecture by Lupini's theorem.
-\item Shea's crown with any rows or columns repeated still fails the conjecture.
+\item Every pattern $\begin{pmatrix} J & 0 \\ 0 & J' \end{pmatrix}$, where $J$ and $J'$ are all-ones matrices of
+ any sizes, reduces to the $2\times2$ identity, so it satisfies the conjecture by Lupini's theorem~\cite{Lupini}.
+ So does $\begin{pmatrix} 0 & J \\ J' & 0 \end{pmatrix}$, which reduces to the mirror image of the identity
+ (reversing the order of the rows of both the pattern and the host preserves $N_H$ and $D_H$).
+\item OpenAI's $H$ has no two equal neighboring rows and no two equal neighboring columns, so
+ $\operatorname{red}(H)=H$, and $H$ with any of its rows or columns repeated is again a counterexample.
+ If Shea's claimed $3\times3$ counterexample~\cite{shea} holds, the same applies to it.
 \end{itemize}
 
  \begin{thebibliography}{99}
+ \raggedright % so that the long URLs break without stretching the lines
  
   \bibitem{ABE}   
   N.~Alon and O.~Ben-Eliezer, \emph{Efficient removal lemmas for matrices},
@@ -790,8 +811,8 @@ of $H$. So no constants $c',C'$ work for $H$. $\square$
   doi:10.1016/j.cosrev.2025.100806, arXiv:2508.16878.
 
   \bibitem{Lupini}
-  Lupini, Martino. \emph{Polynomial Removal for the Ordered Two-by-Two Identity Matrix}, preprint, Zenodo, November 2, 2026,
-  \url{https://doi.org/10.5281/zenodo.23618366}.
+  M.~Lupini, \emph{Polynomial removal for the ordered two-by-two identity matrix}, preprint,
+  Zenodo, 2 November 2026, doi:10.5281/zenodo.23618366.
 
 
   \bibitem{openai}

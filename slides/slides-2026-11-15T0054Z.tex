@@ -50,8 +50,7 @@
   \end{tikzpicture}%
   \begin{columns}[c]
   \begin{column}{0.64\textwidth}
-  {\footnotesize\bfseries\color{accent}\MakeUppercase{\eventline}\par}
-  \vspace{0.3em}{\footnotesize\color{muted}\insertdate\par}
+  {\footnotesize\bfseries\color{accent}\MakeUppercase{\insertdate}\par}
   \vspace{1.4em}{\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle\par}
   \vspace{0.9em}{\small\insertsubtitle\par}
   \vspace{1.6em}{\footnotesize\insertauthor\par}
@@ -279,12 +278,17 @@
 }
 \newcommand{\smallmat}[1]{\left(\begin{smallmatrix}#1\end{smallmatrix}\right)}
 
+% title, subtitle, authors with affiliations and date as in the team's report
 \title{Polynomial removal for binary matrices}
-\subtitle{OpenAI's counterexample, why it works, and new families}
-\author{Papangkorn Apinyanon,\\
-Saksham Sethi,\\
-and Henning Arn\'{o}r Skeggi \'{U}lfarsson\\[2pt] Team costco}
-\date{November 2026}
+\subtitle{Problem \#96 at the Caltech \texorpdfstring{$\times$}{×} SAIR Mathathon}
+\author{\texorpdfstring{%
+\textbf{Team costco}\\[0.6em]
+\begin{tabular}{@{}l@{\hspace{1.2em}}l@{}}
+Papangkorn Apinyanon & \textcolor{muted}{MIT}\\
+Saksham Sethi & \textcolor{muted}{Caltech}\\
+Henning Arn\'{o}r Skeggi \'{U}lfarsson & \textcolor{muted}{Reykjavik University}
+\end{tabular}}{Papangkorn Apinyanon, Saksham Sethi, Henning Arn\'{o}r Skeggi \'{U}lfarsson}}
+\date{November 15, 2026}
 
 \begin{document}
 

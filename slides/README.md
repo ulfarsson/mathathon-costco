@@ -1,9 +1,9 @@
 # Slides: Polynomial removal for binary matrices
 
-Beamer slides for the team's write-up (team costco, Caltech × SAIR Mathathon, November 2026):
-the polynomial removal conjecture for ordered binary matrices, OpenAI's counterexample and why it
-works, and the team's two reductions (direct sums, duplication). 26 frames, with step-by-step
-overlays.
+Beamer slides for the team's write-up (team costco, Problem #96 at the Caltech × SAIR Mathathon,
+November 15, 2026): the polynomial removal conjecture for ordered binary matrices, OpenAI's
+counterexample and why it works, and the team's two reductions (direct sums, duplication). 26
+frames, with step-by-step overlays.
 
 If you are an agent editing these slides, read this file first, then `slides-template.tex`.
 
@@ -101,6 +101,10 @@ so changes made there must be carried back into `slides-template.tex` by hand, o
 - Open: whether the 2 × 2 corner P = [1 0; 1 1] has polynomial removal.
 
 ## Style
+
+The title page follows the title block of the team's report: the title, the subtitle "Problem #96
+at the Caltech × SAIR Mathathon", the team, the authors with their affiliations, and the date (shown
+above the title).
 
 Taken from the team's earlier slides (their style only): TeX Gyre Heros; paper `#FBF8F4`, ink
 `#2B0B1E`, orange accent `#F26322`, muted gray `#79646E`; bold frame titles with a one-line
