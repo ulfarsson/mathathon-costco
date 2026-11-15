@@ -298,6 +298,171 @@ Henning Arn\'{o}r Skeggi \'{U}lfarsson & \textcolor{muted}{Reykjavik University}
 \titlepage
 \end{frame}
 
+% ------------------------------------------------------------------ motivation
+\begin{frame}{Why removal?}
+\framesubtitle{Far from pattern-free should mean many copies, and then a few random samples find one}
+\begin{columns}[T]
+\begin{column}{0.58\textwidth}
+\small
+\begin{itemize}
+\item<1-> \textbf{Removal lemmas.} If many entries must change to destroy every copy of a small pattern, there are many copies. A central tool: triangle removal implies Roth's theorem.
+\item<2-> \textbf{The engine behind property testing.} Is a huge matrix $A$ free of a pattern $H$, or far from it? Sample rows and columns at random and look: here $261$ of the $4356$ choices of $2$ rows and $2$ columns read $H$.
+\item<3-> \textbf{How many tries?} About $1/\delta$ if $A$ holds a $\delta$ share of all possible copies (here about $17$). If $A$ is far from $H$-free, is $\delta$ only \alert{polynomially} small?
+\end{itemize}
+\end{column}
+\begin{column}{0.38\textwidth}
+\centering
+\begin{tikzpicture}[]
+\useasboundingbox (-0.1,0.55) rectangle (4.98,-2.98);
+\node[font=\scriptsize, anchor=south] at (1.44,0.08) {a large matrix $A$};
+\only<2->{%
+  \fill[teal!22] (0,-0.72) rectangle (2.88,-0.96);
+  \fill[teal!22] (0,-1.92) rectangle (2.88,-2.16);
+  \fill[teal!22] (0.72,0) rectangle (0.96,-2.88);
+  \fill[teal!22] (2.16,0) rectangle (2.4,-2.88);
+}
+\fill[ink!80] (0.035,-0.035) rectangle (0.205,-0.205);
+\fill[ink!80] (0.755,-0.035) rectangle (0.925,-0.205);
+\fill[ink!80] (0.995,-0.035) rectangle (1.165,-0.205);
+\fill[ink!80] (1.235,-0.035) rectangle (1.405,-0.205);
+\fill[ink!80] (1.955,-0.035) rectangle (2.125,-0.205);
+\fill[ink!80] (2.195,-0.035) rectangle (2.365,-0.205);
+\fill[ink!80] (2.675,-0.035) rectangle (2.845,-0.205);
+\fill[ink!80] (0.275,-0.275) rectangle (0.445,-0.445);
+\fill[ink!80] (0.515,-0.275) rectangle (0.685,-0.445);
+\fill[ink!80] (0.995,-0.275) rectangle (1.165,-0.445);
+\fill[ink!80] (1.715,-0.275) rectangle (1.885,-0.445);
+\fill[ink!80] (1.955,-0.275) rectangle (2.125,-0.445);
+\fill[ink!80] (2.675,-0.275) rectangle (2.845,-0.445);
+\fill[ink!80] (0.035,-0.515) rectangle (0.205,-0.685);
+\fill[ink!80] (0.275,-0.515) rectangle (0.445,-0.685);
+\fill[ink!80] (0.515,-0.515) rectangle (0.685,-0.685);
+\fill[ink!80] (0.755,-0.515) rectangle (0.925,-0.685);
+\fill[ink!80] (0.995,-0.515) rectangle (1.165,-0.685);
+\fill[ink!80] (1.235,-0.515) rectangle (1.405,-0.685);
+\fill[ink!80] (1.475,-0.515) rectangle (1.645,-0.685);
+\fill[ink!80] (1.715,-0.515) rectangle (1.885,-0.685);
+\fill[ink!80] (1.955,-0.515) rectangle (2.125,-0.685);
+\fill[ink!80] (2.195,-0.515) rectangle (2.365,-0.685);
+\fill[ink!80] (2.435,-0.515) rectangle (2.605,-0.685);
+\fill[ink!80] (2.675,-0.515) rectangle (2.845,-0.685);
+\fill[ink!80] (0.755,-0.755) rectangle (0.925,-0.925);
+\fill[ink!80] (1.475,-0.755) rectangle (1.645,-0.925);
+\fill[ink!80] (1.715,-0.755) rectangle (1.885,-0.925);
+\fill[ink!80] (2.675,-0.755) rectangle (2.845,-0.925);
+\fill[ink!80] (0.515,-0.995) rectangle (0.685,-1.165);
+\fill[ink!80] (1.955,-0.995) rectangle (2.125,-1.165);
+\fill[ink!80] (2.195,-0.995) rectangle (2.365,-1.165);
+\fill[ink!80] (2.675,-0.995) rectangle (2.845,-1.165);
+\fill[ink!80] (0.035,-1.235) rectangle (0.205,-1.405);
+\fill[ink!80] (0.995,-1.235) rectangle (1.165,-1.405);
+\fill[ink!80] (1.235,-1.235) rectangle (1.405,-1.405);
+\fill[ink!80] (2.195,-1.235) rectangle (2.365,-1.405);
+\fill[ink!80] (2.435,-1.235) rectangle (2.605,-1.405);
+\fill[ink!80] (2.675,-1.235) rectangle (2.845,-1.405);
+\fill[ink!80] (0.035,-1.475) rectangle (0.205,-1.645);
+\fill[ink!80] (0.995,-1.475) rectangle (1.165,-1.645);
+\fill[ink!80] (1.235,-1.475) rectangle (1.405,-1.645);
+\fill[ink!80] (2.675,-1.475) rectangle (2.845,-1.645);
+\fill[ink!80] (0.755,-1.715) rectangle (0.925,-1.885);
+\fill[ink!80] (0.995,-1.715) rectangle (1.165,-1.885);
+\fill[ink!80] (1.715,-1.715) rectangle (1.885,-1.885);
+\fill[ink!80] (0.755,-1.955) rectangle (0.925,-2.125);
+\fill[ink!80] (0.995,-1.955) rectangle (1.165,-2.125);
+\fill[ink!80] (1.715,-1.955) rectangle (1.885,-2.125);
+\fill[ink!80] (2.195,-1.955) rectangle (2.365,-2.125);
+\fill[ink!80] (2.435,-1.955) rectangle (2.605,-2.125);
+\fill[ink!80] (2.675,-1.955) rectangle (2.845,-2.125);
+\fill[ink!80] (0.755,-2.195) rectangle (0.925,-2.365);
+\fill[ink!80] (0.995,-2.195) rectangle (1.165,-2.365);
+\fill[ink!80] (1.235,-2.195) rectangle (1.405,-2.365);
+\fill[ink!80] (1.475,-2.195) rectangle (1.645,-2.365);
+\fill[ink!80] (0.035,-2.435) rectangle (0.205,-2.605);
+\fill[ink!80] (0.755,-2.435) rectangle (0.925,-2.605);
+\fill[ink!80] (0.995,-2.435) rectangle (1.165,-2.605);
+\fill[ink!80] (1.235,-2.435) rectangle (1.405,-2.605);
+\fill[ink!80] (1.715,-2.435) rectangle (1.885,-2.605);
+\fill[ink!80] (1.955,-2.435) rectangle (2.125,-2.605);
+\fill[ink!80] (2.435,-2.435) rectangle (2.605,-2.605);
+\fill[ink!80] (2.675,-2.435) rectangle (2.845,-2.605);
+\fill[ink!80] (0.035,-2.675) rectangle (0.205,-2.845);
+\fill[ink!80] (0.515,-2.675) rectangle (0.685,-2.845);
+\fill[ink!80] (0.755,-2.675) rectangle (0.925,-2.845);
+\fill[ink!80] (1.235,-2.675) rectangle (1.405,-2.845);
+\fill[ink!80] (1.475,-2.675) rectangle (1.645,-2.845);
+\fill[ink!80] (1.715,-2.675) rectangle (1.885,-2.845);
+\fill[ink!80] (1.955,-2.675) rectangle (2.125,-2.845);
+\fill[ink!80] (2.195,-2.675) rectangle (2.365,-2.845);
+\fill[ink!80] (2.435,-2.675) rectangle (2.605,-2.845);
+\fill[ink!80] (2.675,-2.675) rectangle (2.845,-2.845);
+\draw[ink, line width=0.5pt] (0,0) rectangle (2.88,-2.88);
+\only<2->{%
+  \draw[accent, line width=1.2pt] (0.71,-0.71) rectangle (0.97,-0.97);
+  \draw[accent, line width=1.2pt] (2.15,-0.71) rectangle (2.41,-0.97);
+  \draw[accent, line width=1.2pt] (0.71,-1.91) rectangle (0.97,-2.17);
+  \draw[accent, line width=1.2pt] (2.15,-1.91) rectangle (2.41,-2.17);
+}
+\node[font=\scriptsize, anchor=south] at (4.05,-0.5) {pattern $H$};
+\draw[gray!55] (3.63,-0.55) -- (4.47,-0.55);
+\draw[gray!55] (3.63,-0.97) -- (4.47,-0.97);
+\draw[gray!55] (3.63,-1.39) -- (4.47,-1.39);
+\draw[gray!55] (3.63,-0.55) -- (3.63,-1.39);
+\draw[gray!55] (4.05,-0.55) -- (4.05,-1.39);
+\draw[gray!55] (4.47,-0.55) -- (4.47,-1.39);
+\node[font=\scriptsize] at (3.84,-0.76) {$1$};
+\node[font=\scriptsize] at (4.26,-0.76) {$0$};
+\node[font=\scriptsize] at (3.84,-1.18) {$1$};
+\node[font=\scriptsize] at (4.26,-1.18) {$1$};
+\only<2->{%
+  \node[font=\scriptsize, anchor=south, align=center] at (4.05,-2.2) {the sample\\[-2pt] reads};
+  \fill[accent!20] (3.63,-2.25) rectangle (4.47,-3.09);
+  \draw[gray!55] (3.63,-2.25) -- (4.47,-2.25);
+  \draw[gray!55] (3.63,-2.67) -- (4.47,-2.67);
+  \draw[gray!55] (3.63,-3.09) -- (4.47,-3.09);
+  \draw[gray!55] (3.63,-2.25) -- (3.63,-3.09);
+  \draw[gray!55] (4.05,-2.25) -- (4.05,-3.09);
+  \draw[gray!55] (4.47,-2.25) -- (4.47,-3.09);
+  \node[font=\scriptsize] at (3.84,-2.46) {$1$};
+  \node[font=\scriptsize] at (4.26,-2.46) {$0$};
+  \node[font=\scriptsize] at (3.84,-2.88) {$1$};
+  \node[font=\scriptsize] at (4.26,-2.88) {$1$};
+}
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{What we set out to do}
+\framesubtitle{Make OpenAI's counterexample readable; turn single counterexamples into families}
+\small
+Polynomial removal for ordered binary matrices was a central open problem for nearly two decades. OpenAI's $66\times66$ counterexample settled it in the negative, and smaller counterexamples followed within weeks, at least one found with the help of AI.
+
+\medskip
+\begin{columns}[T]
+\begin{column}{0.48\textwidth}
+\begin{block}{1. Understand it}
+The constructions are a tangle of anchors, modes and recursive parts. Why does OpenAI's counterexample escape the approach of Alon and Ben-Eliezer? We give a human-readable account.
+\end{block}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{block}{2. Extend it}
+Counterexamples were found one pattern at a time. \textbf{Direct sums} and \textbf{duplication} give the first infinite families of counterexamples, and new families that satisfy the conjecture.
+\end{block}
+\end{column}
+\end{columns}
+
+\medskip
+\centering
+\begin{tikzpicture}[>={Stealth[length=2mm]}, node distance=0.32cm, every node/.append style={minimum height=0.8cm}]
+\node[leanbox=2.15cm, fill=accent!8] (a) {copies and\\ the conjecture};
+\node[leanbox=2.15cm, fill=accent!8, right=of a] (b) {disjoint copies\\ are not enough};
+\node[leanbox=2.15cm, fill=accent!8, right=of b] (c) {OpenAI's\\ construction};
+\node[leanbox=2.15cm, fill=teal!10, right=of c] (d) {direct sums and\\ duplication};
+\node[leanbox=2.15cm, fill=teal!10, right=of d] (e) {Lean};
+\foreach \u/\v in {a/b, b/c, c/d, d/e} \draw[->, muted] (\u) -- (\v);
+\end{tikzpicture}
+\end{frame}
+
 % ------------------------------------------------------------------ basics
 \begin{frame}{Ordered copies}
 \framesubtitle{Both $0$s and $1$s must be matched}
@@ -3684,7 +3849,7 @@ So no constants $c',C'$ work for $H$.
 \begin{frame}{Formal verification}
 \begin{itemize}
 \item \textbf{Lean 4} (Mathlib v4.35.0): the direct-sum theorem, the zero-column variant, their corollaries and the infinite family obtained by repeatedly adding $(1)$ are fully proved: no \texttt{sorry}, only the standard axioms. Written with Kimi 3.1 Pro; checked independently.
-\item \textbf{Agda} (\texttt{--safe}): the special case of one appended zero column, fully proved.
+\item \textbf{Agda} (\texttt{--safe}): the special case of one appended zero column, fully proved. (not turned in)
 \item \textbf{Computer checks}: the direct-sum statements on $200$ small hosts; OpenAI's counts for small $h$, including $m^2$ as the exact distance for $h\le5$.
 \end{itemize}
 \end{frame}
@@ -3794,7 +3959,7 @@ rows of $Z$ pairwise distinct & \texttt{Function.Injective Z}
 \small
 \begin{itemize}
 \item \textbf{Literature, extensions, smaller counterexamples, proofs}: Opus 5.5 (Max), Fable 5.2 (Medium).
-\item \textbf{Formalization}: planning with GPT-6.1 Sol (Extra High) and Opus 5.5 (Max); the Lean proof with Open Math Kimi 3.1 Pro (Ultramath); the Agda special case with Opus 5.5 (Max).
+\item \textbf{Formalization}: planning with GPT-6.1 Sol (Extra High) and Opus 5.5 (Max); the Lean proof with Open Math Kimi 3.1 Pro (Ultramath); the Agda special case with Opus 5.5 (Max) (not turned in).
 \item \textbf{Proofreading, slides, examples}: Opus 5.5 (Max), Open Math DeepSeek V4.1 Flash and Kimi 3.1 Pro.
 \end{itemize}
 \end{frame}
