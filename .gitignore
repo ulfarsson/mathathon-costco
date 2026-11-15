@@ -1,0 +1,38 @@
+# LaTeX: files made while compiling. The .tex sources and the compiled
+# PDFs are kept, so readers can open the report and slides directly.
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.dvi
+*.fdb_latexmk
+*.fls
+*.lof
+*.log
+*.lot
+*.out
+*.run.xml
+*.synctex
+*.synctex.gz
+*.synctex(busy)
+*.synctex.gz(busy)
+*.toc
+*.xdv
+*-blx.bib
+
+# Beamer
+*.nav
+*.snm
+*.vrb
+
+# Lean 4 / Lake: build output and downloaded packages (Mathlib among them).
+# lakefile, lean-toolchain and lake-manifest.json stay tracked.
+.lake/
+lake-packages/
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store

@@ -1,0 +1,726 @@
+% Slides for the write-up writeup-2026-11-15T0054Z.tex.
+% This is the template: run `python3 make_slides.py` in this folder to fill the %%...%% markers
+% with the pictures and numbers it computes, and compile the .tex file it writes.
+\documentclass[aspectratio=169,11pt,t]{beamer}
+\usetheme{default}
+\usefonttheme{professionalfonts}
+\usepackage[T1]{fontenc}
+\usepackage{tgheros}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{booktabs}
+\setbeamertemplate{navigation symbols}{}
+\setlength{\parskip}{0.45em}
+
+% the style of the team's earlier slides: warm paper, dark plum ink, orange accent
+\definecolor{paper}{HTML}{FBF8F4}
+\definecolor{ink}{HTML}{2B0B1E}
+\definecolor{accent}{HTML}{F26322}
+\definecolor{muted}{HTML}{79646E}
+\definecolor{rulecol}{HTML}{E1DBD9}
+\newcommand{\eventline}{Caltech $\times$ SAIR Mathathon 2026}
+\setbeamercolor{background canvas}{bg=paper}
+\setbeamercolor{normal text}{fg=ink}
+\setbeamercolor{frametitle}{fg=ink}
+\setbeamercolor{framesubtitle}{fg=ink}
+\setbeamercolor{title}{fg=ink}
+\setbeamercolor{structure}{fg=accent}
+\setbeamercolor{alerted text}{fg=accent!85!black}
+\setbeamercolor{block title}{fg=ink, bg=accent!16}
+\setbeamercolor{block body}{fg=ink, bg=white}
+\setbeamercolor{block title example}{fg=ink, bg=rulecol}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamerfont{frametitle}{size=\large, series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\footnotesize, series=\bfseries}
+\setbeamerfont{title}{size=\LARGE, series=\bfseries}
+\setbeamertemplate{itemize items}{\textbullet}
+\makeatletter
+\setbeamertemplate{frametitle}{%
+  \vspace*{0.6em}%
+  {\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle\par}%
+  \ifx\insertframesubtitle\@empty\else
+    \vspace*{0.15em}{\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle\par}%
+  \fi
+  \vspace*{0.25em}{\color{accent}\rule{\textwidth}{0.6pt}}\par}
+\makeatother
+\setbeamertemplate{footline}{%
+  \hspace*{1.4em}{\tiny\color{muted}\eventline}\hfill{\tiny\color{muted}\insertframenumber\,/\,\inserttotalframenumber}\hspace*{1.4em}\vspace*{0.8em}}
+\setbeamertemplate{title page}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[accent] (current page.north west) rectangle ([xshift=5pt]current page.south west);
+  \end{tikzpicture}%
+  \begin{columns}[c]
+  \begin{column}{0.64\textwidth}
+  {\footnotesize\bfseries\color{accent}\MakeUppercase{\eventline}\par}
+  \vspace{0.3em}{\footnotesize\color{muted}\insertdate\par}
+  \vspace{1.4em}{\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle\par}
+  \vspace{0.9em}{\small\insertsubtitle\par}
+  \vspace{1.6em}{\footnotesize\insertauthor\par}
+  \end{column}
+  \begin{column}{0.3\textwidth}
+  \centering
+  %%TITLEPIC%%
+
+  \vspace{0.3em}{\scriptsize\color{muted}OpenAI's pattern $H$, a $66\times66$-matrix}
+  \end{column}
+  \end{columns}
+}
+
+\usepackage{amsmath, amssymb}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, decorations.markings, positioning, calc}
+\DeclareMathOperator{\dist}{dist}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\tikzset{
+  tnode/.style={circle, draw, thick, minimum size=8mm, inner sep=0pt, font=\small},
+  note/.style={font=\scriptsize, align=center},
+  lab/.style={font=\scriptsize},
+  forced/.style={line width=2pt, blue!70!black, opacity=0.45, line cap=round,
+    postaction={decorate}, decoration={markings,
+      mark=at position #1 with {\arrow[opacity=1]{Stealth[length=2.6mm, width=2.4mm]}}}},
+  forced/.default=0.75,
+  dropped/.style={forced=#1, red!80!black, opacity=0.6},
+  dropped/.default=0.75,
+}
+\newcommand{\treepart}[2]{%
+  \foreach \row [count=\i from 0] in {{0,0,0,0,0,0},{0,0,0,0,0,0},{1,1,#1,1,0,0},
+                                       {1,1,0,1,0,0},{1,1,0,0,0,0},{1,1,0,0,0,0}} {
+    \foreach \v [count=\j from 0] in \row {
+      \ifnum\v=1 \fill[gray!25] (\j, -\i) rectangle (\j+1, -\i-1); \fi
+    }
+  }
+  #2
+  \foreach \row [count=\i from 0] in {{0,0,0,0,0,0},{0,0,0,0,0,0},{1,1,#1,1,0,0},
+                                       {1,1,0,1,0,0},{1,1,0,0,0,0},{1,1,0,0,0,0}} {
+    \foreach \v [count=\j from 0] in \row {
+      \draw[gray!60] (\j, -\i) rectangle (\j+1, -\i-1);
+      \node[font=\small] at (\j+0.5, -\i-0.5) {$\v$};
+    }
+  }
+  \foreach \x in {2,3,4} \draw[thick] (\x, 0) -- (\x, -6);
+  \foreach \y in {2,3,4} \draw[thick] (0, -\y) -- (6, -\y);
+  \draw[thick] (0, 0) rectangle (6, -6);
+  \node[lab, anchor=east] at (-0.1, -1)   {$R^-$};
+  \node[lab, anchor=east] at (-0.1, -2.5) {$r_0$};
+  \node[lab, anchor=east] at (-0.1, -3.5) {$r_1$};
+  \node[lab, anchor=east] at (-0.1, -5)   {$R^+$};
+  \node[lab, anchor=south] at (1, 0.05)   {$C^+$};
+  \node[lab, anchor=south] at (2.5, 0.05) {$c_0$};
+  \node[lab, anchor=south] at (3.5, 0.05) {$c_1$};
+  \node[lab, anchor=south] at (5, 0.05)   {$C^-$};
+  \draw[ultra thick, blue!70!black] (0, -4) rectangle (2, -6);
+  \draw[ultra thick, orange!90!black] (4, 0) rectangle (6, -2);
+  \draw[ultra thick, red!80!black] (2.06, -2.06) rectangle (2.94, -2.94);
+  \draw[ultra thick, red!80!black] (3.06, -3.06) rectangle (3.94, -3.94);
+}
+\newcommand{\smallmat}[1]{\left(\begin{smallmatrix}#1\end{smallmatrix}\right)}
+
+\title{Polynomial removal for binary matrices}
+\subtitle{OpenAI's counterexample, why it works, and new families}
+\author{Papangkorn Apinyanon,\\
+Saksham Sethi,\\
+and Henning Arn\'{o}r Skeggi \'{U}lfarsson\\[2pt] Team costco}
+\date{November 2026}
+
+\begin{document}
+
+\begin{frame}[c]
+\titlepage
+\end{frame}
+
+% ------------------------------------------------------------------ basics
+\begin{frame}{Ordered copies}
+\framesubtitle{Both $0$s and $1$s must be matched}
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
+\small
+A \textbf{copy} of a $k\times k$ pattern $H$ in an $n\times n$ binary matrix $A$:
+rows $r_1<\dots<r_k$ and columns $c_1<\dots<c_k$ with
+\[ A(r_i,c_j)=H(i,j)\quad\text{for all } i,j. \]
+$N_H(A)$ is the number of copies.
+
+\smallskip
+\textbf{Example.} $H=\smallmat{1&0\\1&1}$ in the matrix on the right:
+\begin{itemize}
+\item<2-> rows $1,2$, columns $1,3$
+\item<3-> rows $1,2$, columns $1,2$
+\item<4-> rows $1,3$, columns $1,3$
+\end{itemize}
+\uncover<5->{No others: $N_H(A)=3$, and all three use the entry $A(1,1)$.}
+\end{column}
+\begin{column}{0.4\textwidth}
+\centering
+%%COPIES%%
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Removing copies}
+\framesubtitle{Sometimes one entry meets every copy}
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
+$D_H(A)$: the fewest entries of $A$ to change so that no copy of $H$ is left.
+
+\medskip
+$\dist_H(A)=D_H(A)/n^2$, and $A$ is \textbf{$\epsilon$-far} from $H$-free if $\dist_H(A)\ge\epsilon$.
+
+\bigskip
+\textbf{Example.}
+\begin{overprint}
+\onslide<1>
+\raggedright
+All three copies use $A(1,1)$.
+\onslide<2->
+\raggedright
+Change $A(1,1)$ to $0$: no copy is left. One change was needed, so $D_H(A)=1$ and $\dist_H(A)=1/9$.
+\end{overprint}
+\end{column}
+\begin{column}{0.4\textwidth}
+\centering
+%%DISTANCE%%
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{A change can create a new copy}
+\framesubtitle{Repairing one copy can make another}
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
+\begin{itemize}
+\item<1-> A copy: rows $1,2$, columns $1,2$.
+\item<2-> Repair it by changing $A(1,2)$ from $0$ to $1$.
+\item<3-> That copy is gone \dots
+\item<4-> \dots\ but rows $1,2$ with columns $2,3$ now read $\smallmat{1&0\\1&1}$: a \alert{new copy}.
+\item<5-> Still $3$ copies. A repair has to watch the copies it creates.
+\end{itemize}
+\end{column}
+\begin{column}{0.4\textwidth}
+\centering
+%%CREATE%%
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The conjecture}
+\begin{conjecture}[polynomial removal]
+For every $k\times k$ binary matrix $H$ there are $c,C>0$ such that for every $n$, every
+$n\times n$ binary matrix $A$ and every $\epsilon\in(0,1]$:
+\[ \dist_H(A)\ge\epsilon \quad\Longrightarrow\quad N_H(A)\ge c\,\epsilon^{C}n^{2k}. \]
+\end{conjecture}
+\medskip
+If many changes are needed to remove the copies, there should be many copies: at least a
+fraction polynomial in $\epsilon$ of the about $n^{2k}$ possible positions.
+
+\medskip
+For a $k\times l$ pattern, read the conjecture with $n^{k+l}$ in place of $n^{2k}$.
+\end{frame}
+
+\begin{frame}{History}
+\small
+\begin{itemize}
+\item \textbf{2007} Alon, Fischer, Newman: polynomial removal without row and column order; the ordered case is raised as an open direction.
+\item \textbf{2017} Alon, Ben-Eliezer, Fischer: removal holds for ordered matrices: an $\epsilon$-far matrix has at least $\delta n^{2k}$ copies, for some $\delta>0$ depending on $\epsilon$ and $H$. But the $1/\delta$ their proof gives is of wowzer type in $1/\epsilon$, not polynomial.
+\item \textbf{2020} Alon, Ben-Eliezer: the question for finite families (Problem~1.4); polynomial removal when there are many \emph{disjoint} copies.
+\item \textbf{2025} Gishboliner, Shapira, survey: ``one of the key open problems'' (Conjecture~4.5).
+\item \textbf{Sep 2026} OpenAI's preprint: the conjecture \alert{fails} for a $66\times66$ pattern.
+\item \textbf{Oct 2026} smaller ones: a $5\times5$ draft (ProveIt, 7 Oct), a $4\times4$ with a Lean proof (Erebos Labs, 9 Oct), the same $4\times4$ on arXiv (Wang, 11 Oct), a claimed $3\times3$ (Shea, 12 Oct, unrefereed).
+\item \textbf{Nov 2026} Lupini: the $2\times2$ identity \emph{does} have polynomial removal.
+\end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------ Alon and Ben-Eliezer
+\begin{frame}{The approach of Alon and Ben-Eliezer}
+\framesubtitle{Many disjoint copies give many copies}
+\begin{columns}[T]
+\begin{column}{0.6\textwidth}
+Copies are \textbf{pairwise disjoint} if no two share an entry.
+
+\medskip
+\textbf{Theorem} (Alon--Ben-Eliezer). If $A$ has $\epsilon n^2$ pairwise disjoint copies of $H$,
+then $N_H(A)\ge\delta n^{2k}$ with $1/\delta$ polynomial in $1/\epsilon$.
+
+\medskip
+So it would suffice to show: \emph{$\epsilon$-far $\Rightarrow$ $\tau n^2$ pairwise disjoint copies},
+$1/\tau$ polynomial in $1/\epsilon$.
+
+\medskip
+\uncover<3->{In the example all copies share one entry: at most one disjoint copy, but then one
+change removes them all. \alert{Can few disjoint copies need many changes?}}
+\end{column}
+\begin{column}{0.35\textwidth}
+\centering
+%%DISJOINT%%
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{How OpenAI's hosts $A_h$ escape}
+\framesubtitle{Few disjoint copies, yet far from $H$-free}
+For OpenAI's $66\times66$ pattern $H$ and its hosts $A_h$, with $m=2^h$ and $n=(386h+2)m$:
+\begin{enumerate}
+\item<2-> $A_h$ is $\epsilon$-far from $H$-free for $\epsilon=(386h+2)^{-2}$: every repair changes at least $m^2=\epsilon n^2$ entries \hfill (OpenAI's Prop.~3.1)
+\item<3-> every copy of $H$ passes through one of only $m$ \textbf{leaf cells}, so there are at most $m$ pairwise disjoint copies \hfill (OpenAI's Prop.~4.6)
+\item<4-> so $\tau\le m/n^2=\epsilon/m$, and $m=2^{(\epsilon^{-1/2}-2)/386}$ is exponential in $\epsilon^{-1/2}$.
+\end{enumerate}
+\medskip
+\uncover<5->{The conjecture itself fails too: $A_h$ has at most $\epsilon\,2^{-h}n^{132}$ copies, smaller than
+any fixed power of $\epsilon$ times $n^{132}$ as $h$ grows.}
+
+\medskip
+\uncover<6->{\alert{Few copies, all through $m$ entries, yet $m^2$ changes needed.} How?}
+\end{frame}
+
+% ------------------------------------------------------------------ the construction
+\begin{frame}{OpenAI's pattern $H$}
+\framesubtitle{$64$ of its $66$ rows and columns are an address; the content is a $2\times2$ body}
+\begin{columns}[c]
+\begin{column}{0.48\textwidth}
+\[
+H=\begin{pmatrix} S & e_1 & e_2\\ e_1^{\mathsf T} & 1 & 0\\ e_2^{\mathsf T} & 1 & 1\end{pmatrix}
+\]
+\begin{itemize}
+\item \textbf{anchor} $S$, $64\times64$: $1$ off the diagonal, $0$ on it, except that rows $33$--$64$ spell the $32$ five-bit words in columns $60$--$64$
+\item \textbf{marks} $e_1,e_2$: point back to the first two rows and columns of $S$
+\item \textbf{body} $P=\smallmat{1&0\\1&1}$
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\centering
+%%HPICTURE%%
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{The host $A_h$}
+\framesubtitle{Anchors, a tree part and dummies}
+\begin{columns}[c]
+\begin{column}{0.5\textwidth}
+\begin{itemize}
+\item \textbf{anchor part}: $6h$ blown-up copies of $S$ (each row and column repeated $m$ times), one for each \textbf{mode}, as diagonal blocks that meet only in $0$s
+\item \textbf{tree part}: built on a complete binary tree of depth $h$ with $m=2^h$ leaves; every node owns rows and columns; a leaf's row and column cross in its \textbf{leaf cell}
+\item \textbf{dummy} rows and columns: all $1$s
+\item size $n=(386h+2)m$
+\end{itemize}
+\end{column}
+\begin{column}{0.46\textwidth}
+\centering
+\begin{tikzpicture}[x=0.85cm,y=0.85cm,font=\scriptsize]
+\draw[thick] (0,0) rectangle (5,-5);
+\foreach \k in {0,...,5} { \fill[gray!35] (\k*0.5,-\k*0.5) rectangle (\k*0.5+0.5,-\k*0.5-0.5); }
+\draw (3,0) -- (3,-5); \draw (0,-3) -- (5,-3);
+\fill[teal!15] (3,0) rectangle (5,-3); \fill[teal!15] (0,-3) rectangle (3,-5);
+\fill[orange!18] (3,-3) rectangle (5,-5);
+\fill[gray!25] (3,-3) rectangle (3.35,-5); \fill[gray!25] (3,-4.65) rectangle (5,-5);
+\foreach \k in {0,...,5} { \fill[gray!45] (\k*0.5,-\k*0.5) rectangle (\k*0.5+0.5,-\k*0.5-0.5); }
+\draw[thick] (0,0) rectangle (5,-5); \draw (3,0) -- (3,-5); \draw (0,-3) -- (5,-3);
+\node[align=left, anchor=west] at (1.25,-0.6) {anchors: one\\block per mode};
+\node[align=center] at (4,-1.5) {marks};
+\node[align=center] at (1.5,-4) {marks};
+\node[align=center] at (4.15,-3.9) {tree\\part};
+\node[anchor=west] at (5.1,-4.82) {dummy row};
+\node[anchor=north] at (3.17,-5.05) {dummy column};
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Where a copy of $H$ can sit}
+\framesubtitle{In $A_1$: one mode's anchor, its marks, and a $2\times2$ body}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+%%HOSTVIEW%%
+\end{column}
+\begin{column}{0.45\textwidth}
+\small
+\begin{overprint}
+\onslide<1>
+\raggedright
+All of $A_1$, with each anchor shrunk: groups $1$ and $2$ get one row and column each, groups $3$--$64$ one small block (drawn as $S$). Six modes, six anchors on the diagonal, $0$s between them. Bottom right, drawn larger: the tree part and the dummies, one cell per row and column.
+\onslide<2>
+\raggedright
+\textbf{The anchor.} A copy of $S$ can only use one mode's block, with one row and one column from each of its $64$ groups ($2^{128}$ ways). Here the mode is $W_{1,0}^-$.
+\onslide<3>
+\raggedright
+\textbf{The marks.} In this mode's anchor, row group $1$ has its $1$s in the mode's \textcolor{teal!80!black}{first} columns, row group $2$ in its \textcolor{orange!70!yellow!90!black}{second} columns, and the column groups likewise point to the first and second rows (ticks on the right and below).
+\onslide<4>
+\raggedright
+\textbf{The body.} So the last two rows of $H$ must be a first and a second row ($r_0$ and a dummy row), its last two columns a first and a second column ($c_0$ and a column of $C_0^-$). They cross in a $2\times2$ block, which must read $P=\smallmat{1&0\\1&1}$: here it does.
+\onslide<5>
+\raggedright
+\textbf{A copy of $H$.} These $66$ rows and $66$ columns (shaded) read exactly $H$.
+\onslide<6>
+\raggedright
+\textbf{All copies.} $A_1$ has %%A1_BODIES%% bodies, all at the two leaf cells (circled), in the modes $W_{1,0}^-$ and $W_{1,1}^-$. With the $2^{128}$ anchor choices each, they give every copy of $H$ (OpenAI's Prop.~4.6).
+\end{overprint}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Why $S$ cannot hide in the tree part}
+\framesubtitle{The tree's rows are too regular to show all $32$ five-bit words}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\centering
+%%WORDSVIEW%%
+\end{column}
+\begin{column}{0.45\textwidth}
+\small
+\begin{overprint}
+\onslide<1>
+\raggedright
+Rows $33$--$64$ of $S$, read on its columns $60$--$64$, are all $32$ words of five bits.
+\onslide<2>
+\raggedright
+The tree and dummy part of $A_2$, read on five of its columns: the five that show the most words.
+\onslide<3->
+\raggedright
+Only \alert{%%WORDS_FOUND%% of the $32$} words appear; for every $h$ at most $27$ do (OpenAI's Lemma~4.3).
+
+\medskip
+So a copy of $S$ cannot have its rows $33$--$64$ and its columns $60$--$64$ in this part: more than $32$ of its rows or columns are anchors. The dense half of $S$ then keeps the copy inside one mode's block (OpenAI's Lemma~4.4).
+\end{overprint}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Each body is a forced step, and the steps form chains}
+\framesubtitle{A chain runs from $1$s to $0$s, so it must drop somewhere, and the drop is a copy}
+\begin{columns}[T]
+\begin{column}{0.45\textwidth}
+\small
+\begin{minipage}[t]{0.28\linewidth}
+\vspace{0pt}
+\centering
+\begin{tikzpicture}[x=0.62cm,y=0.62cm]
+\fill[gray!22] (0,0) rectangle (1,-2);
+\draw[gray!60] (1,0) -- (1,-2); \draw[gray!60] (0,-1) -- (2,-1); \draw (0,0) rectangle (2,-2);
+\node at (0.5,-0.5) {$1$}; \node at (0.5,-1.5) {$1$};
+\node at (1.5,-0.5) {$x$}; \node at (1.5,-1.5) {$y$};
+\node[font=\scriptsize, anchor=south] at (0.5,0.02) {dummy};
+\draw[-{Stealth[length=2.2mm]}, accent!90!black, very thick] (1.5,-1.25) -- (1.5,-0.75);
+\end{tikzpicture}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.68\linewidth}
+\vspace{0pt}
+\raggedright
+One row or column of every body is a \textbf{dummy}, all $1$s. The body reads $P=\smallmat{1&0\\1&1}$ exactly when $y=1$ and $x=0$.
+\end{minipage}
+
+\medskip
+\alert{To avoid $H$, a $1$ at $y$ forces a $1$ at $x$}: a \textbf{forced step}.
+
+\begin{overprint}
+\onslide<1>
+\raggedright
+\onslide<2->
+\raggedright
+The modes link forced steps into \textbf{chains}, from the root's block of $1$s through a leaf cell to its block of $0$s. Every chain must \alert{drop} from $1$ to $0$ somewhere, and each drop gives copies of $H$. In $A_1$ each chain drops right after its leaf cell.
+\end{overprint}
+\end{column}
+\begin{column}{0.53\textwidth}
+\centering
+\begin{tikzpicture}[baseline=(root.north), tnode/.append style={minimum size=6.5mm, font=\scriptsize}]
+\node[tnode] (root) at (0, 0) {root};
+\node[tnode] (l0) at (-0.65, -1.3) {$0$};
+\node[tnode] (l1) at ( 0.65, -1.3) {$1$};
+\draw[thick] (root) -- (l0);
+\draw[thick] (root) -- (l1);
+\node[note, below=1mm of l0] {$r_0, c_0$};
+\node[note, below=1mm of l1] {$r_1, c_1$};
+\node[note, above=1mm of root] {$R^\pm, C^\pm$};
+\end{tikzpicture}\hspace{0.2cm}%
+\begin{tikzpicture}[x=5.4mm, y=5.4mm, baseline=(top)]
+\coordinate (top) at (0, 0.6);
+\only<1>{\treepart{1}{}}
+\only<2->{\treepart{1}{%
+  \draw[forced]  (0.5, -4.5) -- (0.5, -2.5);
+  \draw[forced]  (0.5, -2.5) -- (2.5, -2.5);
+  \draw[dropped] (2.5, -2.5) -- (4.5, -2.5);
+  \draw[forced=0.5] (4.5, -2.5) -- (4.5, -1.5);
+  \draw[forced]  (1.5, -5.5) -- (1.5, -3.5);
+  \draw[forced]  (1.5, -3.5) -- (3.5, -3.5);
+  \draw[dropped] (3.5, -3.5) -- (5.5, -3.5);
+  \draw[forced]  (5.5, -3.5) -- (5.5, -1.5);
+}}
+\end{tikzpicture}
+
+\vspace{0.3em}
+{\scriptsize\color{muted} The rows and columns of $A_1$ that the tree's nodes own. Blue box: the root's block of $1$s; orange box: its block of $0$s; red: the leaf cells.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Hitting every copy is cheap, removing them is not}
+\framesubtitle{In $A_1$: repairing one entry makes another copy appear}
+\begin{columns}[T]
+\begin{column}{0.5\textwidth}
+\centering
+%%CORE%%
+\end{column}
+\begin{column}{0.47\textwidth}
+\small
+The tree and dummy part of $A_1$ ($m=2$). Orange arrows: drops, with their number of bodies; green: changed entries; circles: leaf cells. Each body gives $2^{128}$ copies of $H$.
+
+\begin{overprint}
+\onslide<1>
+\raggedright
+\textbf{$A_1$.} Every chain drops right after its leaf cell: \alert{%%CORE_BODIES_1%% bodies}, all through the $2$ leaf cells.
+\onslide<2>
+\raggedright
+\textbf{Change the leaf cell $(r_0,c_0)$} (%%CORE_CHANGED_2%% change). Its copies are gone, but the step into it now drops: \alert{%%CORE_BODIES_2%% bodies}, as many as before.
+\onslide<3>
+\raggedright
+\textbf{Change both leaf cells} (%%CORE_CHANGED_3%% changes). Every original copy is hit, yet every chain just drops one step earlier: \alert{%%CORE_BODIES_3%% bodies} (OpenAI's Remark~4.7).
+\onslide<4>
+\raggedright
+\textbf{Cut the chains instead}: set the dummy rows to $0$ in both leaf columns, $m^2=%%CORE_CHANGED_4%%$ changes. \alert{%%CORE_BODIES_4%% bodies}: no copy of $H$ is left (checked by computer).
+\onslide<5>
+\raggedright
+\textbf{No repair is cheaper} (OpenAI's Prop.~3.1). A repair must break every chain, at one of its ends, its dummy entries or its anchor entries, and each such entry lies on at most a $1/m^2$ share of the chains, while a leaf cell lies on a $1/m$ share. So hitting every copy costs $m$ changes; removing them costs $m^2=\epsilon n^2$.
+\end{overprint}
+\end{column}
+\end{columns}
+\end{frame}
+
+% ------------------------------------------------------------------ our results
+\begin{frame}{Our results: two reductions}
+\begin{block}{Direct sums}
+If $H$ is a counterexample with no all-zero row or column, then so is
+$\smallmat{H&0\\0&Z}$ for every $Z$ with pairwise distinct rows or pairwise distinct columns.
+\end{block}
+\begin{block}{Duplication}
+Repeating a row or a column next to itself does not change whether a pattern satisfies the conjecture.
+\end{block}
+\medskip
+Consequences: the first \textbf{infinite families of counterexamples}, and, with Lupini's theorem
+for the $2\times2$ identity, an infinite family of patterns that \textbf{satisfy} the conjecture.
+\end{frame}
+
+\begin{frame}{Direct sums: the construction}
+\framesubtitle{Attach $Z$ diagonally, and blow it up in the host}
+\begin{columns}[c]
+\begin{column}{0.56\textwidth}
+\small
+$H$ is $k\times l$, $Z$ is $p\times q$, $A$ is $n\times n$:
+\[
+H'=\begin{pmatrix} H & 0\\ 0 & Z\end{pmatrix},
+\qquad
+A^+=\begin{pmatrix} A & 0\\ 0 & \widehat Z\end{pmatrix},
+\]
+where $\widehat Z$ replaces each entry of $Z$ by a constant $qn\times pn$ block; $A^+$ has size $m=(1+pq)n$.
+
+\medskip
+\textbf{Theorem.} If $H$ has no all-zero row or column, and $Z$ has distinct rows or distinct columns, then
+\[ D_{H'}(A^+)=D_H(A),\qquad N_{H'}(A^+)\le m^{p+q}N_H(A). \]
+\end{column}
+\begin{column}{0.4\textwidth}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+\fill[blue!10] (0,0) rectangle (2.2,-2.2);
+\fill[gray!20] (2.2,-2.2) rectangle (4,-4);
+\draw[thick] (0,0) rectangle (4,-4);
+\draw (2.2,0) -- (2.2,-4); \draw (0,-2.2) -- (4,-2.2);
+\node at (1.1,-1.1) {$A$};
+\node at (3.1,-1.1) {$0$};
+\node at (1.1,-3.1) {$0$};
+\node at (3.1,-3.1) {$\widehat Z$};
+\node[font=\scriptsize, anchor=south] at (1.1,0.05) {old};
+\node[font=\scriptsize, anchor=south] at (3.1,0.05) {new};
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Direct sums: an example}
+\framesubtitle{Copies and distance carry over}
+\begin{columns}[c]
+\begin{column}{0.5\textwidth}
+\small
+$H=\smallmat{1&0\\1&1}$, $Z=(1)$, so $H'=\smallmat{1&0&0\\1&1&0\\0&0&1}$, and $A$ is the $3\times3$ example; $\widehat Z$ is a $3\times3$ block of $1$s.
+
+\medskip
+\begin{itemize}
+\item $N_H(A)=%%DS_NH%%$, $D_H(A)=1$.
+\item<2-> A copy of $H'$: a copy of $H$ in $A$, plus a new row and a new column. $N_{H'}(A^+)=%%DS_NH2%%$.
+\item<3-> Changing $A(1,1)$ removes every copy of $H'$ too: $D_{H'}(A^+)=1=D_H(A)$.
+\end{itemize}
+\medskip
+\uncover<3->{\footnotesize (This $H$ only illustrates the construction; whether it has polynomial removal is open.)}
+\end{column}
+\begin{column}{0.45\textwidth}
+\centering
+%%DIRECTSUM%%
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Direct sums: why it works}
+\framesubtitle{The $H$-part of every copy stays in the old part}
+\begin{itemize}
+\item<1-> \textbf{The $H$-part of every copy of $H'$ lies in the old part.} A new row has $1$s only in new columns, and the $Z$-part needs $p+1$ distinct rows (or $q+1$ distinct columns) where $\widehat Z$ has only $p$ groups of equal rows ($q$ of equal columns).
+\item<2-> So copies of $H'$ come from copies of $H$: $N_{H'}(A^+)\le m^{p+q}N_H(A)$, and a repair of $A$ repairs $A^+$.
+\item<3-> \textbf{No repair of $A^+$ is cheaper.} Pick one new row from each group and one new column from each group at random. Zero every old row or column that has a $1$ against a picked line: on average this costs at most the number of changes in the off-diagonal blocks. If the picked lines still read $Z$, what is left of the old block is a repair of $A$; averaging gives $D_H(A)\le D_{H'}(A^+)$.
+\item<4-> Then a counterexample host for $H$ gives one for $H'$, with $\epsilon'=\epsilon/(1+pq)^2$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Duplication: repeated rows and columns do not matter}
+\framesubtitle{Delete repeats until none are left}
+\begin{columns}[T]
+\begin{column}{0.6\textwidth}
+$\operatorname{red}(H)$: delete every row equal to the row above it and every column equal to the column to its left, until none is left. If $H$ is $k\times l$, $\operatorname{red}(H)$ is $k_0\times l_0$.
+
+\begin{overprint}
+\onslide<1>
+\raggedright
+Row $2$ equals row $1$ \dots
+\onslide<2>
+\raggedright
+\dots\ delete it.
+\onslide<3>
+\raggedright
+Column $2$ equals column $1$ \dots
+\onslide<4>
+\raggedright
+\dots\ delete it: $\operatorname{red}(H)=I_2$.
+\end{overprint}
+
+\medskip
+\uncover<4->{\textbf{Theorem.} $H$ satisfies the conjecture if and only if $\operatorname{red}(H)$ does.}
+
+\medskip
+\uncover<4->{\footnotesize One direction counts copies, the other blows up a host: the next two slides.}
+\end{column}
+\begin{column}{0.35\textwidth}
+\centering
+%%RED%%
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Duplication (1): many copies of $\operatorname{red}(H)$ give many copies of $H$}
+\framesubtitle{Two completions of a frame make a copy with a repeated column}
+\begin{columns}[T]
+\begin{column}{0.62\textwidth}
+\small
+$R=\smallmat{1&0\\1&1}$; doubling its column $2$ gives $H'=\smallmat{1&0&0\\1&1&1}$.
+A copy of $R$ is a \textbf{frame} (its rows and its first column) plus one more column that \emph{completes} it.
+
+\begin{overprint}
+\onslide<1>
+\raggedright
+\onslide<2>
+\raggedright
+In $A$, the frame \textcolor{accent!90!black}{rows $1,2$ with column $1$} is completed by \textcolor{teal!80!black}{columns $2$ and $3$}: two copies of $R$.
+\onslide<3>
+\raggedright
+Any two completing columns give a copy of $H'$, its doubled column on them: here rows $1,2$ with columns $1,2,3$.
+\onslide<4>
+\raggedright
+The frame rows $1,3$ with column $1$ has one completion, column $3$: no copy of $H'$. In all, $N_R(A)=%%DUP_NR%%$ and $N_{H'}(A)=%%DUP_BINOMS%%=%%DUP_NHC%%$.
+\onslide<5>
+\raggedright
+For a $k\times l$ pattern $G$, $G'=G$ with one column doubled, and an $n\times n$ matrix $B$: a frame with $x$ completions gives $\binom{x}{2}$ copies of $G'$, and by Jensen's inequality
+\[ N_{G'}(B)\ \ge\ \frac{N_G(B)^2}{2n^{k+l-1}}-\frac{N_G(B)}{2}. \]
+So if $\operatorname{red}(H)$ satisfies the conjecture, so does $H$: a matrix $\epsilon$-far from $H$-free is $\epsilon$-far from $\operatorname{red}(H)$-free, so it has $c\,\epsilon^Cn^{k_0+l_0}$ copies of $\operatorname{red}(H)$; each doubling keeps a polynomial share.
+\end{overprint}
+\end{column}
+\begin{column}{0.34\textwidth}
+\centering
+%%DUP1%%
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Duplication (2): blowing up a host}
+\framesubtitle{A counterexample host for $\operatorname{red}(H)$, blown up, is one for $H$}
+\begin{columns}[T]
+\begin{column}{0.52\textwidth}
+\small
+$A^{(q)}$: every entry of $A$ becomes a $q\times q$ block (here $q=2$). Take $H=\smallmat{1&0\\1&0\\1&1}$, that is $R=\smallmat{1&0\\1&1}$ with row $1$ doubled.
+
+\begin{overprint}
+\onslide<1>
+\raggedright
+\onslide<2>
+\raggedright
+A copy of $H$ in $A^{(2)}$: \textcolor{accent!90!black}{rows $1,2,3$ with columns $1,5$}.
+\onslide<3>
+\raggedright
+Keep one row and one column per run of equal rows and columns of $H$. They lie in \emph{different} blocks, because $\operatorname{red}(H)$ has no two equal neighbors, so they come from a \textcolor{teal!80!black}{copy of $R$ in $A$} (rows $1,2$, columns $1,3$).
+\textbf{Few stay few:} $N_H(A^{(q)})/(qn)^{k+l}\le N_R(A)/n^{k_0+l_0}$.
+\onslide<4>
+\raggedright
+\textbf{Far stays far:} for large $q$, changing fewer than $\tfrac12q^2D_R(A)$ entries of $A^{(q)}$ leaves a copy of $H$. Pick one row and one column per block at random: the picked $n\times n$ matrix is $A$ with, on average, fewer than $\tfrac12D_R(A)$ entries changed. By Markov's inequality at least half the picks change fewer than $D_R(A)$ and still contain $R$. That makes at least $\tfrac12q^{k_0+l_0}$ copies of $R$, a density that does not depend on $q$, and by (1) a copy of $H$ once $q$ is large.
+\end{overprint}
+\end{column}
+\begin{column}{0.44\textwidth}
+\centering
+%%DUP2%%
+
+\medskip
+\footnotesize
+\uncover<3->{$N_R(A)=%%DUP_NR%%$ and $N_H(A^{(2)})=%%DUP_NH2%%$.}
+
+\uncover<4->{$D_R(A)=%%DUP_DR%%$ and $D_H(A^{(2)})=%%DUP_D2%%$,\\ at least $\tfrac12\cdot2^2\cdot D_R(A)=%%DUP_BOUND%%$.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Infinite families}
+\textbf{Counterexamples}
+\begin{itemize}
+\item $H\oplus(1)\oplus(1)\oplus\cdots$ for OpenAI's $H$: a counterexample of every size from $66$ on.
+\item $H$ with zero columns appended: $66\times67$, $66\times68$, \dots
+\item If Shea's claim holds: $K=\smallmat{0&1&1\\1&0&1\\1&1&0}$ gives $\smallmat{0&1&1&0\\1&0&1&0\\1&1&0&0\\0&0&0&1}$ and $\smallmat{0&1&1&0\\1&0&1&0\\1&1&0&0}$.
+\item Any of these with rows or columns repeated.
+\end{itemize}
+\medskip
+\textbf{Patterns that satisfy the conjecture}
+\begin{itemize}
+\item Two all-ones blocks in opposite corners, zeros elsewhere: they reduce to $I_2$ (or its mirror image), which satisfies it by Lupini's theorem.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Formal verification}
+\begin{itemize}
+\item \textbf{Lean 4} (Mathlib v4.35.0): the direct-sum theorem, the zero-column variant, their corollaries and the infinite family obtained by repeatedly adding $(1)$ are fully proved: no \texttt{sorry}, only the standard axioms. Written with Kimi 3.1 Pro; checked independently.
+\item \textbf{Agda} (\texttt{--safe}): the special case of one appended zero column, fully proved.
+\item \textbf{Computer checks}: the direct-sum statements on $200$ small hosts; OpenAI's counts for small $h$, including $m^2$ as the exact distance for $h\le5$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Open questions}
+\begin{itemize}
+\item \textbf{$2\times2$.} The identity $I_2$ satisfies the conjecture (Lupini). The corner $\smallmat{1&0\\1&1}$, OpenAI's body $P$, is open.
+\item \textbf{$3\times3$.} Shea's claimed counterexample awaits review.
+\item \textbf{Which patterns fail?} Our reductions move counterexamples up in size; what is the smallest one?
+\end{itemize}
+\end{frame}
+
+\begin{frame}{How we worked}
+\small
+\begin{itemize}
+\item \textbf{Literature, extensions, smaller counterexamples, proofs}: Opus 5.5 (Max), Fable 5.2 (Medium).
+\item \textbf{Formalization}: planning with GPT-6.1 Sol (Extra High) and Opus 5.5 (Max); the Lean proof with Open Math Kimi 3.1 Pro (Ultramath); the Agda special case with Opus 5.5 (Max).
+\item \textbf{Proofreading, slides, examples}: Opus 5.5 (Max), Open Math DeepSeek V4.1 Flash and Kimi 3.1 Pro.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{References}
+\scriptsize
+\begin{itemize}
+\item N.~Alon, E.~Fischer, I.~Newman, \emph{Efficient testing of bipartite graphs for forbidden induced subgraphs}, SIAM J. Comput. 37 (2007).
+\item N.~Alon, O.~Ben-Eliezer, E.~Fischer, \emph{Testing hereditary properties of ordered graphs and matrices}, FOCS 2017.
+\item N.~Alon, O.~Ben-Eliezer, \emph{Efficient removal lemmas for matrices}, Order 37 (2020).
+\item L.~Gishboliner, A.~Shapira, \emph{Polynomial property testing}, Comput. Sci. Rev. 58 (2025).
+\item OpenAI, \emph{Polynomial removal fails for ordered binary matrices}, preprint, 25 September 2026.
+\item ProveIt project, \emph{A $5\times5$ obstruction to polynomial ordered matrix removal}, draft, 7 October 2026.
+\item Erebos Labs, \emph{ordered-matrix-removal-4x4}, Lean formalization, 9 October 2026.
+\item Z.~Wang, \emph{A four-by-four obstruction to polynomial removal for ordered binary matrices}, arXiv:2610.15370.
+\item R.~Shea, \emph{A $3\times3$ ordered binary matrix removal obstruction}, manuscript, 12 October 2026.
+\item M.~Lupini, \emph{Polynomial removal for the ordered two-by-two identity matrix}, Zenodo, November 2026.
+\end{itemize}
+\end{frame}
+
+\end{document}
