@@ -278,6 +278,11 @@
 }
 \tikzset{leanbox/.style={draw=ink!60, rounded corners=2pt, fill=white, align=center, inner sep=2.5pt, text width=#1, font=\scriptsize},
   leanbox/.default=2.3cm}
+% layout helpers: a callout for the sentence that carries a step, a coloured step heading,
+% and a tight list for the text of an overlay step
+\newcommand{\keybox}[1]{\par\smallskip\noindent\hbox{{\color{accent}\vrule width 2pt}{\setlength{\fboxsep}{4pt}\colorbox{accent!9}{\parbox{\dimexpr\linewidth-2\fboxsep-2pt\relax}{\raggedright #1}}}}\par}
+\newcommand{\stephead}[1]{{\color{accent!85!black}\bfseries #1}\par\vspace{0.15em}}
+\newenvironment{steplist}{\setlength{\leftmargini}{1.1em}\begin{itemize}\setlength{\itemsep}{0.18em}\setlength{\parskip}{0pt}\setlength{\topsep}{0pt}}{\end{itemize}}
 \newcommand{\smallmat}[1]{\left(\begin{smallmatrix}#1\end{smallmatrix}\right)}
 
 % title, subtitle, authors with affiliations and date as in the team's report
@@ -467,23 +472,24 @@ Counterexamples were found one pattern at a time. \textbf{Direct sums} and \text
 \begin{frame}{Ordered copies}
 \framesubtitle{Both $0$s and $1$s must be matched}
 \begin{columns}[T]
-\begin{column}{0.55\textwidth}
+\begin{column}{0.58\textwidth}
 \small
+\begin{block}{Definition}
 A \textbf{copy} of a $k\times k$ pattern $H$ in an $n\times n$ binary matrix $A$:
 rows $r_1<\dots<r_k$ and columns $c_1<\dots<c_k$ with
-\[ A(r_i,c_j)=H(i,j)\quad\text{for all } i,j. \]
+$A(r_i,c_j)=H(i,j)$ for all $i,j$.
 $N_H(A)$ is the number of copies.
+\end{block}
 
-\smallskip
-\textbf{Example.} $H=\smallmat{1&0\\1&1}$ in the matrix on the right:
-\begin{itemize}
+{\color{accent!85!black}\bfseries Example.} $H=\smallmat{1&0\\1&1}$ in the matrix on the right:
+\begin{steplist}
 \item<2-> rows $1,2$, columns $1,3$
 \item<3-> rows $1,2$, columns $1,2$
 \item<4-> rows $1,3$, columns $1,3$
-\end{itemize}
-\uncover<5->{No others: $N_H(A)=3$, and all three use the entry $A(1,1)$.}
+\end{steplist}
+\uncover<5->{\keybox{No others: $N_H(A)=3$, and all three use the entry $A(1,1)$.}}
 \end{column}
-\begin{column}{0.4\textwidth}
+\begin{column}{0.38\textwidth}
 \centering
 \begin{tikzpicture}[]
 \only<2>{%
@@ -557,13 +563,15 @@ $N_H(A)$ is the number of copies.
 \framesubtitle{Sometimes one entry meets every copy}
 \begin{columns}[T]
 \begin{column}{0.55\textwidth}
-$D_H(A)$: the fewest entries of $A$ to change so that no copy of $H$ is left.
+\begin{block}{Definition}
+\begin{itemize}
+\item $D_H(A)$: the fewest entries of $A$ to change so that no copy of $H$ is left.
+\item $\dist_H(A)=D_H(A)/n^2$, and $A$ is \textbf{$\epsilon$-far} from $H$-free if $\dist_H(A)\ge\epsilon$.
+\end{itemize}
+\end{block}
 
 \medskip
-$\dist_H(A)=D_H(A)/n^2$, and $A$ is \textbf{$\epsilon$-far} from $H$-free if $\dist_H(A)\ge\epsilon$.
-
-\bigskip
-\textbf{Example.}
+\stephead{Example}
 \begin{overprint}
 \onslide<1>
 \raggedright
@@ -715,24 +723,25 @@ $n\times n$ binary matrix $A$ and every $\epsilon\in(0,1]$:
 \[ \dist_H(A)\ge\epsilon \quad\Longrightarrow\quad N_H(A)\ge c\,\epsilon^{C}n^{2k}. \]
 \end{conjecture}
 \medskip
-If many changes are needed to remove the copies, there should be many copies: at least a
+\begin{itemize}
+\item If many changes are needed to remove the copies, there should be many copies: at least a
 fraction polynomial in $\epsilon$ of the about $n^{2k}$ possible positions.
-
-\medskip
-For a $k\times l$ pattern, read the conjecture with $n^{k+l}$ in place of $n^{2k}$.
+\item For a $k\times l$ pattern, read the conjecture with $n^{k+l}$ in place of $n^{2k}$.
+\end{itemize}
 \end{frame}
 
 \begin{frame}{History}
 \small
-\begin{itemize}
-\item \textbf{2007} Alon, Fischer, Newman: polynomial removal without row and column order; the ordered case is raised as an open direction.
-\item \textbf{2017} Alon, Ben-Eliezer, Fischer: removal holds for ordered matrices: an $\epsilon$-far matrix has at least $\delta n^{2k}$ copies, for some $\delta>0$ depending on $\epsilon$ and $H$. But the $1/\delta$ their proof gives is of wowzer type in $1/\epsilon$, not polynomial.
-\item \textbf{2020} Alon, Ben-Eliezer: the question for finite families (Problem~1.4); polynomial removal when there are many \emph{disjoint} copies.
-\item \textbf{2025} Gishboliner, Shapira, survey: ``one of the key open problems'' (Conjecture~4.5).
-\item \textbf{Sep 2026} OpenAI's preprint: the conjecture \alert{fails} for a $66\times66$ pattern.
-\item \textbf{Oct 2026} smaller ones: a $5\times5$ draft (ProveIt, 7 Oct), a $4\times4$ with a Lean proof (Erebos Labs, 9 Oct), the same $4\times4$ on arXiv (Wang, 11 Oct), a claimed $3\times3$ (Shea, 12 Oct, unrefereed).
-\item \textbf{Nov 2026} Lupini: the $2\times2$ identity \emph{does} have polynomial removal.
-\end{itemize}
+\setbeamercolor{description item}{fg=accent!85!black}
+\begin{description}[Nov 2026]\setlength{\itemsep}{0.22em}
+\item[2007] Alon, Fischer, Newman: polynomial removal without row and column order; the ordered case is raised as an open direction.
+\item[2017] Alon, Ben-Eliezer, Fischer: removal holds for ordered matrices: an $\epsilon$-far matrix has at least $\delta n^{2k}$ copies, for some $\delta>0$ depending on $\epsilon$ and $H$. But the $1/\delta$ their proof gives is of wowzer type in $1/\epsilon$, not polynomial.
+\item[2020] Alon, Ben-Eliezer: the question for finite families (Problem~1.4); polynomial removal when there are many \emph{disjoint} copies.
+\item[2025] Gishboliner, Shapira, survey: ``one of the key open problems'' (Conjecture~4.5).
+\item[Sep 2026] OpenAI's preprint: the conjecture \alert{fails} for a $66\times66$ pattern.
+\item[Oct 2026] smaller ones: a $5\times5$ draft (ProveIt, 7 Oct), a $4\times4$ with a Lean proof (Erebos Labs, 9 Oct), the same $4\times4$ on arXiv (Wang, 11 Oct), a claimed $3\times3$ (Shea, 12 Oct, unrefereed).
+\item[Nov 2026] Lupini: the $2\times2$ identity \emph{does} have polynomial removal.
+\end{description}
 \end{frame}
 
 % ------------------------------------------------------------------ Alon and Ben-Eliezer
@@ -742,17 +751,17 @@ For a $k\times l$ pattern, read the conjecture with $n^{k+l}$ in place of $n^{2k
 \begin{column}{0.6\textwidth}
 Copies are \textbf{pairwise disjoint} if no two share an entry.
 
-\medskip
-\textbf{Theorem} (Alon--Ben-Eliezer). If $A$ has $\epsilon n^2$ pairwise disjoint copies of $H$,
+\begin{block}{Theorem (Alon--Ben-Eliezer)}
+If $A$ has $\epsilon n^2$ pairwise disjoint copies of $H$,
 then $N_H(A)\ge\delta n^{2k}$ with $1/\delta$ polynomial in $1/\epsilon$.
+\end{block}
 
-\medskip
 So it would suffice to show: \emph{$\epsilon$-far $\Rightarrow$ $\tau n^2$ pairwise disjoint copies},
 $1/\tau$ polynomial in $1/\epsilon$.
 
-\medskip
 \uncover<3->{In the example all copies share one entry: at most one disjoint copy, but then one
-change removes them all. \alert{Can few disjoint copies need many changes?}}
+change removes them all.
+\keybox{\alert{Can few disjoint copies need many changes?}}}
 \end{column}
 \begin{column}{0.35\textwidth}
 \centering
@@ -817,7 +826,7 @@ For OpenAI's $66\times66$ pattern $H$ and its hosts $A_h$, with $m=2^h$ and $n=(
 any fixed power of $\epsilon$ times $n^{132}$ as $h$ grows.}
 
 \medskip
-\uncover<6->{\alert{Few copies, all through $m$ entries, yet $m^2$ changes needed.} How?}
+\uncover<6->{\keybox{\alert{Few copies, all through $m$ entries, yet $m^2$ changes needed.} How?}}
 \end{frame}
 
 % ------------------------------------------------------------------ the construction
@@ -1375,22 +1384,45 @@ H=\begin{pmatrix} S & e_1 & e_2\\ e_1^{\mathsf T} & 1 & 0\\ e_2^{\mathsf T} & 1 
 \begin{overprint}
 \onslide<1>
 \raggedright
-All of $A_1$, with each anchor shrunk: groups $1$ and $2$ get one row and column each, groups $3$--$64$ one small block (drawn as $S$). Six modes, six anchors on the diagonal, $0$s between them. Bottom right, drawn larger: the tree part and the dummies, one cell per row and column.
+\stephead{All of $A_1$}
+\begin{steplist}
+\item Each anchor shrunk: groups $1$ and $2$ get one row and column each, groups $3$--$64$ one small block (drawn as $S$).
+\item Six modes, six anchors on the diagonal, $0$s between them.
+\item Bottom right, drawn larger: the tree part and the dummies, one cell per row and column.
+\end{steplist}
 \onslide<2>
 \raggedright
-\textbf{The anchor.} A copy of $S$ can only use one mode's block, with one row and one column from each of its $64$ groups ($2^{128}$ ways). Here the mode is $W_{1,0}^-$.
+\stephead{The anchor}
+\begin{steplist}
+\item A copy of $S$ can only use one mode's block, with one row and one column from each of its $64$ groups ($2^{128}$ ways).
+\item Here the mode is $W_{1,0}^-$.
+\end{steplist}
 \onslide<3>
 \raggedright
-\textbf{The marks.} In this mode's anchor, row group $1$ has its $1$s in the mode's \textcolor{teal!80!black}{first} columns, row group $2$ in its \textcolor{orange!70!yellow!90!black}{second} columns, and the column groups likewise point to the first and second rows (ticks on the right and below).
+\stephead{The marks}
+\begin{steplist}
+\item In this mode's anchor, row group $1$ has its $1$s in the mode's \textcolor{teal!80!black}{first} columns, row group $2$ in its \textcolor{orange!70!yellow!90!black}{second} columns.
+\item The column groups likewise point to the first and second rows (ticks on the right and below).
+\end{steplist}
 \onslide<4>
 \raggedright
-\textbf{The body.} So the last two rows of $H$ must be a first and a second row ($r_0$ and a dummy row), its last two columns a first and a second column ($c_0$ and a column of $C_0^-$). They cross in a $2\times2$ block, which must read $P=\smallmat{1&0\\1&1}$: here it does.
+\stephead{The body}
+\begin{steplist}
+\item So the last two rows of $H$ must be a first and a second row ($r_0$ and a dummy row),
+\item its last two columns a first and a second column ($c_0$ and a column of $C_0^-$).
+\end{steplist}
+\keybox{They cross in a $2\times2$ block, which must read $P=\smallmat{1&0\\1&1}$: here it does.}
 \onslide<5>
 \raggedright
-\textbf{A copy of $H$.} These $66$ rows and $66$ columns (shaded) read exactly $H$.
+\stephead{A copy of $H$}
+These $66$ rows and $66$ columns (shaded) read exactly $H$.
 \onslide<6>
 \raggedright
-\textbf{All copies.} $A_1$ has 8 bodies, all at the two leaf cells (circled), in the modes $W_{1,0}^-$ and $W_{1,1}^-$. With the $2^{128}$ anchor choices each, they give every copy of $H$ (OpenAI's Prop.~4.6).
+\stephead{All copies}
+\begin{steplist}
+\item $A_1$ has 8 bodies, all at the two leaf cells (circled), in the modes $W_{1,0}^-$ and $W_{1,1}^-$.
+\end{steplist}
+\keybox{With the $2^{128}$ anchor choices each, they give every copy of $H$ (OpenAI's Prop.~4.6).}
 \end{overprint}
 \end{column}
 \end{columns}
@@ -2137,10 +2169,11 @@ Rows $33$--$64$ of $S$, read on its columns $60$--$64$, are all $32$ words of fi
 The tree and dummy part of $A_2$, read on five of its columns: the five that show the most words.
 \onslide<3->
 \raggedright
-Only \alert{9 of the $32$} words appear; for every $h$ at most $27$ do (OpenAI's Lemma~4.3).
-
-\medskip
-So a copy of $S$ cannot have its rows $33$--$64$ and its columns $60$--$64$ in this part: more than $32$ of its rows or columns are anchors. The dense half of $S$ then keeps the copy inside one mode's block (OpenAI's Lemma~4.4).
+\keybox{Only \alert{9 of the $32$} words appear; for every $h$ at most $27$ do (OpenAI's Lemma~4.3).}
+\begin{steplist}
+\item So a copy of $S$ cannot have its rows $33$--$64$ and its columns $60$--$64$ in this part: more than $32$ of its rows or columns are anchors.
+\item The dense half of $S$ then keeps the copy inside one mode's block (OpenAI's Lemma~4.4).
+\end{steplist}
 \end{overprint}
 \end{column}
 \end{columns}
@@ -2149,7 +2182,7 @@ So a copy of $S$ cannot have its rows $33$--$64$ and its columns $60$--$64$ in t
 \begin{frame}{Each body is a forced step, and the steps form chains}
 \framesubtitle{A chain runs from $1$s to $0$s, so it must drop somewhere, and the drop is a copy}
 \begin{columns}[T]
-\begin{column}{0.45\textwidth}
+\begin{column}{0.49\textwidth}
 \small
 \begin{minipage}[t]{0.28\linewidth}
 \vspace{0pt}
@@ -2169,18 +2202,21 @@ So a copy of $S$ cannot have its rows $33$--$64$ and its columns $60$--$64$ in t
 One row or column of every body is a \textbf{dummy}, all $1$s. The body reads $P=\smallmat{1&0\\1&1}$ exactly when $y=1$ and $x=0$.
 \end{minipage}
 
-\medskip
-\alert{To avoid $H$, a $1$ at $y$ forces a $1$ at $x$}: a \textbf{forced step}.
-
+\keybox{\alert{To avoid $H$, a $1$ at $y$ forces a $1$ at $x$}: a \textbf{forced step}.}
+\vspace{-0.3em}
 \begin{overprint}
 \onslide<1>
 \raggedright
 \onslide<2->
 \raggedright
-The modes link forced steps into \textbf{chains}, from the root's block of $1$s through a leaf cell to its block of $0$s. Every chain must \alert{drop} from $1$ to $0$ somewhere, and each drop gives copies of $H$. In $A_1$ each chain drops right after its leaf cell.
+\begin{steplist}
+\item The modes link forced steps into \textbf{chains}, from the root's block of $1$s through a leaf cell to its block of $0$s.
+\item Every chain must \alert{drop} from $1$ to $0$ somewhere, and each drop gives copies of $H$.
+\item In $A_1$ each chain drops right after its leaf cell.
+\end{steplist}
 \end{overprint}
 \end{column}
-\begin{column}{0.53\textwidth}
+\begin{column}{0.49\textwidth}
 \centering
 \begin{tikzpicture}[baseline=(root.north), tnode/.append style={minimum size=6.5mm, font=\scriptsize}]
 \node[tnode] (root) at (0, 0) {root};
@@ -2216,7 +2252,7 @@ The modes link forced steps into \textbf{chains}, from the root's block of $1$s 
 \begin{frame}{Hitting every copy is cheap, removing them is not}
 \framesubtitle{In $A_1$: repairing one entry makes another copy appear}
 \begin{columns}[T]
-\begin{column}{0.5\textwidth}
+\begin{column}{0.42\textwidth}
 \centering
 \begin{tikzpicture}[]
 \fill[gray!12] (0,-3) rectangle (0.5,-3.5);
@@ -2602,26 +2638,46 @@ The modes link forced steps into \textbf{chains}, from the root's block of $1$s 
 }
 \end{tikzpicture}
 \end{column}
-\begin{column}{0.47\textwidth}
+\begin{column}{0.55\textwidth}
 \small
-The tree and dummy part of $A_1$ ($m=2$). Orange arrows: drops, with their number of bodies; green: changed entries; circles: leaf cells. Each body gives $2^{128}$ copies of $H$.
+{\scriptsize\color{muted} The tree and dummy part of $A_1$ ($m=2$). Orange arrows: drops, with their number of bodies; green: changed entries; circles: leaf cells. Each body gives $2^{128}$ copies of $H$.\par}
 
 \begin{overprint}
 \onslide<1>
 \raggedright
-\textbf{$A_1$.} Every chain drops right after its leaf cell: \alert{8 bodies}, all through the $2$ leaf cells.
+\stephead{$A_1$}
+\begin{steplist}
+\item Every chain drops right after its leaf cell: \alert{8 bodies}, all through the $2$ leaf cells.
+\end{steplist}
 \onslide<2>
 \raggedright
-\textbf{Change the leaf cell $(r_0,c_0)$} (1 change). Its copies are gone, but the step into it now drops: \alert{8 bodies}, as many as before.
+\stephead{Change the leaf cell $(r_0,c_0)$ (1 change)}
+\begin{steplist}
+\item Its copies are gone, but the step into it now drops:
+\item \alert{8 bodies}, as many as before.
+\end{steplist}
 \onslide<3>
 \raggedright
-\textbf{Change both leaf cells} (2 changes). Every original copy is hit, yet every chain just drops one step earlier: \alert{8 bodies} (OpenAI's Remark~4.7).
+\stephead{Change both leaf cells (2 changes)}
+\begin{steplist}
+\item Every original copy is hit,
+\item yet every chain just drops one step earlier: \alert{8 bodies} (OpenAI's Remark~4.7).
+\end{steplist}
 \onslide<4>
 \raggedright
-\textbf{Cut the chains instead}: set the dummy rows to $0$ in both leaf columns, $m^2=4$ changes. \alert{0 bodies}: no copy of $H$ is left (checked by computer).
+\stephead{Cut the chains instead}
+\begin{steplist}
+\item Set the dummy rows to $0$ in both leaf columns, $m^2=4$ changes.
+\item \alert{0 bodies}: no copy of $H$ is left (checked by computer).
+\end{steplist}
 \onslide<5>
 \raggedright
-\textbf{No repair is cheaper} (OpenAI's Prop.~3.1). A repair must break every chain, at one of its ends, its dummy entries or its anchor entries, and each such entry lies on at most a $1/m^2$ share of the chains, while a leaf cell lies on a $1/m$ share. So hitting every copy costs $m$ changes; removing them costs $m^2=\epsilon n^2$.
+\stephead{No repair is cheaper (OpenAI's Prop.~3.1)}
+\begin{steplist}
+\item A repair must break every chain, at one of its ends, its dummy entries or its anchor entries,
+\item and each such entry lies on at most a $1/m^2$ share of the chains, while a leaf cell lies on a $1/m$ share.
+\end{steplist}
+\keybox{So hitting every copy costs $m$ changes; removing them costs $m^2=\epsilon n^2$.}
 \end{overprint}
 \end{column}
 \end{columns}
@@ -2637,8 +2693,8 @@ $\smallmat{H&0\\0&Z}$ for every $Z$ with pairwise distinct rows or pairwise dist
 Repeating a row or a column next to itself does not change whether a pattern satisfies the conjecture.
 \end{block}
 \medskip
-Consequences: the first \textbf{infinite families of counterexamples}, and, with Lupini's theorem
-for the $2\times2$ identity, an infinite family of patterns that \textbf{satisfy} the conjecture.
+\keybox{Consequences: the first \textbf{infinite families of counterexamples}, and, with Lupini's theorem
+for the $2\times2$ identity, an infinite family of patterns that \textbf{satisfy} the conjecture.}
 \end{frame}
 
 \begin{frame}{Direct sums: the construction}
@@ -2654,9 +2710,10 @@ A^+=\begin{pmatrix} A & 0\\ 0 & \widehat Z\end{pmatrix},
 \]
 where $\widehat Z$ replaces each entry of $Z$ by a constant $qn\times pn$ block; $A^+$ has size $m=(1+pq)n$.
 
-\medskip
-\textbf{Theorem.} If $H$ has no all-zero row or column, and $Z$ has distinct rows or distinct columns, then
+\begin{block}{Theorem}
+If $H$ has no all-zero row or column, and $Z$ has distinct rows or distinct columns, then
 \[ D_{H'}(A^+)=D_H(A),\qquad N_{H'}(A^+)\le m^{p+q}N_H(A). \]
+\end{block}
 \end{column}
 \begin{column}{0.4\textwidth}
 \centering
@@ -2681,22 +2738,40 @@ where $\widehat Z$ replaces each entry of $Z$ by a constant $qn\times pn$ block;
 \begin{columns}[T]
 \begin{column}{0.55\textwidth}
 \small
-Take $H=\smallmat{1&0\\1&1}$ ($k=l=2$), $Z=(1)$ ($p=q=1$), and as host $A$ the $3\times3$ example ($n=3$). Then
-\[ H'=\begin{pmatrix} H&0\\0&Z\end{pmatrix}=\left(\begin{array}{cc|c}1 & 0 & 0\\ 1 & 1 & 0\\ \hline 0 & 0 & 1\end{array}\right). \]
+Take $H=\smallmat{1&0\\1&1}$ ($k=l=2$), $Z=(1)$ ($p=q=1$), and as host $A$ the $3\times3$ example ($n=3$). Then $H'=\smallmat{H&0\\0&Z}=\left(\begin{smallmatrix}1 & 0 & 0\\ 1 & 1 & 0\\ 0 & 0 & 1\end{smallmatrix}\right)$.
 \begin{overprint}
 \onslide<1>
 \raggedright
-\textbf{The host.} $\widehat Z$ replaces the entry $1$ of $Z$ by a constant block with $qn=3$ rows and $pn=3$ columns. So $A^+$ has size $m=(1+pq)n=6$: rows and columns $1$--$3$ are old, $4$--$6$ new. The new rows form one group of identical rows, and the new columns one group of identical columns.
+\stephead{The host}
+\begin{steplist}
+\item $\widehat Z$ replaces the entry $1$ of $Z$ by a constant block with $qn=3$ rows and $pn=3$ columns.
+\item So $A^+$ has size $m=(1+pq)n=6$: rows and columns $1$--$3$ are old, $4$--$6$ new.
+\item The new rows form one group of identical rows, and the new columns one group of identical columns.
+\end{steplist}
 \onslide<2>
 \raggedright
-\textbf{A copy of $H'$.} Its two H-rows and two H-columns are \textcolor{accent!90!black}{rows $1,2$ and columns $1,3$}, a copy of $H$ in $A$. Its Z-row and Z-column are the new \textcolor{teal!80!black}{row $4$ and column $4$}. Between the two parts $A^+$ has $0$s, as $H'$ needs.
+\stephead{A copy of $H'$}
+\begin{steplist}
+\item Its two H-rows and two H-columns are \textcolor{accent!90!black}{rows $1,2$ and columns $1,3$}, a copy of $H$ in $A$.
+\item Its Z-row and Z-column are the new \textcolor{teal!80!black}{row $4$ and column $4$}.
+\item Between the two parts $A^+$ has $0$s, as $H'$ needs.
+\end{steplist}
 \onslide<3>
 \raggedright
-\textbf{All copies.} The H-part of every copy lies in the old part (next slide). So a copy of $H'$ is one of the $N_H(A)=3$ copies of $H$ in $A$, plus any of the $3$ new rows and any of the $3$ new columns: $N_{H'}(A^+)=3\cdot3\cdot3=27$, within the theorem's bound $m^{p+q}N_H(A)=6^{2}\cdot3=108$.
+\stephead{All copies}
+\begin{steplist}
+\item The H-part of every copy lies in the old part (next slide).
+\item So a copy of $H'$ is one of the $N_H(A)=3$ copies of $H$ in $A$, plus any of the $3$ new rows and any of the $3$ new columns:
+\end{steplist}
+\keybox{$N_{H'}(A^+)=3\cdot3\cdot3=27$, within the theorem's bound $m^{p+q}N_H(A)=6^{2}\cdot3=108$.}
 \onslide<4>
 \raggedright
-\textbf{Distance.} Changing $A(1,1)$ removes every copy of $H$ from $A$, so $D_H(A)=1$. The same change in $A^+$ removes every copy of $H'$, so
-\[ D_{H'}(A^+)=1=D_H(A). \]
+\stephead{Distance}
+\begin{steplist}
+\item Changing $A(1,1)$ removes every copy of $H$ from $A$, so $D_H(A)=1$.
+\item The same change in $A^+$ removes every copy of $H'$, so
+\end{steplist}
+\keybox{\centering $D_{H'}(A^+)=1=D_H(A)$.}
 {\footnotesize (This $H$ only illustrates the theorem; whether it has polynomial removal is open.)}
 \end{overprint}
 \end{column}
@@ -2878,26 +2953,39 @@ Take $H=\smallmat{1&0\\1&1}$ ($k=l=2$), $Z=(1)$ ($p=q=1$), and as host $A$ the $
 \framesubtitle{New rows have $1$s only in new columns, and they come in too few groups}
 \begin{columns}[T]
 \begin{column}{0.55\textwidth}
-\small
+\footnotesize
 Let $M=\smallmat{X&0\\0&\widehat Z}$ with $X$ any $n\times n$ matrix. Take a copy of $H'$ in $M$ on rows $r_1<\dots<r_{k+p}$ and columns $c_1<\dots<c_{l+q}$: first its \textbf{H-rows} $r_1,\dots,r_k$ and \textbf{H-columns} $c_1,\dots,c_l$, then its \textbf{Z-rows} and \textbf{Z-columns}.
 
-\textbf{Claim.} The H-rows and H-columns are old, so they form a copy of $H$ in $X$.
+\keybox{\textbf{Claim.} The H-rows and H-columns are old, so they form a copy of $H$ in $X$.}
 
 \begin{overprint}
 \onslide<1>
 \raggedright
 \onslide<2>
 \raggedright
-Suppose the last H-row $r_k$ is \alert{new}. The Z-rows $r_{k+1},\dots,r_{k+p}$ come after it, so they are new too.
+\begin{steplist}
+\item Suppose the last H-row $r_k$ is \alert{new}.
+\item The Z-rows $r_{k+1},\dots,r_{k+p}$ come after it, so they are new too.
+\end{steplist}
 \onslide<3>
 \raggedright
-Row $k$ of $H$ contains a $1$, say in column $j\le l$, so $M(r_k,c_j)=1$. A new row has $1$s only in new columns, so $c_j$ is new, and so are the Z-columns $c_{l+1},\dots,c_{l+q}$ after it.
+\begin{steplist}
+\item Row $k$ of $H$ contains a $1$, say in column $j\le l$, so $M(r_k,c_j)=1$.
+\item A new row has $1$s only in new columns, so $c_j$ is new, and so are the Z-columns $c_{l+1},\dots,c_{l+q}$ after it.
+\end{steplist}
 \onslide<4>
 \raggedright
-These $p+1$ rows and $q+1$ columns lie in $\widehat Z$ and must read $\smallmat{1&0\\0&Z}$, whose rows are pairwise distinct when those of $Z$ are. But the new rows form only $p$ groups of identical rows, so two of the $p+1$ rows are equal: a \alert{contradiction}. Here $r_k$ and $r_{k+1}$ both lie in group~1 and read $(1,1,0)$, where $r_k$ needs $(1,0,0)$ and $r_{k+1}$ needs $(0,1,0)$.
+\begin{steplist}
+\item These $p+1$ rows and $q+1$ columns lie in $\widehat Z$ and must read $\smallmat{1&0\\0&Z}$, whose rows are pairwise distinct when those of $Z$ are.
+\item But the new rows form only $p$ groups of identical rows, so two of the $p+1$ rows are equal: a \alert{contradiction}.
+\item Here $r_k$ and $r_{k+1}$ both lie in group~1 and read $(1,1,0)$, where $r_k$ needs $(1,0,0)$ and $r_{k+1}$ needs $(0,1,0)$.
+\end{steplist}
 \onslide<5>
 \raggedright
-So $r_k$ is old, and with it $r_1,\dots,r_k$. Column $l$ of $H$ contains a $1$, say in row $i\le k$, so $M(r_i,c_l)=1$; an old row has $1$s only in old columns, so $c_l$ is old, and with it $c_1,\dots,c_l$.
+\begin{steplist}
+\item So $r_k$ is old, and with it $r_1,\dots,r_k$.
+\item Column $l$ of $H$ contains a $1$, say in row $i\le k$, so $M(r_i,c_l)=1$; an old row has $1$s only in old columns, so $c_l$ is old, and with it $c_1,\dots,c_l$.
+\end{steplist}
 
 {\footnotesize If instead the columns of $Z$ are pairwise distinct, run the same argument on $q+1$ columns and $q$ groups.}
 \end{overprint}
@@ -3046,27 +3134,42 @@ So $r_k$ is old, and with it $r_1,\dots,r_k$. Column $l$ of $H$ contains a $1$, 
 \framesubtitle{Pick one new line per group; a good pick turns any repair of $A^+$ into a repair of $A$}
 \begin{columns}[T]
 \begin{column}{0.55\textwidth}
-\small
-Let $B$ be any $m\times m$ matrix with no copy of $H'$. $E_0,E_1,E_2$: the numbers of entries where $B$ differs from $A^+$ in the old--old block, the two mixed blocks, and the new--new block (\textcolor{red!75!black}{crosses}). \textbf{Goal:} $E_0+E_1+E_2\ge D$, where $D=D_H(A)\le n^2$.
+\footnotesize
+Let $B$ be any $m\times m$ matrix with no copy of $H'$. $E_0,E_1,E_2$: the numbers of entries where $B$ differs from $A^+$ in the old--old block, the two mixed blocks, and the new--new block (\textcolor{red!75!black}{crosses}). \keybox{\textbf{Goal:} $E_0+E_1+E_2\ge D$, where $D=D_H(A)\le n^2$.}
 
 \begin{overprint}
 \onslide<1>
 \raggedright
 \onslide<2>
 \raggedright
-\textbf{Pick} at random one row $\rho_i$ from each of the $p$ groups of new rows and one column $\gamma_j$ from each of the $q$ groups of new columns. The pick is \textbf{good} if $B(\rho_i,\gamma_j)=Z(i,j)$ for all $i,j$. A fixed new--new entry is picked with probability $\frac1{qn\cdot pn}$, so
-\[ \Pr[\text{not good}]\le \frac{E_2}{pq\,n^2}. \]
+\begin{steplist}
+\item \textbf{Pick} at random one row $\rho_i$ from each of the $p$ groups of new rows and one column $\gamma_j$ from each of the $q$ groups of new columns.
+\item The pick is \textbf{good} if $B(\rho_i,\gamma_j)=Z(i,j)$ for all $i,j$.
+\item A fixed new--new entry is picked with probability $\frac1{qn\cdot pn}$, so $\Pr[\text{not good}]\le \frac{E_2}{pq\,n^2}$.
+\end{steplist}
 \onslide<3>
 \raggedright
-An old row is \textbf{bad} if $B$ has a $1$ where it meets a picked column; an old column, where it meets a picked row. Each such $1$ is one of the $E_1$ changes, and lies on a picked line with probability at most $\frac1n$: on average at most $\frac{E_1}n$ bad lines. $B^\circ$: the old--old block of $B$ with the bad lines set to $0$. It differs from $A$ in at most $E_0+W$ entries, $W=n\cdot\#\text{bad lines}$, $\mathbb E[W]\le E_1$.
+\begin{steplist}
+\item An old row is \textbf{bad} if $B$ has a $1$ where it meets a picked column; an old column, where it meets a picked row.
+\item Each such $1$ is one of the $E_1$ changes, and lies on a picked line with probability at most $\frac1n$: on average at most $\frac{E_1}n$ bad lines.
+\item $B^\circ$: the old--old block of $B$ with the bad lines set to $0$. It differs from $A$ in at most $E_0+W$ entries, $W=n\cdot\#\text{bad lines}$, $\mathbb E[W]\le E_1$.
+\end{steplist}
 \onslide<4>
 \raggedright
-\textbf{Claim: if the pick is good, $B^\circ$ is $H$-free.} Every row and column of $H$ has a $1$, so a copy of $H$ in $B^\circ$ avoids the zeroed lines; its lines are not bad, so they meet the picked lines in $0$s. The picked lines read $Z$. Together they form a \alert{copy of $H'$ in $B$}, which is impossible.
+\stephead{Claim: if the pick is good, $B^\circ$ is $H$-free.}
+\begin{steplist}
+\item Every row and column of $H$ has a $1$, so a copy of $H$ in $B^\circ$ avoids the zeroed lines;
+\item its lines are not bad, so they meet the picked lines in $0$s. The picked lines read $Z$.
+\end{steplist}
+\keybox{Together they form a \alert{copy of $H'$ in $B$}, which is impossible.}
 \onslide<5>
 \raggedright
-So a good pick gives $D\le E_0+W$. Taking expectations,
+\begin{steplist}
+\item So a good pick gives $D\le E_0+W$. Taking expectations,
 \[ D\Bigl(1-\frac{E_2}{pq\,n^2}\Bigr)\le D\cdot\Pr[\text{good}]\le E_0+E_1, \]
-and since $D\le n^2\le pq\,n^2$, this gives $E_0+E_1+E_2\ge D$. So $D_{H'}(A^+)\ge D_H(A)$.
+\item and since $D\le n^2\le pq\,n^2$, this gives $E_0+E_1+E_2\ge D$.
+\end{steplist}
+\keybox{So $D_{H'}(A^+)\ge D_H(A)$.}
 \end{overprint}
 \end{column}
 \begin{column}{0.43\textwidth}
@@ -3159,9 +3262,7 @@ and since $D\le n^2\le pq\,n^2$, this gives $E_0+E_1+E_2\ge D$. So $D_{H'}(A^+)\
 \begin{frame}{Direct sums: new counterexamples}
 \framesubtitle{A host for $H$ with few copies gives one for $H'$}
 \small
-\textbf{Corollary.} If $H$ (no all-zero row or column) is a counterexample, so is $H'=\smallmat{H&0\\0&Z}$ for every $Z$ with pairwise distinct rows or pairwise distinct columns.
-
-\medskip
+\keybox{\textbf{Corollary.} If $H$ (no all-zero row or column) is a counterexample, so is $H'=\smallmat{H&0\\0&Z}$ for every $Z$ with pairwise distinct rows or pairwise distinct columns.}
 \begin{itemize}
 \item<1-> Given $c',C'>0$, put $s=1+pq$, $C=C'$ and $c=c'\,s^{k+l-2C}$. As $H$ is a counterexample, some $n\times n$ matrix $A$ and $\epsilon\in(0,1]$ have $\dist_H(A)\ge\epsilon$ and $N_H(A)<c\,\epsilon^{C}n^{k+l}$.
 \item<2-> Take the host $A^+$, of size $m=sn$, and $\epsilon'=\epsilon/s^2$. By the theorem, $\dist_{H'}(A^+)=D_H(A)/(sn)^2\ge\epsilon/s^2=\epsilon'$, and, with $n=m/s$ and $\epsilon=s^2\epsilon'$,
@@ -3175,7 +3276,9 @@ and since $D\le n^2\le pq\,n^2$, this gives $E_0+E_1+E_2\ge D$. So $D_{H'}(A^+)\
 \framesubtitle{Delete repeats until none are left}
 \begin{columns}[T]
 \begin{column}{0.6\textwidth}
+\begin{block}{Definition}
 $\operatorname{red}(H)$: delete every row equal to the row above it and every column equal to the column to its left, until none is left. If $H$ is $k\times l$, $\operatorname{red}(H)$ is $k_0\times l_0$.
+\end{block}
 
 \begin{overprint}
 \onslide<1>
@@ -3192,8 +3295,7 @@ Column $2$ equals column $1$ \dots
 \dots\ delete it: $\operatorname{red}(H)=I_2$.
 \end{overprint}
 
-\medskip
-\uncover<4->{\textbf{Theorem.} $H$ satisfies the conjecture if and only if $\operatorname{red}(H)$ does.}
+\uncover<4->{\keybox{\textbf{Theorem.} $H$ satisfies the conjecture if and only if $\operatorname{red}(H)$ does.}}
 
 \medskip
 \uncover<4->{\footnotesize The proof rests on two facts: Fact 1 counts copies with one more repeat, Fact 2 blows up a host.}
@@ -3266,27 +3368,40 @@ Column $2$ equals column $1$ \dots
 \framesubtitle{Copies of $H$ are frames with one more column; two completions make a copy of $H'$}
 \begin{columns}[T]
 \begin{column}{0.62\textwidth}
-\small
-\textbf{Fact 1.} Let $H$ be $k\times l$ and $H'$ be $H$ with column $j$ written twice in a row. For every $n\times n$ matrix $B$, with $N=N_H(B)$ and $N'=N_{H'}(B)$: $\;N'\ge \frac{N^2}{2n^{k+l-1}}-\frac N2$.
-(For a repeated row, transpose $H$ and $B$.)
+\footnotesize
+\keybox{\textbf{Fact 1.} Let $H$ be $k\times l$ and $H'$ be $H$ with column $j$ written twice in a row. For every $n\times n$ matrix $B$, with $N=N_H(B)$ and $N'=N_{H'}(B)$: $\;N'\ge \frac{N^2}{2n^{k+l-1}}-\frac N2$.
+(For a repeated row, transpose $H$ and $B$.)}
 
-\textbf{Example} (right): $H=\smallmat{1&0\\1&1}$, $j=2$, $H'=\smallmat{1&0&0\\1&1&1}$.
+{\color{accent!85!black}\bfseries Example} (right): $H=\smallmat{1&0\\1&1}$, $j=2$, $H'=\smallmat{1&0&0\\1&1&1}$.
 
 \begin{overprint}
 \onslide<1>
 \raggedright
-A \textbf{frame} $F$: rows $r_1<\dots<r_k$ and columns $c_1<\dots<c_{j-1}<c_{j+1}<\dots<c_l$ of $B$, a would-be copy of $H$ missing its $j$th column. There are $T\le n^{k+l-1}$ frames (here $T=9$). A column $c$ with $c_{j-1}<c<c_{j+1}$ is a \textbf{completion} of $F$ if adding it gives a copy of $H$; $x_F$ is the number of completions.
+\begin{steplist}
+\item A \textbf{frame} $F$: rows $r_1<\dots<r_k$ and columns $c_1<\dots<c_{j-1}<c_{j+1}<\dots<c_l$ of $B$, a would-be copy of $H$ missing its $j$th column.
+\item There are $T\le n^{k+l-1}$ frames (here $T=9$).
+\item A column $c$ with $c_{j-1}<c<c_{j+1}$ is a \textbf{completion} of $F$ if adding it gives a copy of $H$; $x_F$ is the number of completions.
+\end{steplist}
 \onslide<2>
 \raggedright
 The frame \textcolor{accent!90!black}{rows $1,2$ with column $1$} has the completions \textcolor{teal!80!black}{columns $2$ and $3$}: $x_F=2$.
 
-\textbf{Step 2.} Deleting column $j$ of a copy of $H$ leaves a frame, and the deleted column completes it. So the copies of $H$ match the pairs ($F$, a completion of $F$) one to one, and $\sum_F x_F=N$.
+\stephead{Step 2}
+\begin{steplist}
+\item Deleting column $j$ of a copy of $H$ leaves a frame, and the deleted column completes it.
+\item So the copies of $H$ match the pairs ($F$, a completion of $F$) one to one, and $\sum_F x_F=N$.
+\end{steplist}
 \onslide<3>
 \raggedright
 The frame \textcolor{accent!90!black}{rows $1,3$ with column $1$} has one completion, \textcolor{teal!80!black}{column $3$}. The other $7$ frames have none: $\sum_F x_F=2+1=3=N$.
 \onslide<4>
 \raggedright
-\textbf{Step 3.} Two completions $c<c'$ of one frame give a \alert{copy of $H'$}: the columns $c_1<\dots<c_{j-1}<c<c'<c_{j+1}<\dots<c_l$ are in order, and $c$, $c'$ both match column $j$. Different ($F$, $\{c,c'\}$) give different copies, so $N'\ge\sum_F\binom{x_F}{2}$. Here: rows $1,2$ with columns $1,2,3$, and $\binom{2}{2}+\binom{1}{2}=1=N'$.
+\stephead{Step 3}
+\begin{steplist}
+\item Two completions $c<c'$ of one frame give a \alert{copy of $H'$}: the columns $c_1<\dots<c_{j-1}<c<c'<c_{j+1}<\dots<c_l$ are in order, and $c$, $c'$ both match column $j$.
+\item Different ($F$, $\{c,c'\}$) give different copies, so $N'\ge\sum_F\binom{x_F}{2}$.
+\item Here: rows $1,2$ with columns $1,2,3$, and $\binom{2}{2}+\binom{1}{2}=1=N'$.
+\end{steplist}
 \end{overprint}
 \end{column}
 \begin{column}{0.34\textwidth}
@@ -3353,19 +3468,21 @@ So far: $\sum_F x_F=N$ over $T\le n^{k+l-1}$ frames, and
 \begin{overprint}
 \onslide<1>
 \raggedright
-\textbf{Step 4.} If $N=0$ there is nothing to show. Otherwise, by Cauchy--Schwarz,
+\stephead{Step 4}
+If $N=0$ there is nothing to show. Otherwise, by Cauchy--Schwarz,
 \[ N^2=\Bigl(\sum_F 1\cdot x_F\Bigr)^2\le T\sum_F x_F^2 . \]
 This is Jensen's inequality for $x\mapsto x^2$: the sum of squares is smallest when every $x_F$ equals the average $N/T$ (right).
 \onslide<2>
 \raggedright
-Combining,
-\[ N'\ \ge\ \frac{N^2}{2T}-\frac N2\ \ge\ \frac{N^2}{2n^{k+l-1}}-\frac N2 . \qquad\Box \]
+\stephead{Combining}
+\keybox{\centering $N'\ \ge\ \dfrac{N^2}{2T}-\dfrac N2\ \ge\ \dfrac{N^2}{2n^{k+l-1}}-\dfrac N2 . \qquad\Box$}
 On the example: $N=3$, $T=9$, $\sum_F x_F^2=5$, and indeed $N^2\le T\sum_F x_F^2$.
 \onslide<3>
 \raggedright
-\textbf{How it is used.} If $N_H(B)\ge\delta n^{k+l}$ and $n\ge2/\delta$, then
+\stephead{How it is used}
+If $N_H(B)\ge\delta n^{k+l}$ and $n\ge2/\delta$, then
 \[ N_{H'}(B)\ \ge\ \frac{\delta^2}2n^{k+l+1}-\frac\delta2n^{k+l}\ \ge\ \frac{\delta^2}4n^{k+l+1}. \]
-One repeat turns a copy density $\delta$ into at least $\delta^2/4$, for $H'$ with its $k+l+1$ lines, once $n$ is not too small.
+\keybox{One repeat turns a copy density $\delta$ into at least $\delta^2/4$, for $H'$ with its $k+l+1$ lines, once $n$ is not too small.}
 \end{overprint}
 \end{column}
 \begin{column}{0.4\textwidth}
@@ -3417,32 +3534,39 @@ One repeat turns a copy density $\delta$ into at least $\delta^2/4$, for $H'$ wi
 \begin{frame}{Duplication, Fact 2(a): blowing up a host keeps few copies few}
 \framesubtitle{A copy of $H$ in the blow-up comes from a copy of $\operatorname{red}(H)$ in the host}
 \begin{columns}[T]
-\begin{column}{0.54\textwidth}
-\small
+\begin{column}{0.57\textwidth}
+\footnotesize
 \textbf{Blow-up.} $A^{(q)}$: every entry of the $n\times n$ matrix $A$ becomes a constant $q\times q$ block; $A^{(q)}$ is $qn\times qn$.
 
-\textbf{Fact 2.} For $H$ ($k\times l$) and $R=\operatorname{red}(H)$ ($k_0\times l_0$):
+\keybox{\textbf{Fact 2.} For $H$ ($k\times l$) and $R=\operatorname{red}(H)$ ($k_0\times l_0$):\\
+(a) $N_H(A^{(q)})/(qn)^{k+l}\le N_R(A)/n^{k_0+l_0}$;\\
+(b) $D_H(A^{(q)})\ge\tfrac12q^2D_R(A)$ for all large enough $q$.}
 
-(a) $N_H(A^{(q)})/(qn)^{k+l}\le N_R(A)/n^{k_0+l_0}$;
-
-(b) $D_H(A^{(q)})\ge\tfrac12q^2D_R(A)$ for all large enough $q$.
-
-\textbf{Example} (right): $q=2$, $H=\smallmat{1&0\\1&0\\1&1}$, so $R=\smallmat{1&0\\1&1}$.
+{\color{accent!85!black}\bfseries Example} (right): $q=2$, $H=\smallmat{1&0\\1&0\\1&1}$, so $R=\smallmat{1&0\\1&1}$.
 \begin{overprint}
 \onslide<1>
 \raggedright
 \onslide<2>
 \raggedright
-\textbf{Proof of (a).} Take a copy of $H$ in $A^{(q)}$: here \textcolor{accent!90!black}{rows $1,2,3$ with columns $1,5$}.
+\stephead{Proof of (a)}
+Take a copy of $H$ in $A^{(q)}$: here \textcolor{accent!90!black}{rows $1,2,3$ with columns $1,5$}.
 \onslide<3>
 \raggedright
-Keep one row and one column for each row and column of $R$: \textcolor{teal!80!black}{rows $1,3$, columns $1,5$}. They read $R$. No two kept rows lie in one block: rows in a block are equal, and $R$ has no two equal neighboring rows (same for columns). So they come from a \textcolor{teal!80!black}{copy of $R$ in $A$}: rows $1,2$, columns $1,3$.
+\begin{steplist}
+\item Keep one row and one column for each row and column of $R$: \textcolor{teal!80!black}{rows $1,3$, columns $1,5$}. They read $R$.
+\item No two kept rows lie in one block: rows in a block are equal, and $R$ has no two equal neighboring rows (same for columns).
+\item So they come from a \textcolor{teal!80!black}{copy of $R$ in $A$}: rows $1,2$, columns $1,3$.
+\end{steplist}
 \onslide<4>
 \raggedright
-Each copy of $R$ in $A$ is counted at most $q^{k_0+l_0}(qn)^{k+l-k_0-l_0}$ times: a line in each of its blocks, and the other lines anywhere. Dividing by $(qn)^{k+l}$ gives (a). Here $N_H(A^{(2)})=24\le3\cdot2^{4}\cdot6^{1}=288$, as $N_R(A)=3$.
+\begin{steplist}
+\item Each copy of $R$ in $A$ is counted at most $q^{k_0+l_0}(qn)^{k+l-k_0-l_0}$ times: a line in each of its blocks, and the other lines anywhere.
+\item Dividing by $(qn)^{k+l}$ gives (a).
+\item Here $N_H(A^{(2)})=24\le3\cdot2^{4}\cdot6^{1}=288$, as $N_R(A)=3$.
+\end{steplist}
 \end{overprint}
 \end{column}
-\begin{column}{0.42\textwidth}
+\begin{column}{0.40\textwidth}
 \centering
 \begin{tikzpicture}[]
 \useasboundingbox (-0.4,0.75) rectangle (4.35,-2.6);
@@ -3574,25 +3698,40 @@ Each copy of $R$ in $A$ is counted at most $q^{k_0+l_0}(qn)^{k+l-k_0-l_0}$ times
 \framesubtitle{Pick one line per block: a cheap repair of $A^{(q)}$ leaves $A$ almost intact}
 \begin{columns}[T]
 \begin{column}{0.54\textwidth}
-\small
-\textbf{Claim.} If $q$ is large, changing at most $\tfrac12q^2D_R(A)$ entries of $A^{(q)}$ leaves a copy of $H$. Call the changed matrix $B'$. \textbf{Example} (right): $q=3$, $D_R(A)=1$, so $4$ changes (green), all in the block of $A(1,1)$, the entry every copy of $R$ in $A$ uses.
+\footnotesize
+\keybox{\textbf{Claim.} If $q$ is large, changing at most $\tfrac12q^2D_R(A)$ entries of $A^{(q)}$ leaves a copy of $H$. Call the changed matrix $B'$.}
+{\color{accent!85!black}\bfseries Example} (right): $q=3$, $D_R(A)=1$, so $4$ changes (green), all in the block of $A(1,1)$, the entry every copy of $R$ in $A$ uses.
 \begin{overprint}
 \onslide<1>
 \raggedright
 \onslide<2>
 \raggedright
-\textbf{Pick} one row from each block of rows and one column from each block of columns, at random. They form an $n\times n$ matrix $B$, which is $A$ unless a changed entry is picked. Here \textcolor{teal!80!black}{rows $2,5,8$ and columns $3,4,9$}: $B=A$.
+\begin{steplist}
+\item \textbf{Pick} one row from each block of rows and one column from each block of columns, at random.
+\item They form an $n\times n$ matrix $B$, which is $A$ unless a changed entry is picked.
+\item Here \textcolor{teal!80!black}{rows $2,5,8$ and columns $3,4,9$}: $B=A$.
+\end{steplist}
 \onslide<3>
 \raggedright
-Each changed entry is picked with probability $1/q^2$, so on average $B$ differs from $A$ in at most $\tfrac12D_R(A)$ entries (here $\tfrac{4}{9}$). By Markov's inequality, with probability at least $\tfrac12$ it differs in fewer than $D_R(A)$, and then $B$ contains $R$. Here $405$ of the $729$ picks contain $R$.
+\begin{steplist}
+\item Each changed entry is picked with probability $1/q^2$, so on average $B$ differs from $A$ in at most $\tfrac12D_R(A)$ entries (here $\tfrac{4}{9}$).
+\item By Markov's inequality, with probability at least $\tfrac12$ it differs in fewer than $D_R(A)$, and then $B$ contains $R$.
+\item Here $405$ of the $729$ picks contain $R$.
+\end{steplist}
 \onslide<4>
 \raggedright
-A given copy of $R$ in $B'$ is picked with probability at most $q^{-(k_0+l_0)}$, one line from each of its blocks. So
-\[ N_R(B')\ \ge\ \tfrac12q^{k_0+l_0}. \]
+\begin{steplist}
+\item A given copy of $R$ in $B'$ is picked with probability at most $q^{-(k_0+l_0)}$, one line from each of its blocks. So
+\end{steplist}
+\keybox{\centering $N_R(B')\ \ge\ \tfrac12q^{k_0+l_0}$.}
 Here $N_R(B')=154\ge \tfrac12\cdot 3^{4}$.
 \onslide<5>
 \raggedright
-So at least a fraction $\frac{1}{2n^{k_0+l_0}}$ of all positions hold a copy of $R$ in $B'$, and it does not shrink as $q$ grows. Fact 1, once per repeated row or column, gives the same for $H$ once $q$ is large: \alert{$B'$ contains $H$}. Here $B'$ has $54$ copies of $H$.
+\begin{steplist}
+\item So at least a fraction $\frac{1}{2n^{k_0+l_0}}$ of all positions hold a copy of $R$ in $B'$, and it does not shrink as $q$ grows.
+\item Fact 1, once per repeated row or column, gives the same for $H$ once $q$ is large:
+\end{steplist}
+\keybox{\alert{$B'$ contains $H$}. Here $B'$ has $54$ copies of $H$.}
 \end{overprint}
 \end{column}
 \begin{column}{0.42\textwidth}
@@ -3818,8 +3957,7 @@ So at least a fraction $\frac{1}{2n^{k_0+l_0}}$ of all positions hold a copy of 
 \begin{frame}{Duplication: proof of the theorem}
 \framesubtitle{Fact 1 carries many copies up; Fact 2 carries a bad host up}
 \small
-\textbf{Theorem.} $H$ satisfies the conjecture if and only if $R=\operatorname{red}(H)$ does.
-
+\keybox{\textbf{Theorem.} $H$ satisfies the conjecture if and only if $R=\operatorname{red}(H)$ does.}
 \begin{itemize}
 \item<1-> \textbf{If $R$ satisfies it, so does $H$.} Let $\dist_H(A)\ge\epsilon$. $R$ keeps some rows and columns of $H$, so $H$ contains $R$, and every $R$-free matrix is $H$-free: $\dist_R(A)\ge\epsilon$. So $A$ has at least $c\,\epsilon^Cn^{k_0+l_0}$ copies of $R$. Fact 1, once for each repeated row or column, gives at least $c'\epsilon^{C'}n^{k+l}$ copies of $H$. This needs $n$ larger than a fixed power of $1/\epsilon$; for smaller $n$, use $N_H(A)\ge1$ and a larger $C'$.
 \item<2-> \textbf{If $R$ fails, so does $H$.} Let $c',C'>0$ be given. As $R$ fails, some $A$ has $\dist_R(A)\ge\epsilon_0$ and fewer than $c'2^{-C'}\epsilon_0^{C'}n^{k_0+l_0}$ copies of $R$. For large $q$, Fact 2 gives
@@ -3849,7 +3987,7 @@ So no constants $c',C'$ work for $H$.
 \begin{frame}{Formal verification}
 \begin{itemize}
 \item \textbf{Lean 4} (Mathlib v4.35.0): the direct-sum theorem, the zero-column variant, their corollaries and the infinite family obtained by repeatedly adding $(1)$ are fully proved: no \texttt{sorry}, only the standard axioms. Written with Kimi 3.1 Pro; checked independently.
-\item \textbf{Agda} (\texttt{--safe}): the special case of one appended zero column, fully proved. (not turned in)
+\item \textbf{Agda} (\texttt{--safe}): the special case of one appended zero column, fully proved.
 \item \textbf{Computer checks}: the direct-sum statements on $200$ small hosts; OpenAI's counts for small $h$, including $m^2$ as the exact distance for $h\le5$.
 \end{itemize}
 \end{frame}
@@ -3906,6 +4044,7 @@ rows of $Z$ pairwise distinct & \texttt{Function.Injective Z}
 \footnotesize
 \begin{itemize}
 \item \textbf{Also proved:} the copy bound \texttt{copyCount\_blockDiag}, the zero-column variant, and the family from attaching $(1)$ again and again. Step~3's random picks become sums over all picks: no probability or division.
+\item \textbf{Lean caught three false edge cases} in the first statements: the empty $0\times0$ pattern satisfies \texttt{NoZeroLine} vacuously, and \texttt{editDist} is \texttt{sInf} $\emptyset=0$ when no $H$-free matrix exists. Fixed by the hypotheses \texttt{hk~:~0~<~k} and ``an $H$-free matrix exists''; the corollaries needed no change.
 \end{itemize}
 \end{frame}
 
@@ -3958,7 +4097,7 @@ rows of $Z$ pairwise distinct & \texttt{Function.Injective Z}
 \small
 \begin{itemize}
 \item \textbf{Literature, extensions, smaller counterexamples, proofs}: Opus 5.5 (Max), Fable 5.2 (Medium).
-\item \textbf{Formalization}: planning with GPT-6.1 Sol (Extra High) and Opus 5.5 (Max); the Lean proof with Open Math Kimi 3.1 Pro (Ultramath); the Agda special case with Opus 5.5 (Max) (not turned in).
+\item \textbf{Formalization}: planning with GPT-6.1 Sol (Extra High) and Opus 5.5 (Max); the Lean proof with Open Math Kimi 3.1 Pro (Ultramath); the Agda special case with Opus 5.5 (Max).
 \item \textbf{Proofreading, slides, examples}: Opus 5.5 (Max), Open Math DeepSeek V4.1 Flash and Kimi 3.1 Pro.
 \end{itemize}
 \end{frame}

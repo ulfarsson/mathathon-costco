@@ -1,7 +1,7 @@
 """Find jumps between the overlay steps of a Beamer PDF.
 
-A word that appears on two consecutive pages of the same frame (same text, same left edge) should
-stay at the same height; if it moves, the frame jumps when the speaker steps through it. Uses
+A word that appears on two consecutive pages of the same frame (same text, same left edge, same
+neighboring words) should stay at the same height; if it moves, the frame jumps when the speaker steps through it. Uses
 pdftotext -bbox. Prints the frames that jump and the largest move on each, then OK or JUMPS.
 
 Usage: python3 check_slide_jumps.py slides.pdf
@@ -39,11 +39,15 @@ def main():
         fa, fb = frame_number(a), frame_number(b)
         if fa is None or fa != fb:
             continue
+        # a word is keyed by its text, its left edge and its neighbors in reading order: a word that
+        # really moves keeps its neighbors, while two different occurrences of a common word that
+        # happen to share a left edge (say in two steps of an overprint area) usually do not
         ia, ib = {}, {}
-        for w, x, y in a:
-            ia.setdefault((w, round(x, 1)), []).append(y)
-        for w, x, y in b:
-            ib.setdefault((w, round(x, 1)), []).append(y)
+        for words, index in ((a, ia), (b, ib)):
+            for t, (w, x, y) in enumerate(words):
+                prev = words[t - 1][0] if t > 0 else ""
+                nxt = words[t + 1][0] if t + 1 < len(words) else ""
+                index.setdefault((w, round(x, 1), prev, nxt), []).append(y)
         for key, ya in ia.items():
             yb = ib.get(key)
             if not yb or len(key[0]) < 2:

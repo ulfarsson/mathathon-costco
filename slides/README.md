@@ -2,7 +2,7 @@
 
 Beamer slides for the team's write-up (team costco, Problem #96 at the Caltech × SAIR Mathathon,
 November 15, 2026): the polynomial removal conjecture for ordered binary matrices, OpenAI's
-counterexample and why it works, and the team's two reductions (direct sums, duplication). 26
+counterexample and why it works, and the team's two reductions (direct sums, duplication), and the Lean formalization. 35
 frames, with step-by-step overlays.
 
 If you are an agent editing these slides, read this file first, then `slides-template.tex`.
@@ -95,9 +95,19 @@ so changes made there must be carried back into `slides-template.tex` by hand, o
   corollaries and the family obtained by adding (1) repeatedly are proved in Lean (Mathlib
   v4.35.0, no `sorry`, only the standard axioms), and the one-zero-column case in Agda. The
   duplication theorem's proof in the write-up was read and found sound by the agent that made the
-  slides (2026-11-15); no one else has reviewed it. Its two directions get a frame each: Fact 1
-  (two completions of a frame make a copy of the doubled pattern; Jensen) and Fact 2 (the blow-up
-  A^(q): few copies stay few, and far stays far, D_H(A^(q)) >= q^2 D_R(A)/2 for large q).
+  slides (2026-11-15); no one else has reviewed it. The proof gets five frames, following the write-up (Theorem 11):
+  Fact 1 in two (frames and completions; Cauchy-Schwarz), Fact 2 in two ((a) the blow-up A^(q)
+  keeps few copies few; (b) far stays far, D_H(A^(q)) >= q^2 D_R(A)/2 for large q), and the proof
+  of the theorem. The direct-sum proof gets four frames: Steps 1-3 and the corollary.
+- Lean (repository `ulfarsson/mathathon-costco`, folders `lean/` and `lean-unconditional/`): three
+  frames after "Formal verification". The Lean code on them is quoted verbatim; `make_slides.py`
+  checks every snippet, and the facts it states (61 OpenAI files, 8 bridge theorems, 4059 lines,
+  1803 audited declarations, commit 4eaee87), against the repository when it runs inside it (the
+  folder above this one) or when `MATHATHON_REPO` points to a clone; otherwise it prints a note and
+  skips the check. Checked by the agent that made the slides (2026-11-15): the 61 vendored files and
+  the license are byte-identical to openai/math@4eaee87, and no compiled module contains `sorry`,
+  `native_decide` or a custom axiom. The build and axiom-audit numbers are from the repository's
+  reports; the full Mathlib build was not rerun.
 - Open: whether the 2 × 2 corner P = [1 0; 1 1] has polynomial removal.
 
 ## Style
