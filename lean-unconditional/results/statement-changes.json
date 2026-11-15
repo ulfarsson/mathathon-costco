@@ -1,0 +1,93 @@
+{
+ "free_zero": {
+  "same": true,
+  "orig_line": 108,
+  "cur_line": 965,
+  "orig": "theorem free_zero {k l n m : ℕ} (H : BMat k l) (h : ∃ i j, H i j = true) : Free H (zeros n m)",
+  "cur": "theorem free_zero {k l n m : ℕ} (H : BMat k l) (h : ∃ i j, H i j = true) : Free H (zeros n m)"
+ },
+ "editDist_spec": {
+  "same": true,
+  "orig_line": 113,
+  "cur_line": 133,
+  "orig": "theorem editDist_spec {k l n m : ℕ} (H : BMat k l) (A : BMat n m) (h : ∃ B : BMat n m, Free H B) : ∃ B : BMat n m, Free H B ∧ hamming A B = editDist H A",
+  "cur": "theorem editDist_spec {k l n m : ℕ} (H : BMat k l) (A : BMat n m) (h : ∃ B : BMat n m, Free H B) : ∃ B : BMat n m, Free H B ∧ hamming A B = editDist H A"
+ },
+ "editDist_le": {
+  "same": true,
+  "orig_line": 119,
+  "cur_line": 974,
+  "orig": "theorem editDist_le {k l n m : ℕ} (H : BMat k l) (A B : BMat n m) (hB : Free H B) : editDist H A ≤ hamming A B",
+  "cur": "theorem editDist_le {k l n m : ℕ} (H : BMat k l) (A B : BMat n m) (hB : Free H B) : editDist H A ≤ hamming A B"
+ },
+ "editDist_eq_zero_iff": {
+  "same": false,
+  "orig_line": 124,
+  "cur_line": 147,
+  "orig": "theorem editDist_eq_zero_iff {k l n m : ℕ} (H : BMat k l) (A : BMat n m) : editDist H A = 0 ↔ Free H A",
+  "cur": "theorem editDist_eq_zero_iff {k l n m : ℕ} (H : BMat k l) (A : BMat n m) (hfree : ∃ B : BMat n m, Free H B) : editDist H A = 0 ↔ Free H A"
+ },
+ "copyCount_eq_zero_iff": {
+  "same": true,
+  "orig_line": 129,
+  "cur_line": 177,
+  "orig": "theorem copyCount_eq_zero_iff {k l n m : ℕ} (H : BMat k l) (A : BMat n m) : copyCount H A = 0 ↔ Free H A",
+  "cur": "theorem copyCount_eq_zero_iff {k l n m : ℕ} (H : BMat k l) (A : BMat n m) : copyCount H A = 0 ↔ Free H A"
+ },
+ "editDist_blockDiag_one": {
+  "same": false,
+  "orig_line": 137,
+  "cur_line": 2542,
+  "orig": "theorem editDist_blockDiag_one {k l n : ℕ} (H : BMat k l) (hH : NoZeroLine H) (A : BMat n n) : editDist (blockDiag H (ones 1 1)) (blockDiag A (ones n n)) = editDist H A",
+  "cur": "theorem editDist_blockDiag_one {k l n : ℕ} (H : BMat k l) (hH : NoZeroLine H) (hk : 0 < k) (A : BMat n n) : editDist (blockDiag H (ones 1 1)) (blockDiag A (ones n n)) = editDist H A"
+ },
+ "copyCount_blockDiag_one": {
+  "same": true,
+  "orig_line": 142,
+  "cur_line": 2552,
+  "orig": "theorem copyCount_blockDiag_one {k l n : ℕ} (H : BMat k l) (hH : NoZeroLine H) (A : BMat n n) : copyCount (blockDiag H (ones 1 1)) (blockDiag A (ones n n)) ≤ (n + n) ^ 2 * copyCount H A",
+  "cur": "theorem copyCount_blockDiag_one {k l n : ℕ} (H : BMat k l) (hH : NoZeroLine H) (A : BMat n n) : copyCount (blockDiag H (ones 1 1)) (blockDiag A (ones n n)) ≤ (n + n) ^ 2 * copyCount H A"
+ },
+ "editDist_appendZeroCols": {
+  "same": true,
+  "orig_line": 150,
+  "cur_line": 3146,
+  "orig": "theorem editDist_appendZeroCols {k l n : ℕ} (H : BMat k l) (hH : NoZeroLine H) (q : ℕ) (A : BMat n n) : editDist (appendZeroCols H q) (blockDiag A (zeros (q * n) (q * n))) = editDist H A",
+  "cur": "theorem editDist_appendZeroCols {k l n : ℕ} (H : BMat k l) (hH : NoZeroLine H) (q : ℕ) (A : BMat n n) : editDist (appendZeroCols H q) (blockDiag A (zeros (q * n) (q * n))) = editDist H A"
+ },
+ "copyCount_appendZeroCols": {
+  "same": true,
+  "orig_line": 155,
+  "cur_line": 3287,
+  "orig": "theorem copyCount_appendZeroCols {k l n : ℕ} (H : BMat k l) (hH : NoZeroLine H) (q : ℕ) (A : BMat n n) : copyCount (appendZeroCols H q) (blockDiag A (zeros (q * n) (q * n))) ≤ (n + q * n) ^ q * copyCount H A",
+  "cur": "theorem copyCount_appendZeroCols {k l n : ℕ} (H : BMat k l) (hH : NoZeroLine H) (q : ℕ) (A : BMat n n) : copyCount (appendZeroCols H q) (blockDiag A (zeros (q * n) (q * n))) ≤ (n + q * n) ^ q * copyCount H A"
+ },
+ "editDist_blockDiag": {
+  "same": false,
+  "orig_line": 164,
+  "cur_line": 3310,
+  "orig": "theorem editDist_blockDiag {k l p q n : ℕ} (H : BMat k l) (hH : NoZeroLine H) (Z : BMat p q) (hp : 0 < p) (hq : 0 < q) (hZ : Function.Injective Z ∨ Function.Injective (fun j i => Z i j)) (A : BMat n n) : editDist (blockDiag H Z) (blockDiag A (blowup Z n)) = editDist H A",
+  "cur": "theorem editDist_blockDiag {k l p q n : ℕ} (H : BMat k l) (hH : NoZeroLine H) (hk : 0 < k) (Z : BMat p q) (hp : 0 < p) (hq : 0 < q) (hZ : Function.Injective Z ∨ Function.Injective (fun j i => Z i j)) (A : BMat n n) : editDist (blockDiag H Z) (blockDiag A (blowup Z n)) = editDist H A"
+ },
+ "copyCount_blockDiag": {
+  "same": true,
+  "orig_line": 171,
+  "cur_line": 3462,
+  "orig": "theorem copyCount_blockDiag {k l p q n : ℕ} (H : BMat k l) (hH : NoZeroLine H) (Z : BMat p q) (hp : 0 < p) (hq : 0 < q) (hZ : Function.Injective Z ∨ Function.Injective (fun j i => Z i j)) (A : BMat n n) : copyCount (blockDiag H Z) (blockDiag A (blowup Z n)) ≤ (n + p * q * n) ^ (p + q) * copyCount H A",
+  "cur": "theorem copyCount_blockDiag {k l p q n : ℕ} (H : BMat k l) (hH : NoZeroLine H) (Z : BMat p q) (hp : 0 < p) (hq : 0 < q) (hZ : Function.Injective Z ∨ Function.Injective (fun j i => Z i j)) (A : BMat n n) : copyCount (blockDiag H Z) (blockDiag A (blowup Z n)) ≤ (n + p * q * n) ^ (p + q) * copyCount H A"
+ },
+ "not_polyRemoval_blockDiag": {
+  "same": true,
+  "orig_line": 181,
+  "cur_line": 3509,
+  "orig": "theorem not_polyRemoval_blockDiag {k l p q : ℕ} (H : BMat k l) (hH : NoZeroLine H) (Z : BMat p q) (hp : 0 < p) (hq : 0 < q) (hZ : Function.Injective Z ∨ Function.Injective (fun j i => Z i j)) (hcounter : ¬ PolyRemoval H) : ¬ PolyRemoval (blockDiag H Z)",
+  "cur": "theorem not_polyRemoval_blockDiag {k l p q : ℕ} (H : BMat k l) (hH : NoZeroLine H) (Z : BMat p q) (hp : 0 < p) (hq : 0 < q) (hZ : Function.Injective Z ∨ Function.Injective (fun j i => Z i j)) (hcounter : ¬ PolyRemoval H) : ¬ PolyRemoval (blockDiag H Z)"
+ },
+ "not_polyRemoval_appendZeroCols": {
+  "same": true,
+  "orig_line": 189,
+  "cur_line": 3824,
+  "orig": "theorem not_polyRemoval_appendZeroCols {k l : ℕ} (H : BMat k l) (hH : NoZeroLine H) (q : ℕ) (hq : 0 < q) (hcounter : ¬ PolyRemoval H) : ¬ PolyRemoval (appendZeroCols H q)",
+  "cur": "theorem not_polyRemoval_appendZeroCols {k l : ℕ} (H : BMat k l) (hH : NoZeroLine H) (q : ℕ) (hq : 0 < q) (hcounter : ¬ PolyRemoval H) : ¬ PolyRemoval (appendZeroCols H q)"
+ }
+}

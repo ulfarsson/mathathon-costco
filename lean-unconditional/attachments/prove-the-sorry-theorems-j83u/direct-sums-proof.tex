@@ -1,0 +1,275 @@
+% Direct sums of ordered-removal counterexamples.
+% Edited 2026-11-14 from the text proof supplied by the author (another agent's write-up):
+% H may be rectangular (k x l), to match formal/direct-sum/DirectSum/Statements.lean;
+% "counterexample" is defined; the corollary's last step is spelled out; the credit to
+% Lupini is corrected; the lead example is OpenAI's 66 x 66 H; the unreproducible
+% "528 hosts" sentence is replaced by the project's own check (scratch/direct-sum/check.py).
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[margin=1in]{geometry}
+
+\DeclareMathOperator{\dist}{dist}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\title{Direct sums of counterexamples to polynomial ordered removal}
+\author{}
+\date{14 November 2026}
+
+\begin{document}
+\maketitle
+
+\section{Definitions}
+
+Let $H$ be a $k \times l$ binary matrix with $k, l \ge 1$, and let $A$ be an $n \times n$ binary
+matrix. An \emph{(ordered) copy} of $H$ in $A$ is a choice of rows
+$1 \le r_1 < \dots < r_k \le n$ and columns $1 \le c_1 < \dots < c_l \le n$ such that
+$A(r_i, c_j) = H(i,j)$ for all $i, j$. Both the $0$s and the $1$s of $H$ must match. If $A$ has
+no copy of $H$, it is \emph{$H$-free}.
+
+Let $N_H(A)$ be the number of copies of $H$ in $A$, that is, the number of such choices of rows
+and columns. Let $D_H(A)$ be the least number of entries of $A$ that must be changed so that the
+resulting matrix is $H$-free, and let $\dist_H(A) = D_H(A)/n^2$. For $\epsilon \le \dist_H(A)$
+we say that $A$ is \emph{$\epsilon$-far} from being $H$-free.
+
+\begin{definition}
+A $k \times l$ binary matrix $H$ has \emph{polynomial removal} if there are constants
+$c, C > 0$, depending only on $H$, such that for every $n$, every $n \times n$ binary matrix
+$A$ and every $\epsilon \in (0,1]$: if $\dist_H(A) \ge \epsilon$, then
+$N_H(A) \ge c\,\epsilon^C n^{k+l}$. Otherwise $H$ is a \emph{counterexample}: for every
+$c, C > 0$ there are $n$, an $n \times n$ binary matrix $A$ and $\epsilon \in (0,1]$ with
+$\dist_H(A) \ge \epsilon$ and $N_H(A) < c\,\epsilon^C n^{k+l}$.
+\end{definition}
+
+OpenAI's preprint ``Polynomial removal fails for ordered binary matrices'' (25 September 2026)
+shows that its $66 \times 66$ matrix $H$ is a counterexample.
+
+\section{The theorem}
+
+We show that a counterexample $H$ with no all-zero row and no all-zero column can be enlarged
+into many new counterexamples by attaching a second pattern $Z$ diagonally.
+
+\medskip
+\noindent\textbf{Setup.} Let $H$ be a $k \times l$ binary matrix and let $Z$ be a $p \times q$
+binary matrix with $p, q \ge 1$. Define
+\[
+H' = \begin{pmatrix} H & 0 \\ 0 & Z \end{pmatrix}
+\qquad \bigl((k+p) \times (l+q)\bigr),
+\]
+where each $0$ is a block of zeros. For an $n \times n$ binary matrix $A$, let $\widehat{Z}$ be
+the matrix obtained from $Z$ by replacing every entry with a constant block of that entry having
+$qn$ rows and $pn$ columns, and define
+\[
+A^+ = \begin{pmatrix} A & 0 \\ 0 & \widehat{Z} \end{pmatrix}.
+\]
+Then $\widehat{Z}$ is $pqn \times pqn$, so $A^+$ is a square matrix of size $m = (1+pq)n$. We
+call its first $n$ rows and columns \emph{old} and the others \emph{new}. The new rows come in
+$p$ groups of $qn$ identical rows (one group per row of $Z$), and the new columns come in $q$
+groups of $pn$ identical columns (one group per column of $Z$). Every old row comes before every
+new row, and every old column before every new column.
+
+\begin{theorem}[Direct sums]\label{thm:direct}
+Suppose $H$ has no all-zero row and no all-zero column, and suppose the rows of $Z$ are pairwise
+distinct or the columns of $Z$ are pairwise distinct. Then for every $n \times n$ binary matrix
+$A$,
+\[
+D_{H'}(A^+) = D_H(A)
+\qquad\text{and}\qquad
+N_{H'}(A^+) \le m^{p+q}\, N_H(A).
+\]
+\end{theorem}
+
+\begin{corollary}\label{cor:direct}
+If such an $H$ is a counterexample, then so is
+$H' = \begin{pmatrix} H & 0 \\ 0 & Z \end{pmatrix}$ for every such $Z$.
+\end{corollary}
+
+The condition on $Z$ holds automatically when $Z$ has a single row or a single column. Taking
+$Z = (1)$ adds one new row and one new column with a $1$ in the corner.
+
+\section{Proof of the theorem}
+
+Call the first $k$ rows and the first $l$ columns of $H'$ its \emph{$H$-rows} and
+\emph{$H$-columns}, and the others its \emph{$Z$-rows} and \emph{$Z$-columns}.
+
+\subsection*{Step 1: in every copy of $H'$, the $H$-part lies in the old part}
+
+Let $X$ be any $n \times n$ binary matrix and
+$M = \begin{pmatrix} X & 0 \\ 0 & \widehat{Z} \end{pmatrix}$. Take a copy of $H'$ in $M$ on rows
+$r_1 < \dots < r_{k+p}$ and columns $c_1 < \dots < c_{l+q}$. We claim that
+$r_1, \dots, r_k$ and $c_1, \dots, c_l$ are old, so that they form a copy of $H$ in $X$.
+
+Suppose $r_k$ is new. Then $r_{k+1}, \dots, r_{k+p}$ are new as well. Row $k$ of $H$ contains a
+$1$, say in column $j \le l$, so $M(r_k, c_j) = 1$. A new row of $M$ has $1$s only in new
+columns, so $c_j$ is new, and therefore $c_{l+1}, \dots, c_{l+q}$ are new. Now look at the $p+1$
+rows $r_k, r_{k+1}, \dots, r_{k+p}$ and the $q+1$ columns $c_j, c_{l+1}, \dots, c_{l+q}$. They
+all lie in $\widehat{Z}$, and reading off $H'$ they carry the pattern
+\[
+\begin{pmatrix} 1 & 0 \\ 0 & Z \end{pmatrix}.
+\]
+If the rows of $Z$ are pairwise distinct, the $p+1$ rows of this pattern are pairwise distinct:
+the first row differs from the others in its first entry. But the new rows form only $p$
+groups, so two of our $p+1$ rows lie in the same group, and two rows of $M$ in the same group
+are identical. This is a contradiction. If instead the columns of $Z$ are pairwise distinct, the
+same argument works with the $q+1$ columns and the $q$ groups of new columns. Hence $r_k$ is
+old, and so are $r_1, \dots, r_k$.
+
+Finally suppose $c_l$ is new. Column $l$ of $H$ contains a $1$, say in row $i \le k$, so
+$M(r_i, c_l) = 1$. But $r_i$ is old, and an old row has $1$s only in old columns, a
+contradiction. Hence $c_1, \dots, c_l$ are old.
+
+\subsection*{Step 2: the count, and $D_{H'}(A^+) \le D_H(A)$}
+
+By Step 1 with $X = A$, every copy of $H'$ in $A^+$ consists of a copy of $H$ in $A$ together
+with $p$ more rows and $q$ more columns, for which there are at most $m^{p+q}$ choices. Hence
+$N_{H'}(A^+) \le m^{p+q} N_H(A)$.
+
+Next, change $D_H(A)$ entries of $A$ to get an $H$-free matrix $A_0$, and leave the rest of
+$A^+$ unchanged. By Step 1 with $X = A_0$, the result has no copy of $H'$. Hence
+$D_{H'}(A^+) \le D_H(A)$.
+
+\subsection*{Step 3: $D_{H'}(A^+) \ge D_H(A)$}
+
+Let $B$ be any $m \times m$ binary matrix with no copy of $H'$. Let $E_0$, $E_1$, $E_2$ be the
+numbers of entries where $B$ differs from $A^+$ in the old-old block, in the two mixed blocks,
+and in the new-new block. We must show $E_0 + E_1 + E_2 \ge D$, where $D = D_H(A)$. Note
+$D \le n^2$, since the zero matrix has no copy of $H$ ($H$ contains a $1$).
+
+Pick one row uniformly at random from each of the $p$ groups of new rows, and one column
+uniformly at random from each of the $q$ groups of new columns, all independently. Call these
+the \emph{picked} rows $\rho_1 < \dots < \rho_p$ and columns $\gamma_1 < \dots < \gamma_q$. Call
+the pick \emph{good} if $B$ agrees with $A^+$ on all $pq$ entries $(\rho_i, \gamma_j)$, that is,
+if $B(\rho_i, \gamma_j) = Z(i,j)$ for all $i, j$. A fixed new-new entry is picked with
+probability $\frac{1}{qn \cdot pn}$, so by the union bound
+\[
+\Pr[\text{the pick is not good}] \le \frac{E_2}{pq\,n^2}.
+\]
+
+Call an old row $r$ \emph{bad} if $B(r, \gamma_j) = 1$ for some $j$, and an old column $c$
+\emph{bad} if $B(\rho_i, c) = 1$ for some $i$. Each such $1$ is one of the $E_1$ changed entries
+in the mixed blocks, since those blocks are $0$ in $A^+$. Each changed entry lies on a picked
+line with probability $\frac{1}{pn}$ or $\frac{1}{qn}$, hence at most $\frac{1}{n}$. So the
+expected number of bad rows and columns is at most $E_1/n$.
+
+Let $B^\circ$ be the old-old block of $B$ with every bad row and bad column replaced by zeros.
+This changes at most $n$ entries per bad line, so $B^\circ$ differs from $A$ in at most
+$E_0 + W$ entries, where $W$ is $n$ times the number of bad lines and has expectation at most
+$E_1$.
+
+\emph{Claim: if the pick is good, $B^\circ$ is $H$-free.} Suppose it has a copy of $H$ on rows
+$r_1 < \dots < r_k$ and columns $c_1 < \dots < c_l$. Every row and column of $H$ contains a $1$,
+so none of these rows or columns was replaced by zeros. Thus none of them is bad, and on these
+entries $B^\circ$ agrees with $B$. Not being bad means $B(r_a, \gamma_j) = 0$ and
+$B(\rho_i, c_b) = 0$ for all indices, and the pick being good means
+$B(\rho_i, \gamma_j) = Z(i,j)$. Since old rows and columns come before new ones, the rows
+$r_1, \dots, r_k, \rho_1, \dots, \rho_p$ and the columns
+$c_1, \dots, c_l, \gamma_1, \dots, \gamma_q$ form a copy of $H'$ in $B$, which is impossible.
+This is the only place where the assumption on $H$ is used beyond Step 1.
+
+By the claim, whenever the pick is good we have $D \le E_0 + W$. Taking expectations,
+\[
+D \left(1 - \frac{E_2}{pq\,n^2}\right) \le D \cdot \Pr[\text{good}] \le E_0 + \mathbb{E}[W]
+\le E_0 + E_1 .
+\]
+Rearranging and using $D \le n^2 \le pq\,n^2$,
+\[
+E_0 + E_1 + E_2 \;\ge\; D + E_2\left(1 - \frac{D}{pq\,n^2}\right) \;\ge\; D .
+\]
+Since $B$ was arbitrary, $D_{H'}(A^+) \ge D_H(A)$. Together with Step 2 this proves the
+theorem. \qed
+
+\begin{remark}
+The probability argument is an average over the $(qn)^p (pn)^q$ possible picks, all equally
+likely. In a formal proof it can be replaced by double counting: sum the inequality
+``$\mathbf{1}[\text{good}]\cdot D \le E_0 + W$'' over all picks.
+\end{remark}
+
+\section{Proof of the corollary}
+
+Fix $c', C' > 0$; we must find a host showing that $c'$ and $C'$ do not work for $H'$. Put
+$s = 1 + pq$, $C = C'$ and $c = c'\, s^{k+l-2C'}$. Since $H$ is a counterexample, there are $n$, an $n \times n$ matrix $A$
+and $\epsilon \in (0,1]$ with $\dist_H(A) \ge \epsilon$ and $N_H(A) < c\,\epsilon^C n^{k+l}$.
+Let $m = sn$ and $\epsilon' = \epsilon/s^2 \in (0,1]$. By the theorem,
+\[
+\dist_{H'}(A^+) = \frac{D_H(A)}{(sn)^2} \ge \frac{\epsilon}{s^2} = \epsilon'
+\]
+and, using $n = m/s$ and $\epsilon = s^2 \epsilon'$,
+\[
+N_{H'}(A^+) \le m^{p+q} N_H(A) < c\,\epsilon^{C} n^{k+l} m^{p+q}
+= c\, s^{2C}(\epsilon')^{C}\, s^{-(k+l)}\, m^{(k+p)+(l+q)}
+= c'\,(\epsilon')^{C'}\, m^{(k+p)+(l+q)} .
+\]
+So $c'$ and $C'$ fail for $H'$ on the host $A^+$. As $c'$ and $C'$ were arbitrary, $H'$ is a
+counterexample. \qed
+
+\medskip
+If ``counterexample'' is read in the stronger form, with hosts of arbitrarily large size $n$
+for a fixed $\epsilon$, the same proof applies: $m = sn$ grows with $n$, and $\epsilon/s^2$ is
+fixed.
+
+\section{Variant: appending zero rows or zero columns}
+
+Let $H'$ be $H$ with $q \ge 1$ all-zero columns appended on the right, and let
+$A^+ = \begin{pmatrix} A & 0 \\ 0 & 0 \end{pmatrix}$ have size $m = (1+q)n$. Then again
+$D_{H'}(A^+) = D_H(A)$ and $N_{H'}(A^+) \le m^{q} N_H(A)$, so the corollary holds for this
+$H'$ as well. The proof is a simpler version of the one above.
+\begin{itemize}
+\item \emph{Step 1.} Every row and every $H$-column of $H'$ contains a $1$, and the only $1$s
+of $M = \begin{pmatrix} X & 0 \\ 0 & 0 \end{pmatrix}$ are in the old-old block, so the $H$-part
+of any copy is old.
+\item \emph{Step 3.} Split the $qn$ new columns into $q$ groups of $n$, pick one column from
+each group, call an old row bad if $B$ has a $1$ where it meets a picked column, and replace
+bad rows by zeros. No event ``good'' is needed, and one gets $D \le E_0 + E_1$ directly.
+\end{itemize}
+The same holds for appending $p$ all-zero rows at the bottom, by exchanging rows and columns.
+
+\section{Remarks}
+
+\begin{itemize}
+\item \emph{Symmetries.} Swapping $0$s and $1$s, reversing the order of the rows, reversing the
+order of the columns, and transposing all preserve $N_H$ and $D_H$ when applied to both $H$ and
+$A$. So the theorem has a dual form (if $H$ has no all-ones row or column, fill the
+off-diagonal blocks with $1$s), and $Z$ can be attached at any of the four corners.
+
+\item \emph{New counterexamples.} OpenAI's $66 \times 66$ matrix $H$ has no all-zero row and no
+all-zero column (every row and column of its anchor contains a $1$, and so do its marks and its
+body). Hence $\begin{pmatrix} H & 0 \\ 0 & Z \end{pmatrix}$ is a counterexample for every $Z$
+with pairwise distinct rows or pairwise distinct columns, for example $Z = (1)$, $Z = (0)$ or
+$Z = (1\ 0)$, and $H$ with one appended zero column is a $66 \times 67$ counterexample. The same
+applies to the smaller counterexamples found since, all of which have no all-zero row or column;
+among them Shea's claimed $3 \times 3$ counterexample
+$K = \begin{pmatrix} 0&1&1\\1&0&1\\1&1&0 \end{pmatrix}$ (an unrefereed manuscript), which
+would give, for instance,
+\[
+\begin{pmatrix} 0&1&1&0\\1&0&1&0\\1&1&0&0\\0&0&0&1 \end{pmatrix}
+\qquad\text{and}\qquad
+\begin{pmatrix} 0&1&1&0\\1&0&1&0\\1&1&0&0 \end{pmatrix}.
+\]
+
+\item \emph{Sub-patterns do not help.} Every $Z$ with pairwise distinct rows, including patterns
+for which polynomial removal is known to hold such as the $2 \times 2$ identity, appears as a
+diagonal block of a counterexample.
+
+\item \emph{Credit.} For identity matrices this is Lupini's padding lemma (Zenodo record
+23618367, Lemma ``Identity padding''): $I_k = \operatorname{diag}(I_\ell, I_p)$, with each new
+diagonal $1$ blown up to an $n \times n$ block of ones, so $H = I_\ell$ and $Z = I_p$. Step 3
+follows his argument. The observation here is that his proof needs only that $H$ has no
+all-zero row or column, and that the attached block can be an arbitrary $Z$ with pairwise
+distinct rows or columns.
+
+\item \emph{Checks.} Both statements of the theorem and of the variant were verified by exact
+computation on small hosts: $120$ direct sums with $2 \times 2$ patterns $H$ and
+$Z \in \{(1), (0), (1\ 0), (0\ 1)^{T}, (1\ 1)\}$ ($41$ of them with $D_H(A) > 0$), and $80$
+zero-column variants, with no failure (\texttt{scratch/direct-sum/check.py}). These checks are a
+sanity test, not part of the proof. A Lean statement of the theorem and the corollary, with
+$H$ rectangular as here, is in \texttt{formal/direct-sum/DirectSum/Statements.lean}.
+\end{itemize}
+
+\end{document}

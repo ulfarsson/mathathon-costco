@@ -681,8 +681,10 @@ distinct rows or columns.
 computation on small hosts: $120$ direct sums with $2 \times 2$ patterns $H$ and
 $Z \in \{(1), (0), (1\ 0), (0\ 1)^{T}, (1\ 1)\}$ ($41$ of them with $D_H(A) > 0$), and $80$
 zero-column variants, with no failure (\texttt{scratch/direct-sum/check.py}). These checks are a
-sanity test, not part of the proof. A Lean statement of the theorem and the corollary, with
-$H$ rectangular as here, is in \texttt{formal/direct-sum/DirectSum/Statements.lean}.
+sanity test, not part of the proof. A Lean proof of the theorem and the corollary, with
+$H$ rectangular as here, is in \texttt{lean/OrderedRemoval/Statements.lean}. The folder
+\texttt{lean-unconditional/} combines it with OpenAI's Lean proof for their $66 \times 66$
+example (Apache-2.0, credited there).
 \end{itemize}
 
 \section*{An infinite family of examples}
