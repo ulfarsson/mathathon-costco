@@ -1,6 +1,12 @@
 \documentclass{article}
 \usepackage{graphicx, xcolor, amsmath, amssymb, amsthm} % Required for inserting images
 \usepackage{tikz}
+\usepackage{array} % >{...}p{...} columns in the Lean tables
+\usepackage{listings} % Lean code; the Unicode symbols are typeset by `literate'
+\lstset{basicstyle=\ttfamily\small, columns=fullflexible, keepspaces=true, breaklines=true,
+  literate={ℕ}{{$\mathbb{N}$}}1 {ℝ}{{$\mathbb{R}$}}1 {→}{{$\to$}}1 {∃}{{$\exists$}}1
+    {∀}{{$\forall$}}1 {∧}{{$\wedge$}}1 {¬}{{$\neg$}}1 {ε}{{$\varepsilon$}}1 {≤}{{$\le$}}1
+    {Σ}{{$\Sigma$}}1 {×}{{$\times$}}1}
 \usepackage{hyperref}
 \usepackage{xurl} % long URLs in the bibliography may break, after /, _ and - only
 \def\UrlBreaks{\do\/\do\_\do\-}
@@ -47,11 +53,11 @@ Ben-Eliezer, and we prove two theorems about which patterns satisfy the conjectu
 is a counterexample with no all-zero row or column, then so is
 $\left(\begin{smallmatrix} H & 0 \\ 0 & Z \end{smallmatrix}\right)$ for every $Z$ with pairwise
 distinct rows or pairwise distinct columns; applied to OpenAI's pattern, this gives infinite
-families of counterexamples. This theorem and its consequences are verified in Lean, and,
-combined with OpenAI's Lean proof for their pattern, so is the existence of infinitely many
-counterexamples. Second, repeating a row or a column next to itself does not change whether a
-pattern satisfies the conjecture; together with Lupini's theorem for the $2 \times 2$ identity
-matrix, this gives new infinite families of patterns that satisfy it.
+families of counterexamples. Second, repeating a row or a column next to itself does not change
+whether a pattern satisfies the conjecture; together with Lupini's theorem for the $2 \times 2$
+identity matrix, this gives new infinite families of patterns that satisfy it. Both theorems are
+verified in Lean; combined with OpenAI's Lean proof for their pattern, so is the existence of
+infinitely many counterexamples.
 \end{abstract}
 
 \paragraph{Team formation.} We formed the team through the Caltech Mathathon Discord server, since we found that we are all interested in combinatorics.
@@ -88,7 +94,7 @@ sources.
 the event: the exposition of OpenAI's counterexample (the intuition, Figure~\ref{fig:tree-matrix},
 and the account of the proof in terms of forced steps and chains); the direct-sum theorem, its
 variant and corollary, with their proofs, their Lean formalization and the computational checks;
-the duplication theorem and its proof; and the writing of this report and the slides. Before the
+the duplication theorem, its proof and its Lean formalization; and the writing of this report and the slides. Before the
 event we read the literature, with help from LLMs. While reading OpenAI's preprint we also wrote a
 program that builds OpenAI's $H$ and $A_h$, and checked parts of the construction with it for small
 $h$. That program and those checks are prior work; during the event we used the program to draw
@@ -1020,7 +1026,8 @@ and random $3 \times 3$ hosts, with no failure. $D$ was computed exactly by a br
 search, and $N$ by listing all copies. These checks are a sanity test, not part of the
 proof. The theorem, the variant, both corollaries, and the infinite family obtained by
 attaching $Z = (1)$ again and again are proved in Lean~4 with Mathlib, with no \texttt{sorry}
-and only the standard axioms. The duplication theorem below is not formalized.
+and only the standard axioms. The duplication theorem below is formalized too (see the section
+on the Lean formalization).
 \end{itemize}
 
 \section*{An infinite family of examples}
@@ -1176,6 +1183,161 @@ of $H$. So no constants $c',C'$ work for $H$. $\square$
  If Shea's claimed $3\times3$ counterexample~\cite{shea} holds, the same applies to it.
 \end{itemize}
 
+\section*{Lean formalization}
+
+Our theorems are formalized in Lean~4 with Mathlib, in our
+repository~\cite{costcoLean}: Theorem~\ref{thm:direct}, Corollary~\ref{cor:direct},
+the zero-column variant and the infinite family they generate, and the
+duplication theorem (Theorem~\ref{thm:dup}). The repository has two Lean packages,
+both pinned to Lean~4.35.0 and Mathlib~4.35.0:
+\begin{itemize}\itemsep1pt
+\item \texttt{lean/} proves our direct-sum results for an arbitrary pattern $H$. So it
+  shows that \emph{if} $H$ is a counterexample with no all-zero row or column,
+  \emph{then} it generates infinitely many counterexamples.
+\item \texttt{lean-unconditional/} adds OpenAI's own Lean proof that their
+  $66\times66$ pattern is a counterexample~\cite{openaiLean}. This turns the
+  infinite family into an unconditional theorem. This package also contains the
+  duplication theorem, in \texttt{OrderedRemoval/Dup/}.
+\end{itemize}
+The rest of this section explains how the formal statements match the
+mathematics, what is proved, how the two developments are joined, and why the
+result can be trusted.
+
+\subsection*{Definitions}
+
+Matrices are functions \lstinline[basicstyle=\ttfamily]|Fin a → Fin b → Bool|, where \texttt{true}
+stands for $1$. The basic notions of the introduction translate directly:
+
+\medskip
+{\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.41\textwidth}@{\quad}>{\raggedright\arraybackslash}p{0.52\textwidth}@{}}
+  \textbf{Paper} & \textbf{Lean}\\[2pt]
+  $k\times l$ pattern $H$, $n\times n$ host $A$ & \texttt{H : BMat k l}, \texttt{A : BMat n n}\\
+  ordered copy on rows $r_1<\dots<r_k$ and columns $c_1<\dots<c_l$
+    & \texttt{IsCopy H A r c}, with \texttt{r} and \texttt{c} strictly monotone\\
+  $N_H(A)$ & \texttt{copyCount H A}\\
+  $D_H(A)$ & \texttt{editDist H A}\\
+  Conjecture~\ref{conj:poly-removal} for $H$ & \texttt{PolyRemoval H}\\
+  no all-zero row or column & \texttt{NoZeroLine H}\\
+  $\left(\begin{smallmatrix} H & 0\\ 0 & Z\end{smallmatrix}\right)$, $\widehat Z$, $A^+$
+    & \texttt{blockDiag H Z}, \texttt{blowup Z n}, \texttt{blockDiag A (blowup Z n)}
+\end{tabular}}
+
+\medskip
+Here \texttt{copyCount} counts pairs of strictly increasing index maps, as in
+the introduction. \texttt{editDist} is the least Hamming distance from $A$ to
+an $H$-free matrix of the same size. The conjecture is stated word for word:
+\begin{lstlisting}
+def PolyRemoval {a b : ℕ} (H : BMat a b) : Prop :=
+  ∃ c C : ℝ, 0 < c ∧ 0 < C ∧
+    ∀ (n : ℕ) (A : BMat n n) (ε : ℝ), 0 < ε → ε ≤ 1 →
+      ε * (n : ℝ) ^ 2 ≤ (editDist H A : ℝ) →
+        c * ε ^ C * (n : ℝ) ^ (a + b) ≤ (copyCount H A : ℝ)
+\end{lstlisting}
+A counterexample is a pattern with \lstinline[basicstyle=\ttfamily]|¬ PolyRemoval H|.
+
+\subsection*{What is proved}
+
+\medskip
+{\small
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.41\textwidth}@{\quad}>{\raggedright\arraybackslash}p{0.52\textwidth}@{}}
+  \textbf{Result} & \textbf{Lean declaration}\\[2pt]
+  Theorem~\ref{thm:direct}: $D_{H'}(A^+)=D_H(A)$ & \texttt{editDist\_blockDiag}\\
+  Theorem~\ref{thm:direct}: $N_{H'}(A^+)\le m^{p+q}N_H(A)$ & \texttt{copyCount\_blockDiag}\\
+  Corollary~\ref{cor:direct} & \texttt{not\_polyRemoval\_blockDiag}\\
+  zero-column variant & \texttt{editDist\_appendZeroCols}, \texttt{copyCount\_appendZeroCols}, \texttt{not\_polyRemoval\_appendZeroCols}\\
+  infinite family from any counterexample & \texttt{infinite\_family\_of\_counterexample}\\
+Theorem~\ref{thm:dup}: $H$ satisfies the conjecture iff $\operatorname{red}(H)$ does & \texttt{polyRemoval\_iff\_red}\\
+Fact~1, for a repeated row or column & \texttt{fact1\_row}, \texttt{fact1\_col}\\
+Fact~2 (a) and (b) & \texttt{fact2a}, \texttt{fact2b}\\[4pt]
+  \multicolumn{2}{@{}l}{\emph{In \texttt{lean-unconditional/} only:}}\\[1pt]
+  OpenAI's $H$ has no all-zero row or column & \texttt{oai\_noZeroLine}\\
+  OpenAI's $H$ is a counterexample & \texttt{oai\_not\_polyRemoval}\\
+  infinitely many counterexamples & \texttt{infinitely\_many\_counterexamples}\\
+OpenAI's $H$ has no two equal neighboring rows or columns & \texttt{oai\_reduced}\\
+OpenAI's $H$ with rows or columns repeated is a counterexample & \texttt{oai\_infl\_not\_polyRemoval}
+\end{tabular}}
+
+\medskip
+The family is built by attaching $Z=(1)$ again and again. Its $t$th member
+\texttt{padding H t} is $H$ with $t$ diagonal blocks $(1)$ attached, a
+$(k+t)\times(l+t)$ pattern. Its size determines $t$, so the members are
+pairwise distinct. The final theorem of \texttt{lean-unconditional/} says that
+there is an injective sequence of counterexamples:
+\begin{lstlisting}
+theorem infinitely_many_counterexamples :
+    ∃ f : ℕ → Pattern, Function.Injective f ∧
+      ∀ t, NoZeroLine (f t).2 ∧ ¬ PolyRemoval (f t).2
+\end{lstlisting}
+Here \lstinline[basicstyle=\ttfamily]|Pattern := Σ d : ℕ × ℕ, BMat d.1 d.2| is the type of binary
+patterns of any size.
+
+\subsection*{The duplication theorem}
+
+\sloppy The files in \texttt{OrderedRemoval/Dup/} define \texttt{red H}, which deletes
+repeated rows and then repeated columns, and \texttt{Infl R H}, which says that
+$H$ arises from $R$ by repeating rows and columns one at a time. The main step,
+\texttt{polyRemoval\_iff\_of\_infl}, proves the theorem for every such $H$ when
+$R$ has no two equal neighboring rows or columns, along the proof above:
+Fact~1 is applied once for each repeated row or column, and the random choice
+of rows and columns in Fact~2(b) becomes a count over all $q^{2n}$ choices, so
+no probability is needed. OpenAI's $H$ has no two equal neighboring rows or
+columns, which the Lean kernel checks by computation, so every pattern obtained
+from it by repeating rows and columns is a counterexample
+(\texttt{oai\_infl\_not\_polyRemoval}).
+
+\subsection*{Joining our proof to OpenAI's}
+
+OpenAI's repository~\cite{openaiLean} proves their theorem in Lean, with its
+own definitions, as
+\[
+  \texttt{OAI.Problem348.no\_polynomial\_removal\_bound}.
+\] Patterns there are square. Copies are pairs of bundled increasing
+maps. The least number of changes is a minimum over all $n\times n$ matrices,
+with the sentinel value $n^2+1$ for matrices that are not $H$-free. We include
+their $61$ proof files without any change: they are byte-identical to commit
+\texttt{4eaee87} of \texttt{openai/math}, used under its Apache~2.0 license.
+They were written for Lean~4.34.1 and compile under 4.35.0 without edits.
+
+A short bridge file, \texttt{Unconditional.lean}, then proves that the two
+sets of definitions agree:
+\begin{itemize}\itemsep1pt
+\item The Hamming distances are equal by definition.
+\item The copy counts are equal, by an explicit bijection between bundled maps
+  and plain maps. So the two notions of $H$-free agree.
+\item The two notions of least number of changes are equal. The sentinel is
+  never the minimum: $H$ contains a $1$, so the zero matrix is $H$-free and
+  at most $n^2$ changes always suffice.
+\item OpenAI's bound $N_H(A)<c\,\epsilon^C n^{132}$ then contradicts any
+  constants $c,C$ in \texttt{PolyRemoval}, which gives
+  \texttt{oai\_not\_polyRemoval}.
+\end{itemize}
+Finally, \texttt{oai\_noZeroLine} checks all $66$ rows and $66$ columns of
+OpenAI's matrix by direct computation in the Lean kernel. These two facts are
+the only hypotheses of our infinite-family theorem.
+
+\subsection*{Why the result can be trusted}
+
+\begin{itemize}
+\item \emph{No gaps.} No compiled proof file contains \texttt{sorry},
+  \texttt{admit}, \texttt{native\_decide} or a new axiom. An audit module
+  computes the axioms behind every one of the $1803$ declarations in the
+  $63$ proof modules: our two and OpenAI's $61$. It makes the build fail if
+  any declaration uses an axiom other than Lean's standard three,
+  \texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}. The
+  build completes ($9122$ jobs) with no failures. A second audit module does
+the same for the $208$ declarations of the duplication theorem.
+\item \emph{Statements first.} We first wrote \texttt{Statements.lean} with
+  every theorem left as \texttt{sorry}, so that each statement could be checked
+  against the text before any proof existed. The agents then proved them in
+  stages. The
+  file \texttt{statement-changes.json} records every difference between the
+  original and the final statements.
+\item \emph{Reproducible.} Lean, Mathlib and all their dependencies are pinned
+  to exact commits. The script \texttt{scripts/verify.sh} downloads the pinned
+  toolchain, builds from scratch and runs the audit.
+\end{itemize}
+
 \section*{How each claim is supported}
 
 \begingroup\raggedright % the Lean names below cannot be hyphenated
@@ -1200,22 +1362,19 @@ infinitely many counterexamples (\texttt{infinite\_family\_of\_counterexample});
 formalization this holds for OpenAI's $H$ with no assumption left
 (\texttt{infinitely\_many\_counterexamples}). That OpenAI's $H$ has no all-zero row or column is
 argued in the Remarks, checked by computer, and verified in Lean (\texttt{oai\_noZeroLine}).
-\item \emph{Theorem~\ref{thm:dup}} (duplication): proved in this report; not formalized and not
-checked by computation.
+\item \emph{Theorem~\ref{thm:dup}} (duplication): proved in this report; verified in Lean
+(\texttt{polyRemoval\_iff\_red}); not checked by computation.
 \item \emph{Examples after Theorem~\ref{thm:dup}}: the first rests on Theorem~\ref{thm:dup} and
 on Lupini's theorem~\cite{Lupini}, which is cited from a preprint that has not been refereed. That
 OpenAI's $H$ has no two equal neighboring rows or columns was checked by computer (its $66$ rows
-are pairwise distinct, and so are its $66$ columns). The statement about Shea's claimed
+are pairwise distinct, and so are its $66$ columns) and is verified in Lean
+(\texttt{oai\_reduced}), and so is the consequence that $H$ with rows or columns repeated is a
+counterexample (\texttt{oai\_infl\_not\_polyRemoval}). The statement about Shea's claimed
 counterexample~\cite{shea} is conditional.
 \item \emph{Earlier work}: cited. That our families of counterexamples are the first infinite
 ones is true as far as we know.
 \end{itemize}
-The Lean files (Lean~4.35.0 and Mathlib~4.35.0) are in the folders \texttt{lean} and
-\texttt{lean-unconditional} of our repository. They define copies, $N_H$, $D_H$ and polynomial
-removal as in this report, for $k \times l$ patterns and square hosts. The build has no
-\texttt{sorry} and uses only the axioms \texttt{propext}, \texttt{Classical.choice} and
-\texttt{Quot.sound}. In \texttt{lean-unconditional}, OpenAI's Lean files are included unchanged,
-and a short bridge proves that their definitions agree with ours.\par
+The section on the Lean formalization gives the details.\par
 \endgroup
 
 \section*{Limitations and next steps}
@@ -1223,7 +1382,6 @@ and a short bridge proves that their definitions agree with ours.\par
 \begin{itemize}
 \item Our account of OpenAI's proof only sketches Step~1 of the copy bound (the rigidity of the
 address) and relies on OpenAI's preprint for it.
-\item The duplication theorem is not formalized; formalizing it is a natural next step.
 \item We do not know whether the assumptions of Theorem~\ref{thm:direct} can be dropped: that
 $H$ has no all-zero row or column, and that $Z$ has pairwise distinct rows or pairwise distinct
 columns.
@@ -1249,6 +1407,10 @@ and are not part of any proof.
   N.~Alon, E.~Fischer, and I.~Newman, \emph{Efficient testing of bipartite
   graphs for forbidden induced subgraphs}, SIAM J. Comput. \textbf{37} (2007),
   no.~3, 959--976, doi:10.1137/050627915.
+
+  \bibitem{costcoLean}
+  Our Lean formalization: the folders \texttt{lean} and \texttt{lean-unconditional} of the
+  repository given on the title page.
 
   \bibitem{erebos}
   Erebos Labs, \emph{ordered-matrix-removal-4x4}, Lean formalization of a
