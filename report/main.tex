@@ -28,16 +28,35 @@
 \,\\
 Papangkorn Apinyanon, MIT\\
 Saksham Sethi, Caltech, and\\
-Henning Arn\'or Skeggi \'Ulfarsson, Reykjavik University}
+Henning Arn\'or Skeggi \'Ulfarsson, Reykjavik University\\
+\,\\
+\small Repository: \url{https://github.com/ulfarsson/mathathon-costco}}
 \date{November 15, 2026}
 
 \begin{document}
 
 \maketitle
 
+\begin{abstract}
+The polynomial removal conjecture for ordered binary matrices stated that if at least $\epsilon n^2$
+entries of an $n \times n$ binary matrix must be changed to remove all ordered copies of a fixed
+$k \times k$ pattern $H$, then the matrix contains at least $c\epsilon^C n^{2k}$ copies of $H$, with
+$c, C > 0$ depending only on $H$. OpenAI's preprint disproved it with a $66 \times 66$ pattern. We
+explain how this counterexample works and why it escapes the earlier approach of Alon and
+Ben-Eliezer, and we prove two theorems about which patterns satisfy the conjecture. First, if $H$
+is a counterexample with no all-zero row or column, then so is
+$\left(\begin{smallmatrix} H & 0 \\ 0 & Z \end{smallmatrix}\right)$ for every $Z$ with pairwise
+distinct rows or pairwise distinct columns; applied to OpenAI's pattern, this gives infinite
+families of counterexamples. This theorem and its consequences are verified in Lean, and,
+combined with OpenAI's Lean proof for their pattern, so is the existence of infinitely many
+counterexamples. Second, repeating a row or a column next to itself does not change whether a
+pattern satisfies the conjecture; together with Lupini's theorem for the $2 \times 2$ identity
+matrix, this gives new infinite families of patterns that satisfy it.
+\end{abstract}
+
 \paragraph{Team formation.} We formed the team through the Caltech Mathathon Discord server, since we found that we are all interested in combinatorics.
 
-\paragraph{Problem selection.} Saksham suggested that we study OpenAI's preprint \emph{Polynomial removal fails for ordered binary matrices}~\cite{openai}, which disproves a conjecture, going back to a question from 2007, about the relationship between the number of changes needed to remove all copies of a smaller matrix from a larger one and the number of copies. We found this problem interesting because of the structure of the counterexample: a $66 \times 66$ matrix carefully constructed to give control over how it can appear in a family of larger matrices. We wanted to understand how the counterexample escapes earlier proof attempts, and to see whether we could extend it to a family of counterexamples.
+\paragraph{Problem selection.} One of us suggested that we study OpenAI's preprint \emph{Polynomial removal fails for ordered binary matrices}~\cite{openai}, which disproves a conjecture, going back to a question from 2007, about the relationship between the number of changes needed to remove all copies of a smaller matrix from a larger one and the number of copies. We found this problem interesting because of the structure of the counterexample: a $66 \times 66$ matrix carefully constructed to give control over how it can appear in a family of larger matrices. We wanted to understand how the counterexample escapes earlier proof attempts, and to see whether we could extend it to a family of counterexamples.
 
 \paragraph{Use of LLMs.} Most of the work was carried out with Opus 5.5.
 This involved literature search, summarizing and giving examples from existing work, and looking for extensions, both new counterexamples and
@@ -45,8 +64,35 @@ matrices that have polynomial removal. We briefly used Fable 5.2 to search for s
 
 In the writing of this report and the accompanying slides we used Opus 5.5 with some help from DeepSeek V4.1 Flash and Kimi 3.1 Pro in the Open Math environment.
 
-All work that was turned in was created at the event. Prior to the event we
-read the literature, with help from LLMs.
+We checked the output of these tools as follows.
+\begin{itemize}
+\item \emph{Lean.} The definitions and theorem statements were written from the text proof before
+any proof was attempted. The Lean kernel checks the proofs. The build contains no \texttt{sorry},
+and an audit module makes the build fail if any declaration depends on an axiom other than
+\texttt{propext}, \texttt{Classical.choice} and \texttt{Quot.sound}. The prover changed only three
+statements, each by adding a nondegeneracy assumption without which the statement is false (a
+nonempty pattern, or the existence of an $H$-free matrix of the given size), and a script compared
+every final statement with the original one. Afterwards Opus 5.5 checked that the proved
+statements say what this report says.
+\item \emph{Computation.} The direct-sum theorem and its variant were also tested by exact
+computation on small cases (see the Remarks after the variant).
+\item \emph{Proofs.} Opus 5.5 read the direct-sum proof before it was formalized, and the
+duplication proof. It checked our account of OpenAI's construction against OpenAI's preprint and
+against a program that builds the construction; this found an error in our count of the rows of
+the host, which we fixed.
+\item \emph{Literature.} The statements about earlier work were checked against the cited
+sources.
+\end{itemize}
+
+\paragraph{Work done during the event.} Everything in this report was done during the 40 hours of
+the event: the exposition of OpenAI's counterexample (the intuition, Figure~\ref{fig:tree-matrix},
+and the account of the proof in terms of forced steps and chains); the direct-sum theorem, its
+variant and corollary, with their proofs, their Lean formalization and the computational checks;
+the duplication theorem and its proof; and the writing of this report and the slides. Before the
+event we read the literature, with help from LLMs. While reading OpenAI's preprint we also wrote a
+program that builds OpenAI's $H$ and $A_h$, and checked parts of the construction with it for small
+$h$. That program and those checks are prior work; during the event we used the program to draw
+Figure~\ref{fig:tree-matrix} and for the computer checks on $H$ mentioned below.
 
 %Running list of models used
 %\begin{itemize}
@@ -133,11 +179,13 @@ Removal lemmas have been a central topic in extremal combinatorics, and they are
 
 The constructions of these counterexamples are often hard to read, due to a tangle of anchors, modes, and recursive subparts. Moreover, it is not well known why OpenAI's counterexample escapes the earlier approach of Alon and Ben-Eliezer~\cite{ABE}, who proved polynomial removal for matrices with many pairwise disjoint copies of the pattern. We believed that it was important to give an intuitive, human-readable exposition, which we do here.
 
-Secondly, counterexamples have so far been found one pattern at a time. We give the first infinite families of counterexamples, and new infinite families of patterns that satisfy the conjecture. (Some infinite families of the second kind were known before: by a theorem of Alon and Ben-Eliezer~\cite[Theorem~1.5]{ABE}, every pattern whose rows are all equal, or whose columns are all equal, satisfies it.) Specifically, our novel contributions are two structural theorems about which patterns satisfy the conjecture:
+Secondly, counterexamples have so far been found one pattern at a time. We give the first infinite families of counterexamples, as far as we know, and new infinite families of patterns that satisfy the conjecture. (Some infinite families of the second kind were known before: by a theorem of Alon and Ben-Eliezer~\cite[Theorem~1.5]{ABE}, every pattern whose rows are all equal, or whose columns are all equal, satisfies it.) Specifically, our novel contributions are two structural theorems about which patterns satisfy the conjecture:
 \begin{itemize}
     \item \textit{Direct sums}: Theorem~\ref{thm:direct} and Corollary~\ref{cor:direct} show that if $H$ is a counterexample with no all-zero row or column, then so is the direct sum $\begin{pmatrix} H & 0 \\ 0 & Z \end{pmatrix}$ for every $Z$ with pairwise distinct rows or pairwise distinct columns.
     \item \textit{Duplication}: Theorem~\ref{thm:dup} shows that repeating a row or a column next to itself does not change whether a pattern satisfies the conjecture.
 \end{itemize}
+The section ``How each claim is supported'' at the end says, for each claim, whether it is proved
+here, verified in Lean, checked by computation, or cited.
 
 
 \section*{The approach of Alon and Ben-Eliezer, and how $A_h$ escapes it}
@@ -165,7 +213,7 @@ Secondly, counterexamples have so far been found one pattern at a time. We give 
   which as $h$ grows is smaller than any fixed power of $\epsilon$ times $n^{132}$.
 
 % Figure: the binary tree of depth h = 1 and the rows and columns of OpenAI's host A_1 that its
-% nodes own (entries from code/construction.py).
+% nodes own (entries computed with our program that builds A_h; they follow the table of Figure 2).
 % Needs \usepackage{tikz}, \usetikzlibrary{arrows.meta, positioning, decorations.markings} and xcolor.
 \begin{figure}[t]
 \centering
@@ -259,18 +307,26 @@ Secondly, counterexamples have so far been found one pattern at a time. We give 
 \end{tikzpicture}
 
 \caption{The smallest host $A_1$ ($h = 1$, $m = 2$ leaves), restricted to the rows and columns
-that the nodes of the tree own; the other rows and columns of $A_1$ are not shown. Blue box: the
-root's block of $1$s. Orange box: the root's block of $0$s. Red squares: the leaf cells. Each
+that the nodes of the tree own; the other rows and columns of $A_1$ are not shown. (a) The tree:
+the root owns two rows labeled $R^-$, two rows labeled $R^+$, two columns labeled $C^+$ and two
+columns labeled $C^-$, and leaf $p$ owns one row $r_p$ and one column $c_p$. (b) The rows, from top
+to bottom, are $R^-, R^-, r_0, r_1, R^+, R^+$, the columns, from left to right, are
+$C^+, C^+, c_0, c_1, C^-, C^-$, and the six rows read $000000$, $000000$, $111100$, $110100$,
+$110000$, $110000$. Blue box: the root's block of $1$s ($R^+ \times C^+$). Orange box: the root's
+block of $0$s ($R^- \times C^-$). Red squares: the leaf cells $(r_0, c_0)$ and $(r_1, c_1)$. Each
 arrow is a forced step: if its start is $1$, its end must be $1$ too, or else the matrix contains
 a copy of $H$. Each chain runs from the block of $1$s, through a leaf cell, to the block of $0$s,
-so it must drop from $1$ to $0$ somewhere (red arrow), and the drop is a copy of $H$. In $A_1$ both
-chains drop right after their leaf cell (b). Changing a leaf cell does not remove the drop; it only
-moves it one step back (c).}
+so it must drop from $1$ to $0$ somewhere (red arrow), and the drop is a copy of $H$. The chain of
+leaf $0$ visits $(R^+, C^+)$, $(r_0, C^+)$, $(r_0, c_0)$, $(r_0, C^-)$, $(R^-, C^-)$ and reads
+$1, 1, 1, 0, 0$; the chain of leaf $1$ is the same with $r_1, c_1$. So in $A_1$ both chains drop
+right after their leaf cell. (c) Changing a leaf cell does not remove the drop; it only moves it
+one step back: with $(r_0, c_0)$ set to $0$, the chain of leaf $0$ reads $1, 1, 0, 0, 0$.}
 \label{fig:tree-matrix}
 \end{figure}
 
 
-  \paragraph{Intuition.}
+  \paragraph{Intuition (heuristic).}
+  This paragraph is a heuristic summary; the next section makes it precise.
   All copies of $H$ in $A_h$ pass through $m$ entries, yet removing them takes
   $m^2$ changes. The pattern $H$ consists of a $64 \times 64$ \emph{anchor} $S$,
   two \emph{mark} rows and columns that point back to the first two rows and
@@ -356,7 +412,30 @@ and so do the $m$ leaf labels. These are $2h+1$ sets, so
 $n=(6h\cdot64+1+2h+1)m=(386h+2)m$. The names come from a binary tree because we need labels with
 a parent map $\pi(p)=\lfloor p/2\rfloor$ and a nested layout order; no row
 \emph{is} a node, and nothing in $A_h$ \emph{is} a tree. Figure~\ref{fig:map}
-gives the lookup table.
+gives the lookup table, which in words is as follows.
+\begin{itemize}\itemsep1pt
+\item Between an anchor row $(t,u)$ and an anchor column $(t',v)$ the entry is $S(u,v)$ if $t=t'$,
+and $0$ otherwise.
+\item An anchor row $(t,u)$ has a $1$ against a non-anchor column exactly when $u=1$ and the column
+lies in the first column set $\mathsf C_1(t)$ that mode $t$ designates, or $u=2$ and it lies in the
+second set $\mathsf C_2(t)$. So the designated columns carry the marks $e_1$ and $e_2$ against the
+anchor of mode $t$. The same holds with rows and columns exchanged. The designated sets are listed
+in \eqref{eq:modes} below.
+\item A dummy row or column has a $1$ against every variable or dummy line.
+\item Between variable labels,
+\[
+\begin{array}{ll}
+  R_i^+(p)\times C_i^+(q)\colon & \mathbf 1[p\le q],\\
+  R_i^-(p)\times C_i^-(q),\ i<h\colon & \mathbf 1[p<q],\\
+  R_i^+(p)\times C_{i-1}^+(q)\colon & \mathbf 1[\pi(p)\le q],\\
+  R_i^-(p)\times C_{i-1}^-(q)\colon & \mathbf 1[\pi(p)<q],
+\end{array}
+\]
+where $R_i^\sigma(p)$ and $C_i^\sigma(q)$ denote the rows and columns with labels $(\sigma,i,p)$ and
+$(\sigma,i,q)$, and every other pair of variable labels gives $0$. A leaf label carries both signs,
+so the entry between the leaf labels $p$ and $q$ is $\mathbf 1[p\le q]$. In particular every leaf
+cell, where the row and the column of the same leaf meet, is $1$.
+\end{itemize}
 
 \begin{figure}[htbp]
 \centering
@@ -418,14 +497,17 @@ gives the lookup table.
 \end{tikzpicture}
 
 \caption{\label{fig:map}%
-Top: the entries of $A_h$, by the labels of their row and column; between two
-variable labels, every pair not listed is $0$. Against the anchor of mode $t$,
-the rows and columns in the first set that $t$ designates carry
-$e_1^{\mathsf T}$ or $e_1$, those in the second set carry $e_2^{\mathsf T}$ or
-$e_2$, and all others carry $0$ (see \eqref{eq:modes}). Bottom: the order of
-the variable rows and columns for $h=2$; $L_p$ is the leaf label $p$, and the
-width of each box is proportional to the number of rows or columns its labels
-take.}
+Top: the entries of $A_h$, by the labels of their row and column, as listed in
+words in the text; between two variable labels, every pair not listed is $0$.
+Against the anchor of mode $t$, the rows and columns in the first set that $t$
+designates carry $e_1^{\mathsf T}$ or $e_1$, those in the second set carry
+$e_2^{\mathsf T}$ or $e_2$, and all others carry $0$ (see \eqref{eq:modes}).
+Bottom: the order of the variable rows and columns for $h=2$. The rows are
+$R_0^-, R_1^-(0), L_0, L_1, R_1^+(0), R_1^-(1), L_2, L_3, R_1^+(1), R_0^+$ and
+the columns are $C_0^+, C_1^+(0), L_0, L_1, C_1^-(0), C_1^+(1), L_2, L_3,
+C_1^-(1), C_0^-$, where $L_p$ is the leaf label $p$; the width of each box is
+proportional to the number of rows or columns its labels take ($4$ for the
+root, $2$ at depth $1$, $1$ for a leaf).}
 \end{figure}
 
 Labels are laid out on each axis as follows. The anchor labels come first on
@@ -488,7 +570,12 @@ The proof has two halves, one for each half of the intuition above. Removing
 the copies costs $m^2$ changes because the chains are spread out, and the
 copies all pass through the $m$ leaf cells. We make the chains precise, prove
 the two halves, and put them together. Routine details are in~\cite{openai},
-whose numbering we use when we cite it.
+whose numbering we use when we cite it. Our account follows OpenAI's proofs
+\cite[Sections~3 and~4]{openai} closely. Their random choice of a path through
+the tree, together with anchor and dummy positions, is our random chain, and
+the values that avoiding $P$ propagates along that path are our forced steps.
+The terms \emph{forced step} and \emph{chain}, Figure~\ref{fig:tree-matrix},
+and the arrangement of the argument are ours.
 
 \begin{theorem}[{\cite[Theorem~1.1]{openai}}]\label{thm:openai}
 Let $h\ge1$, $m=2^h$, $n=(386h+2)m$ and $\epsilon_h=(386h+2)^{-2}$. Then
@@ -921,10 +1008,16 @@ would give, for instance,
 for which polynomial removal is known to hold such as the $2 \times 2$ identity~\cite{Lupini}, appears as a
 diagonal block of a counterexample.
 
-\item \emph{Checks.} Both statements of the theorem and of the variant were verified by exact
-computation on small hosts: $120$ direct sums with $2 \times 2$ patterns $H$ and
-$Z \in \{(1), (0), (1\ 0), (0\ 1)^{T}, (1\ 1)\}$ ($41$ of them with $D_H(A) > 0$), and $80$
-zero-column variants, with no failure. These checks are a sanity test, not part of the
+\item \sloppy\emph{Checks.} Both statements of the theorem and of the variant were tested by exact
+computation on small cases: $120$ random direct sums, with $H$ one of the four $2 \times 2$
+patterns $\left(\begin{smallmatrix}1&0\\0&1\end{smallmatrix}\right)$,
+$\left(\begin{smallmatrix}1&0\\1&1\end{smallmatrix}\right)$,
+$\left(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right)$,
+$\left(\begin{smallmatrix}1&1\\1&0\end{smallmatrix}\right)$,
+$Z \in \{(1), (0), (1\ 0), (0\ 1)^{T}, (1\ 1)\}$ and $A$ a random $3 \times 3$ matrix ($41$ of
+them with $D_H(A) > 0$), and $80$ random zero-column variants with the same $H$, $q \in \{1, 2\}$
+and random $3 \times 3$ hosts, with no failure. $D$ was computed exactly by a branch-and-bound
+search, and $N$ by listing all copies. These checks are a sanity test, not part of the
 proof. The theorem, the variant, both corollaries, and the infinite family obtained by
 attaching $Z = (1)$ again and again are proved in Lean~4 with Mathlib, with no \texttt{sorry}
 and only the standard axioms. The duplication theorem below is not formalized.
@@ -1009,7 +1102,9 @@ true. Otherwise $T\ge1$, and by the Cauchy--Schwarz inequality
  \ =\ T\sum_{F\in\Phi}x_F^2 .
 \]
 This is Jensen's inequality for the convex function $x\mapsto x^2$: the sum of
-squares is smallest when all the $x_F$ are equal to the average $N/T$.
+squares is smallest when all the $x_F$ are equal to the average $N/T$. Steps 3
+and 4 are the double count familiar from the proof of the
+K\H{o}v\'ari--S\'os--Tur\'an theorem~\cite{KST}.
 Combining with Step~3 and $T\le n^{k+l-1}$,
 \[
  N'\ \ge\ \frac{N^2}{2T}-\frac N2\ \ge\ \frac{N^2}{2n^{k+l-1}}-\frac N2 .
@@ -1081,6 +1176,66 @@ of $H$. So no constants $c',C'$ work for $H$. $\square$
  If Shea's claimed $3\times3$ counterexample~\cite{shea} holds, the same applies to it.
 \end{itemize}
 
+\section*{How each claim is supported}
+
+\begingroup\raggedright % the Lean names below cannot be hyphenated
+\begin{itemize}
+\item \emph{OpenAI's theorem} (Theorem~\ref{thm:openai}) and the facts about $A_h$ in the section
+on Alon and Ben-Eliezer's approach: cited from OpenAI's preprint~\cite{openai}. Our proof follows
+theirs and is complete except for Step~1 of the copy bound, which we sketch and cite. That $H$ is a
+counterexample is also verified in Lean by OpenAI's formalization~\cite{openaiLean}, which we
+compiled unchanged together with our Lean proofs.
+\item \emph{Theorem~\ref{thm:direct}} (direct sums): proved in this report; verified in Lean
+(\texttt{editDist\_blockDiag}, \texttt{copyCount\_blockDiag}); checked by computation on small
+cases (see the Remarks after the variant).
+\item \emph{Corollary~\ref{cor:direct}}: proved in this report; verified in Lean
+(\texttt{not\_polyRemoval\_blockDiag}).
+\item \emph{The variant} (appended zero columns): sketched in this report; verified in Lean for
+any number $q \ge 1$ of zero columns (\texttt{editDist\_appendZeroCols},
+\texttt{copyCount\_appendZeroCols}, \texttt{not\_polyRemoval\_appendZeroCols}); checked by
+computation. Appended zero rows follow by transposing; that case is not formalized.
+\item \emph{Infinite families of counterexamples}: from Corollary~\ref{cor:direct}. Verified in
+Lean: attaching $Z = (1)$ again and again to a counterexample with no all-zero row or column gives
+infinitely many counterexamples (\texttt{infinite\_family\_of\_counterexample}); with OpenAI's
+formalization this holds for OpenAI's $H$ with no assumption left
+(\texttt{infinitely\_many\_counterexamples}). That OpenAI's $H$ has no all-zero row or column is
+argued in the Remarks, checked by computer, and verified in Lean (\texttt{oai\_noZeroLine}).
+\item \emph{Theorem~\ref{thm:dup}} (duplication): proved in this report; not formalized and not
+checked by computation.
+\item \emph{Examples after Theorem~\ref{thm:dup}}: the first rests on Theorem~\ref{thm:dup} and
+on Lupini's theorem~\cite{Lupini}, which is cited from a preprint that has not been refereed. That
+OpenAI's $H$ has no two equal neighboring rows or columns was checked by computer (its $66$ rows
+are pairwise distinct, and so are its $66$ columns). The statement about Shea's claimed
+counterexample~\cite{shea} is conditional.
+\item \emph{Earlier work}: cited. That our families of counterexamples are the first infinite
+ones is true as far as we know.
+\end{itemize}
+The Lean files (Lean~4.35.0 and Mathlib~4.35.0) are in the folders \texttt{lean} and
+\texttt{lean-unconditional} of our repository. They define copies, $N_H$, $D_H$ and polynomial
+removal as in this report, for $k \times l$ patterns and square hosts. The build has no
+\texttt{sorry} and uses only the axioms \texttt{propext}, \texttt{Classical.choice} and
+\texttt{Quot.sound}. In \texttt{lean-unconditional}, OpenAI's Lean files are included unchanged,
+and a short bridge proves that their definitions agree with ours.\par
+\endgroup
+
+\section*{Limitations and next steps}
+
+\begin{itemize}
+\item Our account of OpenAI's proof only sketches Step~1 of the copy bound (the rigidity of the
+address) and relies on OpenAI's preprint for it.
+\item The duplication theorem is not formalized; formalizing it is a natural next step.
+\item We do not know whether the assumptions of Theorem~\ref{thm:direct} can be dropped: that
+$H$ has no all-zero row or column, and that $Z$ has pairwise distinct rows or pairwise distinct
+columns.
+\item The smallest counterexample is not known: the claimed $3 \times 3$ counterexample has not
+been refereed. As far as we know, the only $2 \times 2$ patterns whose status is open are those
+with exactly one $0$ or exactly one $1$, such as OpenAI's body $P$.
+\item The computational checks use hosts with $3$ rows and $3$ columns. They test the statements
+and are not part of any proof.
+\end{itemize}
+
+
+
  \begin{thebibliography}{99}
  \raggedright % so that the long URLs break without stretching the lines
  
@@ -1105,6 +1260,10 @@ of $H$. So no constants $c',C'$ work for $H$. $\square$
   Comput. Sci. Rev. \textbf{58} (2025), 100806,
   doi:10.1016/j.cosrev.2025.100806, arXiv:2508.16878.
 
+  \bibitem{KST}
+  T.~K\H{o}v\'ari, V.~T. S\'os, and P.~Tur\'an, \emph{On a problem of K. Zarankiewicz},
+  Colloq. Math. \textbf{3} (1954), 50--57.
+
   \bibitem{Lupini}
   M.~Lupini, \emph{Polynomial removal for the ordered two-by-two identity matrix}, preprint,
   Zenodo, 2 November 2026, doi:10.5281/zenodo.23618366.
@@ -1114,6 +1273,11 @@ of $H$. So no constants $c',C'$ work for $H$. $\square$
   OpenAI, \emph{Polynomial removal fails for ordered binary matrices},
   preprint, 25 September 2026,
   \url{https://github.com/openai/math/tree/main/preprints/Polynomial-removal-fails-for-ordered-binary-matrices-September-25-2026}.
+
+  \bibitem{openaiLean}
+  OpenAI, Lean formalization of the $66\times66$ counterexample, directory
+  \texttt{lean/OAI/Combinatorics/MatrixRemoval} of \url{https://github.com/openai/math},
+  commit 4eaee87, 29 October 2026, Apache License~2.0.
 
   \bibitem{proveit}
   ProveIt project, \emph{A $5\times5$ obstruction to polynomial ordered matrix
