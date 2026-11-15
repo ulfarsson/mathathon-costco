@@ -231,7 +231,7 @@
 
 \usepackage{amsmath, amssymb}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, decorations.markings, positioning, calc}
+\usetikzlibrary{arrows.meta, decorations.markings, decorations.pathreplacing, positioning, calc}
 \DeclareMathOperator{\dist}{dist}
 \newtheorem{conjecture}[theorem]{Conjecture}
 \tikzset{
@@ -276,6 +276,8 @@
   \draw[ultra thick, red!80!black] (2.06, -2.06) rectangle (2.94, -2.94);
   \draw[ultra thick, red!80!black] (3.06, -3.06) rectangle (3.94, -3.94);
 }
+\tikzset{leanbox/.style={draw=ink!60, rounded corners=2pt, fill=white, align=center, inner sep=2.5pt, text width=#1, font=\scriptsize},
+  leanbox/.default=2.3cm}
 \newcommand{\smallmat}[1]{\left(\begin{smallmatrix}#1\end{smallmatrix}\right)}
 
 % title, subtitle, authors with affiliations and date as in the team's report
@@ -2510,173 +2512,498 @@ where $\widehat Z$ replaces each entry of $Z$ by a constant $qn\times pn$ block;
 \end{frame}
 
 \begin{frame}{Direct sums: an example}
-\framesubtitle{Copies and distance carry over}
-\begin{columns}[c]
-\begin{column}{0.5\textwidth}
+\framesubtitle{The smallest case, $Z=(1)$: one new row and one new column}
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
 \small
-$H=\smallmat{1&0\\1&1}$, $Z=(1)$, so $H'=\smallmat{1&0&0\\1&1&0\\0&0&1}$, and $A$ is the $3\times3$ example; $\widehat Z$ is a $3\times3$ block of $1$s.
-
-\medskip
-\begin{itemize}
-\item $N_H(A)=3$, $D_H(A)=1$.
-\item<2-> A copy of $H'$: a copy of $H$ in $A$, plus a new row and a new column. $N_{H'}(A^+)=27$.
-\item<3-> Changing $A(1,1)$ removes every copy of $H'$ too: $D_{H'}(A^+)=1=D_H(A)$.
-\end{itemize}
-\medskip
-\uncover<3->{\footnotesize (This $H$ only illustrates the construction; whether it has polynomial removal is open.)}
+Take $H=\smallmat{1&0\\1&1}$ ($k=l=2$), $Z=(1)$ ($p=q=1$), and as host $A$ the $3\times3$ example ($n=3$). Then
+\[ H'=\begin{pmatrix} H&0\\0&Z\end{pmatrix}=\left(\begin{array}{cc|c}1 & 0 & 0\\ 1 & 1 & 0\\ \hline 0 & 0 & 1\end{array}\right). \]
+\begin{overprint}
+\onslide<1>
+\raggedright
+\textbf{The host.} $\widehat Z$ replaces the entry $1$ of $Z$ by a constant block with $qn=3$ rows and $pn=3$ columns. So $A^+$ has size $m=(1+pq)n=6$: rows and columns $1$--$3$ are old, $4$--$6$ new. The new rows form one group of identical rows, and the new columns one group of identical columns.
+\onslide<2>
+\raggedright
+\textbf{A copy of $H'$.} Its two H-rows and two H-columns are \textcolor{accent!90!black}{rows $1,2$ and columns $1,3$}, a copy of $H$ in $A$. Its Z-row and Z-column are the new \textcolor{teal!80!black}{row $4$ and column $4$}. Between the two parts $A^+$ has $0$s, as $H'$ needs.
+\onslide<3>
+\raggedright
+\textbf{All copies.} The H-part of every copy lies in the old part (next slide). So a copy of $H'$ is one of the $N_H(A)=3$ copies of $H$ in $A$, plus any of the $3$ new rows and any of the $3$ new columns: $N_{H'}(A^+)=3\cdot3\cdot3=27$, within the theorem's bound $m^{p+q}N_H(A)=6^{2}\cdot3=108$.
+\onslide<4>
+\raggedright
+\textbf{Distance.} Changing $A(1,1)$ removes every copy of $H$ from $A$, so $D_H(A)=1$. The same change in $A^+$ removes every copy of $H'$, so
+\[ D_{H'}(A^+)=1=D_H(A). \]
+{\footnotesize (This $H$ only illustrates the theorem; whether it has polynomial removal is open.)}
+\end{overprint}
 \end{column}
-\begin{column}{0.45\textwidth}
+\begin{column}{0.42\textwidth}
 \centering
 \begin{tikzpicture}[]
-\fill[accent!8] (0,0) rectangle (0.55,-0.55);
-\fill[accent!8] (0.55,0) rectangle (1.1,-0.55);
-\fill[accent!8] (1.1,0) rectangle (1.65,-0.55);
-\fill[accent!8] (0,-0.55) rectangle (0.55,-1.1);
-\fill[accent!8] (0.55,-0.55) rectangle (1.1,-1.1);
-\fill[accent!8] (1.1,-0.55) rectangle (1.65,-1.1);
-\fill[accent!8] (0,-1.1) rectangle (0.55,-1.65);
-\fill[accent!8] (0.55,-1.1) rectangle (1.1,-1.65);
-\fill[accent!8] (1.1,-1.1) rectangle (1.65,-1.65);
-\fill[gray!18] (1.65,-1.65) rectangle (2.2,-2.2);
-\fill[gray!18] (2.2,-1.65) rectangle (2.75,-2.2);
-\fill[gray!18] (2.75,-1.65) rectangle (3.3,-2.2);
-\fill[gray!18] (1.65,-2.2) rectangle (2.2,-2.75);
-\fill[gray!18] (2.2,-2.2) rectangle (2.75,-2.75);
-\fill[gray!18] (2.75,-2.2) rectangle (3.3,-2.75);
-\fill[gray!18] (1.65,-2.75) rectangle (2.2,-3.3);
-\fill[gray!18] (2.2,-2.75) rectangle (2.75,-3.3);
-\fill[gray!18] (2.75,-2.75) rectangle (3.3,-3.3);
+\useasboundingbox (-1.3,1.05) rectangle (3.1,-3.1);
+\fill[accent!7] (0,0) rectangle (0.5,-0.5);
+\fill[accent!7] (0.5,0) rectangle (1,-0.5);
+\fill[accent!7] (1,0) rectangle (1.5,-0.5);
+\fill[accent!7] (0,-0.5) rectangle (0.5,-1);
+\fill[accent!7] (0.5,-0.5) rectangle (1,-1);
+\fill[accent!7] (1,-0.5) rectangle (1.5,-1);
+\fill[accent!7] (0,-1) rectangle (0.5,-1.5);
+\fill[accent!7] (0.5,-1) rectangle (1,-1.5);
+\fill[accent!7] (1,-1) rectangle (1.5,-1.5);
+\fill[gray!16] (1.5,-1.5) rectangle (2,-2);
+\fill[gray!16] (2,-1.5) rectangle (2.5,-2);
+\fill[gray!16] (2.5,-1.5) rectangle (3,-2);
+\fill[gray!16] (1.5,-2) rectangle (2,-2.5);
+\fill[gray!16] (2,-2) rectangle (2.5,-2.5);
+\fill[gray!16] (2.5,-2) rectangle (3,-2.5);
+\fill[gray!16] (1.5,-2.5) rectangle (2,-3);
+\fill[gray!16] (2,-2.5) rectangle (2.5,-3);
+\fill[gray!16] (2.5,-2.5) rectangle (3,-3);
 \only<2>{%
-  \fill[accent!35] (0,0) rectangle (0.55,-0.55);
-  \fill[accent!35] (1.1,0) rectangle (1.65,-0.55);
-  \fill[accent!35] (1.65,0) rectangle (2.2,-0.55);
-  \fill[accent!35] (0,-0.55) rectangle (0.55,-1.1);
-  \fill[accent!35] (1.1,-0.55) rectangle (1.65,-1.1);
-  \fill[accent!35] (1.65,-0.55) rectangle (2.2,-1.1);
-  \fill[accent!35] (0,-1.65) rectangle (0.55,-2.2);
-  \fill[accent!35] (1.1,-1.65) rectangle (1.65,-2.2);
-  \fill[accent!35] (1.65,-1.65) rectangle (2.2,-2.2);
+  \fill[accent!38] (0,0) rectangle (0.5,-0.5);
+  \fill[accent!38] (1,0) rectangle (1.5,-0.5);
+  \fill[accent!38] (0,-0.5) rectangle (0.5,-1);
+  \fill[accent!38] (1,-0.5) rectangle (1.5,-1);
+  \fill[teal!35] (1.5,-1.5) rectangle (2,-2);
+  \fill[accent!13] (1.5,0) rectangle (2,-0.5);
+  \fill[accent!13] (1.5,-0.5) rectangle (2,-1);
+  \fill[accent!13] (0,-1.5) rectangle (0.5,-2);
+  \fill[accent!13] (1,-1.5) rectangle (1.5,-2);
 }
 \only<3>{%
-  \fill[green!30] (0,0) rectangle (0.55,-0.55);
+  \fill[teal!28] (1.5,-1.5) rectangle (2,-2);
+  \fill[teal!28] (2,-1.5) rectangle (2.5,-2);
+  \fill[teal!28] (2.5,-1.5) rectangle (3,-2);
+  \fill[teal!28] (1.5,-2) rectangle (2,-2.5);
+  \fill[teal!28] (2,-2) rectangle (2.5,-2.5);
+  \fill[teal!28] (2.5,-2) rectangle (3,-2.5);
+  \fill[teal!28] (1.5,-2.5) rectangle (2,-3);
+  \fill[teal!28] (2,-2.5) rectangle (2.5,-3);
+  \fill[teal!28] (2.5,-2.5) rectangle (3,-3);
 }
-\draw[gray!45] (0,0) -- (3.3,0);
-\draw[gray!45] (0,-0.55) -- (3.3,-0.55);
-\draw[gray!45] (0,-1.1) -- (3.3,-1.1);
-\draw[gray!45] (0,-1.65) -- (3.3,-1.65);
-\draw[gray!45] (0,-2.2) -- (3.3,-2.2);
-\draw[gray!45] (0,-2.75) -- (3.3,-2.75);
-\draw[gray!45] (0,-3.3) -- (3.3,-3.3);
-\draw[gray!45] (0,0) -- (0,-3.3);
-\draw[gray!45] (0.55,0) -- (0.55,-3.3);
-\draw[gray!45] (1.1,0) -- (1.1,-3.3);
-\draw[gray!45] (1.65,0) -- (1.65,-3.3);
-\draw[gray!45] (2.2,0) -- (2.2,-3.3);
-\draw[gray!45] (2.75,0) -- (2.75,-3.3);
-\draw[gray!45] (3.3,0) -- (3.3,-3.3);
-\only<1-2>{%
-  \node[font=\footnotesize] at (0.275,-0.275) {$1$};
-  \node[font=\footnotesize] at (0.825,-0.275) {$0$};
-  \node[font=\footnotesize] at (1.375,-0.275) {$0$};
-  \node[font=\footnotesize] at (1.925,-0.275) {$0$};
-  \node[font=\footnotesize] at (2.475,-0.275) {$0$};
-  \node[font=\footnotesize] at (3.025,-0.275) {$0$};
-  \node[font=\footnotesize] at (0.275,-0.825) {$1$};
-  \node[font=\footnotesize] at (0.825,-0.825) {$1$};
-  \node[font=\footnotesize] at (1.375,-0.825) {$1$};
-  \node[font=\footnotesize] at (1.925,-0.825) {$0$};
-  \node[font=\footnotesize] at (2.475,-0.825) {$0$};
-  \node[font=\footnotesize] at (3.025,-0.825) {$0$};
-  \node[font=\footnotesize] at (0.275,-1.375) {$1$};
-  \node[font=\footnotesize] at (0.825,-1.375) {$0$};
-  \node[font=\footnotesize] at (1.375,-1.375) {$1$};
-  \node[font=\footnotesize] at (1.925,-1.375) {$0$};
-  \node[font=\footnotesize] at (2.475,-1.375) {$0$};
-  \node[font=\footnotesize] at (3.025,-1.375) {$0$};
-  \node[font=\footnotesize] at (0.275,-1.925) {$0$};
-  \node[font=\footnotesize] at (0.825,-1.925) {$0$};
-  \node[font=\footnotesize] at (1.375,-1.925) {$0$};
-  \node[font=\footnotesize] at (1.925,-1.925) {$1$};
-  \node[font=\footnotesize] at (2.475,-1.925) {$1$};
-  \node[font=\footnotesize] at (3.025,-1.925) {$1$};
-  \node[font=\footnotesize] at (0.275,-2.475) {$0$};
-  \node[font=\footnotesize] at (0.825,-2.475) {$0$};
-  \node[font=\footnotesize] at (1.375,-2.475) {$0$};
-  \node[font=\footnotesize] at (1.925,-2.475) {$1$};
-  \node[font=\footnotesize] at (2.475,-2.475) {$1$};
-  \node[font=\footnotesize] at (3.025,-2.475) {$1$};
-  \node[font=\footnotesize] at (0.275,-3.025) {$0$};
-  \node[font=\footnotesize] at (0.825,-3.025) {$0$};
-  \node[font=\footnotesize] at (1.375,-3.025) {$0$};
-  \node[font=\footnotesize] at (1.925,-3.025) {$1$};
-  \node[font=\footnotesize] at (2.475,-3.025) {$1$};
-  \node[font=\footnotesize] at (3.025,-3.025) {$1$};
+\only<4>{%
+  \fill[green!30] (0,0) rectangle (0.5,-0.5);
 }
+\draw[gray!45] (0,0) -- (3,0);
+\draw[gray!45] (0,-0.5) -- (3,-0.5);
+\draw[gray!45] (0,-1) -- (3,-1);
+\draw[gray!45] (0,-1.5) -- (3,-1.5);
+\draw[gray!45] (0,-2) -- (3,-2);
+\draw[gray!45] (0,-2.5) -- (3,-2.5);
+\draw[gray!45] (0,-3) -- (3,-3);
+\draw[gray!45] (0,0) -- (0,-3);
+\draw[gray!45] (0.5,0) -- (0.5,-3);
+\draw[gray!45] (1,0) -- (1,-3);
+\draw[gray!45] (1.5,0) -- (1.5,-3);
+\draw[gray!45] (2,0) -- (2,-3);
+\draw[gray!45] (2.5,0) -- (2.5,-3);
+\draw[gray!45] (3,0) -- (3,-3);
+\only<1-3>{%
+  \node[font=\footnotesize] at (0.25,-0.25) {$1$};
+  \node[font=\footnotesize] at (0.75,-0.25) {$0$};
+  \node[font=\footnotesize] at (1.25,-0.25) {$0$};
+  \node[font=\footnotesize] at (1.75,-0.25) {$0$};
+  \node[font=\footnotesize] at (2.25,-0.25) {$0$};
+  \node[font=\footnotesize] at (2.75,-0.25) {$0$};
+  \node[font=\footnotesize] at (0.25,-0.75) {$1$};
+  \node[font=\footnotesize] at (0.75,-0.75) {$1$};
+  \node[font=\footnotesize] at (1.25,-0.75) {$1$};
+  \node[font=\footnotesize] at (1.75,-0.75) {$0$};
+  \node[font=\footnotesize] at (2.25,-0.75) {$0$};
+  \node[font=\footnotesize] at (2.75,-0.75) {$0$};
+  \node[font=\footnotesize] at (0.25,-1.25) {$1$};
+  \node[font=\footnotesize] at (0.75,-1.25) {$0$};
+  \node[font=\footnotesize] at (1.25,-1.25) {$1$};
+  \node[font=\footnotesize] at (1.75,-1.25) {$0$};
+  \node[font=\footnotesize] at (2.25,-1.25) {$0$};
+  \node[font=\footnotesize] at (2.75,-1.25) {$0$};
+  \node[font=\footnotesize] at (0.25,-1.75) {$0$};
+  \node[font=\footnotesize] at (0.75,-1.75) {$0$};
+  \node[font=\footnotesize] at (1.25,-1.75) {$0$};
+  \node[font=\footnotesize] at (1.75,-1.75) {$1$};
+  \node[font=\footnotesize] at (2.25,-1.75) {$1$};
+  \node[font=\footnotesize] at (2.75,-1.75) {$1$};
+  \node[font=\footnotesize] at (0.25,-2.25) {$0$};
+  \node[font=\footnotesize] at (0.75,-2.25) {$0$};
+  \node[font=\footnotesize] at (1.25,-2.25) {$0$};
+  \node[font=\footnotesize] at (1.75,-2.25) {$1$};
+  \node[font=\footnotesize] at (2.25,-2.25) {$1$};
+  \node[font=\footnotesize] at (2.75,-2.25) {$1$};
+  \node[font=\footnotesize] at (0.25,-2.75) {$0$};
+  \node[font=\footnotesize] at (0.75,-2.75) {$0$};
+  \node[font=\footnotesize] at (1.25,-2.75) {$0$};
+  \node[font=\footnotesize] at (1.75,-2.75) {$1$};
+  \node[font=\footnotesize] at (2.25,-2.75) {$1$};
+  \node[font=\footnotesize] at (2.75,-2.75) {$1$};
+}
+\only<4>{%
+  \node[font=\footnotesize] at (0.25,-0.25) {$0$};
+  \node[font=\footnotesize] at (0.75,-0.25) {$0$};
+  \node[font=\footnotesize] at (1.25,-0.25) {$0$};
+  \node[font=\footnotesize] at (1.75,-0.25) {$0$};
+  \node[font=\footnotesize] at (2.25,-0.25) {$0$};
+  \node[font=\footnotesize] at (2.75,-0.25) {$0$};
+  \node[font=\footnotesize] at (0.25,-0.75) {$1$};
+  \node[font=\footnotesize] at (0.75,-0.75) {$1$};
+  \node[font=\footnotesize] at (1.25,-0.75) {$1$};
+  \node[font=\footnotesize] at (1.75,-0.75) {$0$};
+  \node[font=\footnotesize] at (2.25,-0.75) {$0$};
+  \node[font=\footnotesize] at (2.75,-0.75) {$0$};
+  \node[font=\footnotesize] at (0.25,-1.25) {$1$};
+  \node[font=\footnotesize] at (0.75,-1.25) {$0$};
+  \node[font=\footnotesize] at (1.25,-1.25) {$1$};
+  \node[font=\footnotesize] at (1.75,-1.25) {$0$};
+  \node[font=\footnotesize] at (2.25,-1.25) {$0$};
+  \node[font=\footnotesize] at (2.75,-1.25) {$0$};
+  \node[font=\footnotesize] at (0.25,-1.75) {$0$};
+  \node[font=\footnotesize] at (0.75,-1.75) {$0$};
+  \node[font=\footnotesize] at (1.25,-1.75) {$0$};
+  \node[font=\footnotesize] at (1.75,-1.75) {$1$};
+  \node[font=\footnotesize] at (2.25,-1.75) {$1$};
+  \node[font=\footnotesize] at (2.75,-1.75) {$1$};
+  \node[font=\footnotesize] at (0.25,-2.25) {$0$};
+  \node[font=\footnotesize] at (0.75,-2.25) {$0$};
+  \node[font=\footnotesize] at (1.25,-2.25) {$0$};
+  \node[font=\footnotesize] at (1.75,-2.25) {$1$};
+  \node[font=\footnotesize] at (2.25,-2.25) {$1$};
+  \node[font=\footnotesize] at (2.75,-2.25) {$1$};
+  \node[font=\footnotesize] at (0.25,-2.75) {$0$};
+  \node[font=\footnotesize] at (0.75,-2.75) {$0$};
+  \node[font=\footnotesize] at (1.25,-2.75) {$0$};
+  \node[font=\footnotesize] at (1.75,-2.75) {$1$};
+  \node[font=\footnotesize] at (2.25,-2.75) {$1$};
+  \node[font=\footnotesize] at (2.75,-2.75) {$1$};
+}
+\draw[accent, thick] (0.03,-0.03) rectangle (1.47,-1.47);
+\draw[black!60, thick] (1.53,-1.53) rectangle (2.97,-2.97);
+\node[font=\scriptsize, anchor=east] at (-0.08,-0.25) {$1$};
+\node[font=\scriptsize, anchor=east] at (-0.08,-0.75) {$2$};
+\node[font=\scriptsize, anchor=east] at (-0.08,-1.25) {$3$};
+\node[font=\scriptsize, anchor=east] at (-0.08,-1.75) {$4$};
+\node[font=\scriptsize, anchor=east] at (-0.08,-2.25) {$5$};
+\node[font=\scriptsize, anchor=east] at (-0.08,-2.75) {$6$};
+\node[font=\scriptsize, anchor=south] at (0.25,0.05) {$1$};
+\node[font=\scriptsize, anchor=south] at (0.75,0.05) {$2$};
+\node[font=\scriptsize, anchor=south] at (1.25,0.05) {$3$};
+\node[font=\scriptsize, anchor=south] at (1.75,0.05) {$4$};
+\node[font=\scriptsize, anchor=south] at (2.25,0.05) {$5$};
+\node[font=\scriptsize, anchor=south] at (2.75,0.05) {$6$};
 \only<3>{%
-  \node[font=\footnotesize] at (0.275,-0.275) {$0$};
-  \node[font=\footnotesize] at (0.825,-0.275) {$0$};
-  \node[font=\footnotesize] at (1.375,-0.275) {$0$};
-  \node[font=\footnotesize] at (1.925,-0.275) {$0$};
-  \node[font=\footnotesize] at (2.475,-0.275) {$0$};
-  \node[font=\footnotesize] at (3.025,-0.275) {$0$};
-  \node[font=\footnotesize] at (0.275,-0.825) {$1$};
-  \node[font=\footnotesize] at (0.825,-0.825) {$1$};
-  \node[font=\footnotesize] at (1.375,-0.825) {$1$};
-  \node[font=\footnotesize] at (1.925,-0.825) {$0$};
-  \node[font=\footnotesize] at (2.475,-0.825) {$0$};
-  \node[font=\footnotesize] at (3.025,-0.825) {$0$};
-  \node[font=\footnotesize] at (0.275,-1.375) {$1$};
-  \node[font=\footnotesize] at (0.825,-1.375) {$0$};
-  \node[font=\footnotesize] at (1.375,-1.375) {$1$};
-  \node[font=\footnotesize] at (1.925,-1.375) {$0$};
-  \node[font=\footnotesize] at (2.475,-1.375) {$0$};
-  \node[font=\footnotesize] at (3.025,-1.375) {$0$};
-  \node[font=\footnotesize] at (0.275,-1.925) {$0$};
-  \node[font=\footnotesize] at (0.825,-1.925) {$0$};
-  \node[font=\footnotesize] at (1.375,-1.925) {$0$};
-  \node[font=\footnotesize] at (1.925,-1.925) {$1$};
-  \node[font=\footnotesize] at (2.475,-1.925) {$1$};
-  \node[font=\footnotesize] at (3.025,-1.925) {$1$};
-  \node[font=\footnotesize] at (0.275,-2.475) {$0$};
-  \node[font=\footnotesize] at (0.825,-2.475) {$0$};
-  \node[font=\footnotesize] at (1.375,-2.475) {$0$};
-  \node[font=\footnotesize] at (1.925,-2.475) {$1$};
-  \node[font=\footnotesize] at (2.475,-2.475) {$1$};
-  \node[font=\footnotesize] at (3.025,-2.475) {$1$};
-  \node[font=\footnotesize] at (0.275,-3.025) {$0$};
-  \node[font=\footnotesize] at (0.825,-3.025) {$0$};
-  \node[font=\footnotesize] at (1.375,-3.025) {$0$};
-  \node[font=\footnotesize] at (1.925,-3.025) {$1$};
-  \node[font=\footnotesize] at (2.475,-3.025) {$1$};
-  \node[font=\footnotesize] at (3.025,-3.025) {$1$};
+  \draw[accent, thick] (0.04,-0.04) rectangle (0.46,-0.46);
+  \draw[accent, thick] (0.54,-0.04) rectangle (0.96,-0.46);
+  \draw[accent, thick] (0.04,-0.54) rectangle (0.46,-0.96);
+  \draw[accent, thick] (0.54,-0.54) rectangle (0.96,-0.96);
+  \draw[teal!70!black, thick] (0.09,-0.09) rectangle (0.41,-0.41);
+  \draw[teal!70!black, thick] (1.09,-0.09) rectangle (1.41,-0.41);
+  \draw[teal!70!black, thick] (0.09,-0.59) rectangle (0.41,-0.91);
+  \draw[teal!70!black, thick] (1.09,-0.59) rectangle (1.41,-0.91);
+  \draw[violet!70!black, thick] (0.14,-0.14) rectangle (0.36,-0.36);
+  \draw[violet!70!black, thick] (1.14,-0.14) rectangle (1.36,-0.36);
+  \draw[violet!70!black, thick] (0.14,-1.14) rectangle (0.36,-1.36);
+  \draw[violet!70!black, thick] (1.14,-1.14) rectangle (1.36,-1.36);
 }
-\draw[accent, thick] (0.03,-0.03) rectangle (1.62,-1.62);
-\draw[black!70, thick] (1.68,-1.68) rectangle (3.27,-3.27);
-\node[font=\scriptsize, anchor=east] at (-0.08,-0.275) {$1$};
-\node[font=\scriptsize, anchor=east] at (-0.08,-0.825) {$2$};
-\node[font=\scriptsize, anchor=east] at (-0.08,-1.375) {$3$};
-\node[font=\scriptsize, anchor=east] at (-0.08,-1.925) {$4$};
-\node[font=\scriptsize, anchor=east] at (-0.08,-2.475) {$5$};
-\node[font=\scriptsize, anchor=east] at (-0.08,-3.025) {$6$};
-\node[font=\scriptsize, anchor=south] at (0.275,0.05) {$1$};
-\node[font=\scriptsize, anchor=south] at (0.825,0.05) {$2$};
-\node[font=\scriptsize, anchor=south] at (1.375,0.05) {$3$};
-\node[font=\scriptsize, anchor=south] at (1.925,0.05) {$4$};
-\node[font=\scriptsize, anchor=south] at (2.475,0.05) {$5$};
-\node[font=\scriptsize, anchor=south] at (3.025,0.05) {$6$};
+\draw[decorate, decoration={brace, amplitude=3pt}, muted] (0.03,0.52) -- (1.47,0.52) node[midway, above=2pt, font=\scriptsize, text=muted] {old};
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, muted] (-0.5,-0.03) -- (-0.5,-1.47) node[midway, left=2pt, font=\scriptsize, text=muted] {old};
+\draw[decorate, decoration={brace, amplitude=3pt}, muted] (1.53,0.52) -- (2.97,0.52) node[midway, above=2pt, font=\scriptsize, text=muted] {new};
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, muted] (-0.5,-1.53) -- (-0.5,-2.97) node[midway, left=2pt, font=\scriptsize, text=muted] {new};
 \end{tikzpicture}
 \end{column}
 \end{columns}
 \end{frame}
 
-\begin{frame}{Direct sums: why it works}
-\framesubtitle{The $H$-part of every copy stays in the old part}
+\begin{frame}{Direct sums, proof (1): the $H$-part of every copy is old}
+\framesubtitle{New rows have $1$s only in new columns, and they come in too few groups}
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
+\small
+Let $M=\smallmat{X&0\\0&\widehat Z}$ with $X$ any $n\times n$ matrix. Take a copy of $H'$ in $M$ on rows $r_1<\dots<r_{k+p}$ and columns $c_1<\dots<c_{l+q}$: first its \textbf{H-rows} $r_1,\dots,r_k$ and \textbf{H-columns} $c_1,\dots,c_l$, then its \textbf{Z-rows} and \textbf{Z-columns}.
+
+\textbf{Claim.} The H-rows and H-columns are old, so they form a copy of $H$ in $X$.
+
+\begin{overprint}
+\onslide<1>
+\raggedright
+\onslide<2>
+\raggedright
+Suppose the last H-row $r_k$ is \alert{new}. The Z-rows $r_{k+1},\dots,r_{k+p}$ come after it, so they are new too.
+\onslide<3>
+\raggedright
+Row $k$ of $H$ contains a $1$, say in column $j\le l$, so $M(r_k,c_j)=1$. A new row has $1$s only in new columns, so $c_j$ is new, and so are the Z-columns $c_{l+1},\dots,c_{l+q}$ after it.
+\onslide<4>
+\raggedright
+These $p+1$ rows and $q+1$ columns lie in $\widehat Z$ and must read $\smallmat{1&0\\0&Z}$, whose rows are pairwise distinct when those of $Z$ are. But the new rows form only $p$ groups of identical rows, so two of the $p+1$ rows are equal: a \alert{contradiction}. Here $r_k$ and $r_{k+1}$ both lie in group~1 and read $(1,1,0)$, where $r_k$ needs $(1,0,0)$ and $r_{k+1}$ needs $(0,1,0)$.
+\onslide<5>
+\raggedright
+So $r_k$ is old, and with it $r_1,\dots,r_k$. Column $l$ of $H$ contains a $1$, say in row $i\le k$, so $M(r_i,c_l)=1$; an old row has $1$s only in old columns, so $c_l$ is old, and with it $c_1,\dots,c_l$.
+
+{\footnotesize If instead the columns of $Z$ are pairwise distinct, run the same argument on $q+1$ columns and $q$ groups.}
+\end{overprint}
+\end{column}
+\begin{column}{0.43\textwidth}
+\centering
+\begin{tikzpicture}[]
+\useasboundingbox (-0.55,0.75) rectangle (4.8,-4.4);
+\fill[ink!13] (1,-1) rectangle (2.5,-2.5);
+\fill[ink!13] (1,-2.5) rectangle (2.5,-4);
+\fill[ink!13] (2.5,-2.5) rectangle (4,-4);
+\draw[muted, dashed, line width=0.3pt] (1,-2.5) -- (4,-2.5);
+\draw[muted, dashed, line width=0.3pt] (2.5,-1) -- (2.5,-4);
+\draw[ink, line width=0.6pt] (0,0) rectangle (4,-4);
+\draw[ink, line width=0.6pt] (1,0) -- (1,-4); \draw[ink, line width=0.6pt] (0,-1) -- (4,-1);
+\node[font=\small] at (0.22,-0.53) {$X$};
+\node[font=\small, text=muted] at (2.5,-0.5) {$0$};
+\node[font=\small, text=muted] at (0.5,-2.5) {$0$};
+\draw[decorate, decoration={brace, amplitude=3pt}, muted] (0.03,0.08) -- (0.97,0.08) node[midway, above=2pt, font=\scriptsize, text=muted] {old};
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, muted] (-0.08,-0.03) -- (-0.08,-0.97) node[midway, xshift=-3pt, rotate=90, anchor=south, font=\scriptsize, text=muted] {old};
+\draw[decorate, decoration={brace, amplitude=3pt}, muted] (1.03,0.08) -- (2.47,0.08) node[midway, above=2pt, font=\scriptsize, text=muted] {group 1};
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, muted] (-0.08,-1.03) -- (-0.08,-2.47) node[midway, xshift=-3pt, rotate=90, anchor=south, font=\scriptsize, text=muted] {group 1};
+\draw[decorate, decoration={brace, amplitude=3pt}, muted] (2.53,0.08) -- (3.97,0.08) node[midway, above=2pt, font=\scriptsize, text=muted] {group 2};
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, muted] (-0.08,-2.53) -- (-0.08,-3.97) node[midway, xshift=-3pt, rotate=90, anchor=south, font=\scriptsize, text=muted] {group 2};
+\only<2-4>{%
+  \draw[accent!90!black, thick] (0,-1.45) -- (4,-1.45);
+  \node[font=\scriptsize, anchor=west, inner sep=1pt] at (4.06,-1.45) {$r_k$};
+}
+\only<2-4>{%
+  \draw[teal!75!black, thick] (0,-2.125) -- (4,-2.125);
+  \node[font=\scriptsize, anchor=west, inner sep=1pt] at (4.06,-2.125) {$r_{k+1}$};
+  \draw[teal!75!black, thick] (0,-3.25) -- (4,-3.25);
+  \node[font=\scriptsize, anchor=west, inner sep=1pt] at (4.06,-3.25) {$r_{k+2}$};
+}
+\only<3-4>{%
+  \draw[accent!90!black, thick] (1.45,0) -- (1.45,-4);
+  \node[font=\scriptsize, anchor=north, inner sep=1pt] at (1.45,-4.04) {$c_j$};
+}
+\only<3-4>{%
+  \draw[teal!75!black, thick] (2.125,0) -- (2.125,-4);
+  \node[font=\scriptsize, anchor=north, inner sep=1pt] at (2.125,-4.04) {$c_{l+1}$};
+  \draw[teal!75!black, thick] (3.25,0) -- (3.25,-4);
+  \node[font=\scriptsize, anchor=north, inner sep=1pt] at (3.25,-4.04) {$c_{l+2}$};
+}
+\only<3>{%
+  \node[circle, draw=accent!90!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (1.45,-1.45) {$1$};
+}
+\only<4>{%
+  \node[circle, draw=ink, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (1.45,-1.45) {$1$};
+  \node[circle, draw=red!75!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (2.125,-1.45) {$1$};
+  \node[circle, draw=ink, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (3.25,-1.45) {$0$};
+  \node[circle, draw=red!75!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (1.45,-2.125) {$1$};
+  \node[circle, draw=ink, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (2.125,-2.125) {$1$};
+  \node[circle, draw=ink, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (3.25,-2.125) {$0$};
+  \node[circle, draw=red!75!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (1.45,-3.25) {$1$};
+  \node[circle, draw=ink, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (2.125,-3.25) {$1$};
+  \node[circle, draw=ink, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (3.25,-3.25) {$1$};
+}
+\only<4>{%
+  \draw[red!75!black, line width=0.8pt] (4.68,-1.45) -- ++(0.1,0) |- (4.68,-2.125);
+}
+\only<5>{%
+  \draw[accent!90!black, thick] (0,-0.3) -- (4,-0.3);
+  \node[font=\scriptsize, anchor=west, inner sep=1pt] at (4.06,-0.3) {$r_i$};
+  \draw[accent!90!black, thick] (0,-0.75) -- (4,-0.75);
+  \node[font=\scriptsize, anchor=west, inner sep=1pt] at (4.06,-0.75) {$r_k$};
+  \draw[accent!90!black, thick] (0.6,0) -- (0.6,-4);
+  \node[font=\scriptsize, anchor=north, inner sep=1pt] at (0.6,-4.04) {$c_l$};
+}
+\only<5>{%
+  \node[circle, draw=accent!90!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (0.6,-0.3) {$1$};
+}
+\end{tikzpicture}
+
+{\scriptsize\color{muted} Drawn with $p=q=2$, $Z=\smallmat{1&0\\1&1}$; shaded: $1$s.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Direct sums, proof (2): the count, and $D_{H'}(A^+)\le D_H(A)$}
+\framesubtitle{Both follow from (1) with $X=A$ and with $X=A_0$}
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
+\small
 \begin{itemize}
-\item<1-> \textbf{The $H$-part of every copy of $H'$ lies in the old part.} A new row has $1$s only in new columns, and the $Z$-part needs $p+1$ distinct rows (or $q+1$ distinct columns) where $\widehat Z$ has only $p$ groups of equal rows ($q$ of equal columns).
-\item<2-> So copies of $H'$ come from copies of $H$: $N_{H'}(A^+)\le m^{p+q}N_H(A)$, and a repair of $A$ repairs $A^+$.
-\item<3-> \textbf{No repair of $A^+$ is cheaper.} Pick one new row from each group and one new column from each group at random. Zero every old row or column that has a $1$ against a picked line: on average this costs at most the number of changes in the off-diagonal blocks. If the picked lines still read $Z$, what is left of the old block is a repair of $A$; averaging gives $D_H(A)\le D_{H'}(A^+)$.
-\item<4-> Then a counterexample host for $H$ gives one for $H'$, with $\epsilon'=\epsilon/(1+pq)^2$.
+\item<1-> \textbf{The count.} By (1) with $X=A$, every copy of $H'$ in $A^+$ is a copy of $H$ in $A$ together with $p$ more rows and $q$ more columns. There are at most $m^{p+q}$ ways to choose them, so $N_{H'}(A^+)\le m^{p+q}N_H(A)$.
+\item<2-> \textbf{A repair.} Change $D_H(A)$ entries of $A$ to get an $H$-free matrix $A_0$, and leave the rest of $A^+$ as it is. By (1) with $X=A_0$, a copy of $H'$ would contain a copy of $H$ in $A_0$, and there is none. So $D_{H'}(A^+)\le D_H(A)$.
+\item<3-> \textbf{The other direction is the real work:} a repair of $A^+$ may also change the $0$ blocks and $\widehat Z$, and could be cheaper there.
 \end{itemize}
+\end{column}
+\begin{column}{0.43\textwidth}
+\centering
+\begin{tikzpicture}[]
+\useasboundingbox (-0.55,0.75) rectangle (4.8,-4.4);
+\fill[ink!13] (1.5,-1.5) rectangle (2.75,-2.75);
+\fill[ink!13] (1.5,-2.75) rectangle (2.75,-4);
+\fill[ink!13] (2.75,-2.75) rectangle (4,-4);
+\draw[muted, dashed, line width=0.3pt] (1.5,-2.75) -- (4,-2.75);
+\draw[muted, dashed, line width=0.3pt] (2.75,-1.5) -- (2.75,-4);
+\draw[ink, line width=0.6pt] (0,0) rectangle (4,-4);
+\draw[ink, line width=0.6pt] (1.5,0) -- (1.5,-4); \draw[ink, line width=0.6pt] (0,-1.5) -- (4,-1.5);
+\node[font=\small, text=muted] at (2.75,-0.75) {$0$};
+\node[font=\small, text=muted] at (0.75,-2.75) {$0$};
+\draw[decorate, decoration={brace, amplitude=3pt}, muted] (0.03,0.08) -- (1.47,0.08) node[midway, above=2pt, font=\scriptsize, text=muted] {old};
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, muted] (-0.08,-0.03) -- (-0.08,-1.47) node[midway, xshift=-3pt, rotate=90, anchor=south, font=\scriptsize, text=muted] {old};
+\draw[decorate, decoration={brace, amplitude=3pt}, muted] (1.53,0.08) -- (2.72,0.08) node[midway, above=2pt, font=\scriptsize, text=muted] {group 1};
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, muted] (-0.08,-1.53) -- (-0.08,-2.72) node[midway, xshift=-3pt, rotate=90, anchor=south, font=\scriptsize, text=muted] {group 1};
+\draw[decorate, decoration={brace, amplitude=3pt}, muted] (2.78,0.08) -- (3.97,0.08) node[midway, above=2pt, font=\scriptsize, text=muted] {group 2};
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, muted] (-0.08,-2.78) -- (-0.08,-3.97) node[midway, xshift=-3pt, rotate=90, anchor=south, font=\scriptsize, text=muted] {group 2};
+\only<1>{\node[font=\small] at (0.75,-0.75) {$A$};}
+\only<2->{%
+  \fill[green!22] (0,0) rectangle (1.5,-1.5);
+  \node[font=\small, align=center] at (0.75,-0.75) {$A_0$\\[-1pt] {\scriptsize $H$-free}};
+  \draw[ink, line width=0.6pt] (0,0) rectangle (1.5,-1.5);
+}
+\only<1>{%
+  \draw[accent!90!black, thick] (0,-0.375) -- (4,-0.375);
+  \node[font=\scriptsize, anchor=west, inner sep=1pt] at (4.06,-0.375) {$r_1$};
+  \draw[accent!90!black, thick] (0,-1.125) -- (4,-1.125);
+  \node[font=\scriptsize, anchor=west, inner sep=1pt] at (4.06,-1.125) {$r_2$};
+  \draw[accent!90!black, thick] (0.375,0) -- (0.375,-4);
+  \node[font=\scriptsize, anchor=north, inner sep=1pt] at (0.375,-4.04) {$c_1$};
+  \draw[accent!90!black, thick] (1.125,0) -- (1.125,-4);
+  \node[font=\scriptsize, anchor=north, inner sep=1pt] at (1.125,-4.04) {$c_2$};
+  \draw[teal!75!black, thick, dashed] (0,-2.188) -- (4,-2.188);
+  \node[font=\scriptsize, anchor=west, inner sep=1pt] at (4.06,-2.188) {$r_3$};
+  \draw[teal!75!black, thick, dashed] (0,-3.25) -- (4,-3.25);
+  \node[font=\scriptsize, anchor=west, inner sep=1pt] at (4.06,-3.25) {$r_4$};
+  \draw[teal!75!black, thick, dashed] (2,0) -- (2,-4);
+  \node[font=\scriptsize, anchor=north, inner sep=1pt] at (2,-4.04) {$c_3$};
+  \draw[teal!75!black, thick, dashed] (3.5,0) -- (3.5,-4);
+  \node[font=\scriptsize, anchor=north, inner sep=1pt] at (3.5,-4.04) {$c_4$};
+  \node[circle, draw=accent!90!black, fill=accent!45, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (0.375,-0.375) {$$};
+  \node[circle, draw=accent!90!black, fill=accent!45, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (1.125,-0.375) {$$};
+  \node[circle, draw=accent!90!black, fill=accent!45, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (0.375,-1.125) {$$};
+  \node[circle, draw=accent!90!black, fill=accent!45, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (1.125,-1.125) {$$};
+}
+\end{tikzpicture}
+
+{\scriptsize\color{muted} Orange: a copy of $H$ in $A$. Teal: Z-rows and Z-columns, any new lines.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Direct sums, proof (3): no repair of $A^+$ is cheaper}
+\framesubtitle{Pick one new line per group; a good pick turns any repair of $A^+$ into a repair of $A$}
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
+\small
+Let $B$ be any $m\times m$ matrix with no copy of $H'$. $E_0,E_1,E_2$: the numbers of entries where $B$ differs from $A^+$ in the old--old block, the two mixed blocks, and the new--new block (\textcolor{red!75!black}{crosses}). \textbf{Goal:} $E_0+E_1+E_2\ge D$, where $D=D_H(A)\le n^2$.
+
+\begin{overprint}
+\onslide<1>
+\raggedright
+\onslide<2>
+\raggedright
+\textbf{Pick} at random one row $\rho_i$ from each of the $p$ groups of new rows and one column $\gamma_j$ from each of the $q$ groups of new columns. The pick is \textbf{good} if $B(\rho_i,\gamma_j)=Z(i,j)$ for all $i,j$. A fixed new--new entry is picked with probability $\frac1{qn\cdot pn}$, so
+\[ \Pr[\text{not good}]\le \frac{E_2}{pq\,n^2}. \]
+\onslide<3>
+\raggedright
+An old row is \textbf{bad} if $B$ has a $1$ where it meets a picked column; an old column, where it meets a picked row. Each such $1$ is one of the $E_1$ changes, and lies on a picked line with probability at most $\frac1n$: on average at most $\frac{E_1}n$ bad lines. $B^\circ$: the old--old block of $B$ with the bad lines set to $0$. It differs from $A$ in at most $E_0+W$ entries, $W=n\cdot\#\text{bad lines}$, $\mathbb E[W]\le E_1$.
+\onslide<4>
+\raggedright
+\textbf{Claim: if the pick is good, $B^\circ$ is $H$-free.} Every row and column of $H$ has a $1$, so a copy of $H$ in $B^\circ$ avoids the zeroed lines; its lines are not bad, so they meet the picked lines in $0$s. The picked lines read $Z$. Together they form a \alert{copy of $H'$ in $B$}, which is impossible.
+\onslide<5>
+\raggedright
+So a good pick gives $D\le E_0+W$. Taking expectations,
+\[ D\Bigl(1-\frac{E_2}{pq\,n^2}\Bigr)\le D\cdot\Pr[\text{good}]\le E_0+E_1, \]
+and since $D\le n^2\le pq\,n^2$, this gives $E_0+E_1+E_2\ge D$. So $D_{H'}(A^+)\ge D_H(A)$.
+\end{overprint}
+\end{column}
+\begin{column}{0.43\textwidth}
+\centering
+\begin{tikzpicture}[]
+\useasboundingbox (-0.55,0.75) rectangle (4.95,-4.55);
+\only<3->{%
+  \fill[red!16] (0,-0.805) rectangle (1.75,-0.945);
+  \draw[red!60, dashed] (1.75,-0.875) -- (2.29,-0.875);
+  \fill[red!16] (0.98,0) rectangle (1.12,-1.75);
+  \draw[red!60, dashed] (1.05,-1.75) -- (1.05,-3.43);
+}
+\fill[ink!13] (1.75,-1.75) rectangle (2.95,-2.95);
+\fill[ink!13] (1.75,-2.95) rectangle (2.95,-4.15);
+\fill[ink!13] (2.95,-2.95) rectangle (4.15,-4.15);
+\draw[muted, dashed, line width=0.3pt] (1.75,-2.95) -- (4.15,-2.95);
+\draw[muted, dashed, line width=0.3pt] (2.95,-1.75) -- (2.95,-4.15);
+\draw[ink, line width=0.6pt] (0,0) rectangle (4.15,-4.15);
+\draw[ink, line width=0.6pt] (1.75,0) -- (1.75,-4.15); \draw[ink, line width=0.6pt] (0,-1.75) -- (4.15,-1.75);
+\draw[decorate, decoration={brace, amplitude=3pt}, muted] (0.03,0.08) -- (1.72,0.08) node[midway, above=2pt, font=\scriptsize, text=muted] {old};
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, muted] (-0.08,-0.03) -- (-0.08,-1.72) node[midway, xshift=-3pt, rotate=90, anchor=south, font=\scriptsize, text=muted] {old};
+\draw[decorate, decoration={brace, amplitude=3pt}, muted] (1.78,0.08) -- (2.92,0.08) node[midway, above=2pt, font=\scriptsize, text=muted] {group 1};
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, muted] (-0.08,-1.78) -- (-0.08,-2.92) node[midway, xshift=-3pt, rotate=90, anchor=south, font=\scriptsize, text=muted] {group 1};
+\draw[decorate, decoration={brace, amplitude=3pt}, muted] (2.98,0.08) -- (4.12,0.08) node[midway, above=2pt, font=\scriptsize, text=muted] {group 2};
+\draw[decorate, decoration={brace, amplitude=3pt, mirror}, muted] (-0.08,-2.98) -- (-0.08,-4.12) node[midway, xshift=-3pt, rotate=90, anchor=south, font=\scriptsize, text=muted] {group 2};
+\node[font=\scriptsize, anchor=south east, inner sep=1.5pt] at (1.75,-1.75) {$E_0$};
+\node[font=\scriptsize, anchor=south east, inner sep=1.5pt] at (4.15,-1.75) {$E_1$};
+\node[font=\scriptsize, anchor=south east, inner sep=1.5pt] at (1.75,-4.15) {$E_1$};
+\node[font=\scriptsize, anchor=south east, inner sep=1.5pt] at (4.15,-4.15) {$E_2$};
+\draw[red!75!black, line width=1pt] (1.34,-0.375) -- (1.46,-0.255) (1.34,-0.255) -- (1.46,-0.375);
+\draw[red!75!black, line width=1pt] (0.465,-1.6) -- (0.585,-1.48) (0.465,-1.48) -- (0.585,-1.6);
+\draw[red!75!black, line width=1pt] (2.23,-0.935) -- (2.35,-0.815) (2.23,-0.815) -- (2.35,-0.935);
+\draw[red!75!black, line width=1pt] (3.13,-0.323) -- (3.25,-0.203) (3.13,-0.203) -- (3.25,-0.323);
+\draw[red!75!black, line width=1pt] (3.25,-1.495) -- (3.37,-1.375) (3.25,-1.375) -- (3.37,-1.495);
+\draw[red!75!black, line width=1pt] (0.99,-3.49) -- (1.11,-3.37) (0.99,-3.37) -- (1.11,-3.49);
+\draw[red!75!black, line width=1pt] (0.203,-1.99) -- (0.323,-1.87) (0.203,-1.87) -- (0.323,-1.99);
+\draw[red!75!black, line width=1pt] (2.71,-2.05) -- (2.83,-1.93) (2.71,-1.93) -- (2.83,-2.05);
+\draw[red!75!black, line width=1pt] (2.17,-4.03) -- (2.29,-3.91) (2.17,-3.91) -- (2.29,-4.03);
+\draw[red!75!black, line width=1pt] (3.19,-3.154) -- (3.31,-3.034) (3.19,-3.034) -- (3.31,-3.154);
+\only<2->{%
+  \draw[teal!75!black, thick] (0,-2.41) -- (4.15,-2.41);
+  \node[font=\scriptsize, anchor=west, inner sep=1pt] at (4.21,-2.41) {$\rho_{1}$};
+  \draw[teal!75!black, thick] (0,-3.43) -- (4.15,-3.43);
+  \node[font=\scriptsize, anchor=west, inner sep=1pt] at (4.21,-3.43) {$\rho_{2}$};
+  \draw[teal!75!black, thick] (2.29,0) -- (2.29,-4.15);
+  \node[font=\scriptsize, anchor=north, inner sep=1pt] at (2.29,-4.19) {$\gamma_{1}$};
+  \draw[teal!75!black, thick] (3.67,0) -- (3.67,-4.15);
+  \node[font=\scriptsize, anchor=north, inner sep=1pt] at (3.67,-4.19) {$\gamma_{2}$};
+  \node[circle, draw=teal!75!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (2.29,-2.41) {$1$};
+  \node[circle, draw=teal!75!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (3.67,-2.41) {$0$};
+  \node[circle, draw=teal!75!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (2.29,-3.43) {$1$};
+  \node[circle, draw=teal!75!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (3.67,-3.43) {$1$};
+}
+\only<3->{%
+  \node[font=\scriptsize, text=red!75!black, anchor=south west, inner sep=1pt] at (2.37,-0.875) {bad};
+  \node[font=\scriptsize, text=red!75!black, anchor=north east, inner sep=1pt] at (1.01,-3.51) {bad};
+}
+\only<3->{%
+  \node[font=\scriptsize, inner sep=0.5pt] at (0.735,-0.21) {$B^\circ$};
+}
+\only<4->{%
+  \draw[accent!90!black, thick] (0,-0.525) -- (4.15,-0.525);
+  \draw[accent!90!black, thick] (0,-1.26) -- (4.15,-1.26);
+  \draw[accent!90!black, thick] (0.438,0) -- (0.438,-4.15);
+  \draw[accent!90!black, thick] (1.488,0) -- (1.488,-4.15);
+  \node[circle, draw=accent!90!black, fill=accent!45, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (0.438,-0.525) {$$};
+  \node[circle, draw=accent!90!black, fill=accent!45, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (1.488,-0.525) {$$};
+  \node[circle, draw=accent!90!black, fill=accent!45, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (0.438,-1.26) {$$};
+  \node[circle, draw=accent!90!black, fill=accent!45, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (1.488,-1.26) {$$};
+  \node[circle, draw=muted, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (2.29,-0.525) {$0$};
+  \node[circle, draw=muted, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (3.67,-0.525) {$0$};
+  \node[circle, draw=muted, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (2.29,-1.26) {$0$};
+  \node[circle, draw=muted, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (3.67,-1.26) {$0$};
+  \node[circle, draw=muted, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (0.438,-2.41) {$0$};
+  \node[circle, draw=muted, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (1.488,-2.41) {$0$};
+  \node[circle, draw=muted, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (0.438,-3.43) {$0$};
+  \node[circle, draw=muted, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (1.488,-3.43) {$0$};
+  \node[circle, draw=teal!75!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (2.29,-2.41) {$1$};
+  \node[circle, draw=teal!75!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (3.67,-2.41) {$0$};
+  \node[circle, draw=teal!75!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (2.29,-3.43) {$1$};
+  \node[circle, draw=teal!75!black, fill=paper, line width=0.6pt, inner sep=0pt, minimum size=3.2mm, font=\tiny] at (3.67,-3.43) {$1$};
+}
+\end{tikzpicture}
+
+{\scriptsize\color{muted} $p=q=2$. Teal: picked lines; orange: a copy of $H$ in $B^\circ$.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Direct sums: new counterexamples}
+\framesubtitle{A host for $H$ with few copies gives one for $H'$}
+\small
+\textbf{Corollary.} If $H$ (no all-zero row or column) is a counterexample, so is $H'=\smallmat{H&0\\0&Z}$ for every $Z$ with pairwise distinct rows or pairwise distinct columns.
+
+\medskip
+\begin{itemize}
+\item<1-> Given $c',C'>0$, put $s=1+pq$, $C=C'$ and $c=c'\,s^{k+l-2C}$. As $H$ is a counterexample, some $n\times n$ matrix $A$ and $\epsilon\in(0,1]$ have $\dist_H(A)\ge\epsilon$ and $N_H(A)<c\,\epsilon^{C}n^{k+l}$.
+\item<2-> Take the host $A^+$, of size $m=sn$, and $\epsilon'=\epsilon/s^2$. By the theorem, $\dist_{H'}(A^+)=D_H(A)/(sn)^2\ge\epsilon/s^2=\epsilon'$, and, with $n=m/s$ and $\epsilon=s^2\epsilon'$,
+\[ N_{H'}(A^+)\le m^{p+q}N_H(A)<c\,\epsilon^{C}n^{k+l}m^{p+q}=c'\,(\epsilon')^{C'}m^{(k+p)+(l+q)}. \]
+\item<3-> So $c'$ and $C'$ fail for $H'$ on $A^+$; as they were arbitrary, $H'$ is a counterexample.
+\end{itemize}
+\uncover<4->{\textbf{Variant.} $H$ with $q$ all-zero columns appended, with host $\smallmat{A&0\\0&0}$ of size $(1+q)n$: the same holds, by a simpler proof.}
 \end{frame}
 
 \begin{frame}{Duplication: repeated rows and columns do not matter}
@@ -2704,7 +3031,7 @@ Column $2$ equals column $1$ \dots
 \uncover<4->{\textbf{Theorem.} $H$ satisfies the conjecture if and only if $\operatorname{red}(H)$ does.}
 
 \medskip
-\uncover<4->{\footnotesize One direction counts copies, the other blows up a host: the next two slides.}
+\uncover<4->{\footnotesize The proof rests on two facts: Fact 1 counts copies with one more repeat, Fact 2 blows up a host.}
 \end{column}
 \begin{column}{0.35\textwidth}
 \centering
@@ -2770,46 +3097,46 @@ Column $2$ equals column $1$ \dots
 \end{columns}
 \end{frame}
 
-\begin{frame}{Duplication (1): many copies of $\operatorname{red}(H)$ give many copies of $H$}
-\framesubtitle{Two completions of a frame make a copy with a repeated column}
+\begin{frame}{Duplication, Fact 1: frames and completions}
+\framesubtitle{Copies of $H$ are frames with one more column; two completions make a copy of $H'$}
 \begin{columns}[T]
 \begin{column}{0.62\textwidth}
 \small
-$R=\smallmat{1&0\\1&1}$; doubling its column $2$ gives $H'=\smallmat{1&0&0\\1&1&1}$.
-A copy of $R$ is a \textbf{frame} (its rows and its first column) plus one more column that \emph{completes} it.
+\textbf{Fact 1.} Let $H$ be $k\times l$ and $H'$ be $H$ with column $j$ written twice in a row. For every $n\times n$ matrix $B$, with $N=N_H(B)$ and $N'=N_{H'}(B)$: $\;N'\ge \frac{N^2}{2n^{k+l-1}}-\frac N2$.
+(For a repeated row, transpose $H$ and $B$.)
+
+\textbf{Example} (right): $H=\smallmat{1&0\\1&1}$, $j=2$, $H'=\smallmat{1&0&0\\1&1&1}$.
 
 \begin{overprint}
 \onslide<1>
 \raggedright
+A \textbf{frame} $F$: rows $r_1<\dots<r_k$ and columns $c_1<\dots<c_{j-1}<c_{j+1}<\dots<c_l$ of $B$, a would-be copy of $H$ missing its $j$th column. There are $T\le n^{k+l-1}$ frames (here $T=9$). A column $c$ with $c_{j-1}<c<c_{j+1}$ is a \textbf{completion} of $F$ if adding it gives a copy of $H$; $x_F$ is the number of completions.
 \onslide<2>
 \raggedright
-In $A$, the frame \textcolor{accent!90!black}{rows $1,2$ with column $1$} is completed by \textcolor{teal!80!black}{columns $2$ and $3$}: two copies of $R$.
+The frame \textcolor{accent!90!black}{rows $1,2$ with column $1$} has the completions \textcolor{teal!80!black}{columns $2$ and $3$}: $x_F=2$.
+
+\textbf{Step 2.} Deleting column $j$ of a copy of $H$ leaves a frame, and the deleted column completes it. So the copies of $H$ match the pairs ($F$, a completion of $F$) one to one, and $\sum_F x_F=N$.
 \onslide<3>
 \raggedright
-Any two completing columns give a copy of $H'$, its doubled column on them: here rows $1,2$ with columns $1,2,3$.
+The frame \textcolor{accent!90!black}{rows $1,3$ with column $1$} has one completion, \textcolor{teal!80!black}{column $3$}. The other $7$ frames have none: $\sum_F x_F=2+1=3=N$.
 \onslide<4>
 \raggedright
-The frame rows $1,3$ with column $1$ has one completion, column $3$: no copy of $H'$. In all, $N_R(A)=3$ and $N_{H'}(A)=\binom{2}{2}+\binom{1}{2}=1$.
-\onslide<5>
-\raggedright
-For a $k\times l$ pattern $G$, $G'=G$ with one column doubled, and an $n\times n$ matrix $B$: a frame with $x$ completions gives $\binom{x}{2}$ copies of $G'$, and by Jensen's inequality
-\[ N_{G'}(B)\ \ge\ \frac{N_G(B)^2}{2n^{k+l-1}}-\frac{N_G(B)}{2}. \]
-So if $\operatorname{red}(H)$ satisfies the conjecture, so does $H$: a matrix $\epsilon$-far from $H$-free is $\epsilon$-far from $\operatorname{red}(H)$-free, so it has $c\,\epsilon^Cn^{k_0+l_0}$ copies of $\operatorname{red}(H)$; each doubling keeps a polynomial share.
+\textbf{Step 3.} Two completions $c<c'$ of one frame give a \alert{copy of $H'$}: the columns $c_1<\dots<c_{j-1}<c<c'<c_{j+1}<\dots<c_l$ are in order, and $c$, $c'$ both match column $j$. Different ($F$, $\{c,c'\}$) give different copies, so $N'\ge\sum_F\binom{x_F}{2}$. Here: rows $1,2$ with columns $1,2,3$, and $\binom{2}{2}+\binom{1}{2}=1=N'$.
 \end{overprint}
 \end{column}
 \begin{column}{0.34\textwidth}
 \centering
 \begin{tikzpicture}[]
 \useasboundingbox (-0.45,0.4) rectangle (2.35,-2.35);
-\only<2-3>{%
+\only<2,4>{%
   \fill[accent!32] (0,0) rectangle (0.75,-0.75);
   \fill[accent!32] (0,-0.75) rectangle (0.75,-1.5);
   \fill[teal!28] (0.75,0) rectangle (1.5,-0.75);
-  \fill[teal!28] (0.75,-0.75) rectangle (1.5,-1.5);
   \fill[teal!28] (1.5,0) rectangle (2.25,-0.75);
+  \fill[teal!28] (0.75,-0.75) rectangle (1.5,-1.5);
   \fill[teal!28] (1.5,-0.75) rectangle (2.25,-1.5);
 }
-\only<4>{%
+\only<3>{%
   \fill[accent!32] (0,0) rectangle (0.75,-0.75);
   \fill[accent!32] (0,-1.5) rectangle (0.75,-2.25);
   \fill[teal!28] (1.5,0) rectangle (2.25,-0.75);
@@ -2838,7 +3165,7 @@ So if $\operatorname{red}(H)$ satisfies the conjecture, so does $H$: a matrix $\
 \node[font=\scriptsize, anchor=south] at (0.375,0.05) {$1$};
 \node[font=\scriptsize, anchor=south] at (1.125,0.05) {$2$};
 \node[font=\scriptsize, anchor=south] at (1.875,0.05) {$3$};
-\only<3>{%
+\only<4>{%
   \draw[green!50!black, very thick] (0.05,-0.05) rectangle (0.7,-0.7);
   \draw[green!50!black, very thick] (0.8,-0.05) rectangle (1.45,-0.7);
   \draw[green!50!black, very thick] (1.55,-0.05) rectangle (2.2,-0.7);
@@ -2851,29 +3178,106 @@ So if $\operatorname{red}(H)$ satisfies the conjecture, so does $H$: a matrix $\
 \end{columns}
 \end{frame}
 
-\begin{frame}{Duplication (2): blowing up a host}
-\framesubtitle{A counterexample host for $\operatorname{red}(H)$, blown up, is one for $H$}
+\begin{frame}{Duplication, Fact 1: Cauchy--Schwarz}
+\framesubtitle{The pairs are fewest when the completions are spread evenly over the frames}
 \begin{columns}[T]
-\begin{column}{0.52\textwidth}
+\begin{column}{0.56\textwidth}
 \small
-$A^{(q)}$: every entry of $A$ becomes a $q\times q$ block (here $q=2$). Take $H=\smallmat{1&0\\1&0\\1&1}$, that is $R=\smallmat{1&0\\1&1}$ with row $1$ doubled.
+So far: $\sum_F x_F=N$ over $T\le n^{k+l-1}$ frames, and
+\[ N'\ \ge\ \sum_F\binom{x_F}{2}=\frac12\sum_F x_F^2-\frac N2 . \]
+\begin{overprint}
+\onslide<1>
+\raggedright
+\textbf{Step 4.} If $N=0$ there is nothing to show. Otherwise, by Cauchy--Schwarz,
+\[ N^2=\Bigl(\sum_F 1\cdot x_F\Bigr)^2\le T\sum_F x_F^2 . \]
+This is Jensen's inequality for $x\mapsto x^2$: the sum of squares is smallest when every $x_F$ equals the average $N/T$ (right).
+\onslide<2>
+\raggedright
+Combining,
+\[ N'\ \ge\ \frac{N^2}{2T}-\frac N2\ \ge\ \frac{N^2}{2n^{k+l-1}}-\frac N2 . \qquad\Box \]
+On the example: $N=3$, $T=9$, $\sum_F x_F^2=5$, and indeed $N^2\le T\sum_F x_F^2$.
+\onslide<3>
+\raggedright
+\textbf{How it is used.} If $N_H(B)\ge\delta n^{k+l}$ and $n\ge2/\delta$, then
+\[ N_{H'}(B)\ \ge\ \frac{\delta^2}2n^{k+l+1}-\frac\delta2n^{k+l}\ \ge\ \frac{\delta^2}4n^{k+l+1}. \]
+One repeat turns a copy density $\delta$ into at least $\delta^2/4$, for $H'$ with its $k+l+1$ lines, once $n$ is not too small.
+\end{overprint}
+\end{column}
+\begin{column}{0.4\textwidth}
+\centering
+\begin{tikzpicture}[]
+\useasboundingbox (-0.65,0.45) rectangle (4.54,-2.57);
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (0.04,-1.62) rectangle (0.32,-1.35);
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (0.04,-1.35) rectangle (0.32,-1.08);
+\node[font=\tiny, text=muted, anchor=north] at (0.18,-1.64) {$2$};
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (0.4,-1.62) rectangle (0.68,-1.35);
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (0.4,-1.35) rectangle (0.68,-1.08);
+\node[font=\tiny, text=muted, anchor=north] at (0.54,-1.64) {$2$};
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (0.76,-1.62) rectangle (1.04,-1.35);
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (0.76,-1.35) rectangle (1.04,-1.08);
+\node[font=\tiny, text=muted, anchor=north] at (0.9,-1.64) {$2$};
+\draw[muted, line width=0.4pt] (-0.03,-1.62) -- (1.11,-1.62);
+\node[font=\scriptsize, anchor=north] at (0.54,-1.92) {$3$ pairs};
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (1.72,-1.62) rectangle (2,-1.35);
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (1.72,-1.35) rectangle (2,-1.08);
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (1.72,-1.08) rectangle (2,-0.81);
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (1.72,-0.81) rectangle (2,-0.54);
+\node[font=\tiny, text=muted, anchor=north] at (1.86,-1.64) {$4$};
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (2.08,-1.62) rectangle (2.36,-1.35);
+\node[font=\tiny, text=muted, anchor=north] at (2.22,-1.64) {$1$};
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (2.44,-1.62) rectangle (2.72,-1.35);
+\node[font=\tiny, text=muted, anchor=north] at (2.58,-1.64) {$1$};
+\draw[muted, line width=0.4pt] (1.65,-1.62) -- (2.79,-1.62);
+\node[font=\scriptsize, anchor=north] at (2.22,-1.92) {$6$ pairs};
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (3.4,-1.62) rectangle (3.68,-1.35);
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (3.4,-1.35) rectangle (3.68,-1.08);
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (3.4,-1.08) rectangle (3.68,-0.81);
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (3.4,-0.81) rectangle (3.68,-0.54);
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (3.4,-0.54) rectangle (3.68,-0.27);
+\fill[teal!35, draw=teal!70!black, line width=0.4pt] (3.4,-0.27) rectangle (3.68,0);
+\node[font=\tiny, text=muted, anchor=north] at (3.54,-1.64) {$6$};
+\node[font=\tiny, text=muted, anchor=north] at (3.9,-1.64) {$0$};
+\node[font=\tiny, text=muted, anchor=north] at (4.26,-1.64) {$0$};
+\draw[muted, line width=0.4pt] (3.33,-1.62) -- (4.47,-1.62);
+\node[font=\scriptsize, anchor=north] at (3.9,-1.92) {$15$ pairs};
+\draw[accent, dashed, line width=0.6pt] (1.13,-1.08) -- (-0.05,-1.08) node[left, font=\tiny, text=accent!90!black] {$N/T$};
+\node[font=\scriptsize, anchor=south west] at (0,0.05) {$N=6$ completions on $T=3$ frames:};
+\end{tikzpicture}
 
+{\scriptsize\color{muted} Each bar is a frame, its height the number $x_F$ of its completions; a frame gives $\binom{x_F}2$ pairs.}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Duplication, Fact 2(a): blowing up a host keeps few copies few}
+\framesubtitle{A copy of $H$ in the blow-up comes from a copy of $\operatorname{red}(H)$ in the host}
+\begin{columns}[T]
+\begin{column}{0.54\textwidth}
+\small
+\textbf{Blow-up.} $A^{(q)}$: every entry of the $n\times n$ matrix $A$ becomes a constant $q\times q$ block; $A^{(q)}$ is $qn\times qn$.
+
+\textbf{Fact 2.} For $H$ ($k\times l$) and $R=\operatorname{red}(H)$ ($k_0\times l_0$):
+
+(a) $N_H(A^{(q)})/(qn)^{k+l}\le N_R(A)/n^{k_0+l_0}$;
+
+(b) $D_H(A^{(q)})\ge\tfrac12q^2D_R(A)$ for all large enough $q$.
+
+\textbf{Example} (right): $q=2$, $H=\smallmat{1&0\\1&0\\1&1}$, so $R=\smallmat{1&0\\1&1}$.
 \begin{overprint}
 \onslide<1>
 \raggedright
 \onslide<2>
 \raggedright
-A copy of $H$ in $A^{(2)}$: \textcolor{accent!90!black}{rows $1,2,3$ with columns $1,5$}.
+\textbf{Proof of (a).} Take a copy of $H$ in $A^{(q)}$: here \textcolor{accent!90!black}{rows $1,2,3$ with columns $1,5$}.
 \onslide<3>
 \raggedright
-Keep one row and one column per run of equal rows and columns of $H$. They lie in \emph{different} blocks, because $\operatorname{red}(H)$ has no two equal neighbors, so they come from a \textcolor{teal!80!black}{copy of $R$ in $A$} (rows $1,2$, columns $1,3$).
-\textbf{Few stay few:} $N_H(A^{(q)})/(qn)^{k+l}\le N_R(A)/n^{k_0+l_0}$.
+Keep one row and one column for each row and column of $R$: \textcolor{teal!80!black}{rows $1,3$, columns $1,5$}. They read $R$. No two kept rows lie in one block: rows in a block are equal, and $R$ has no two equal neighboring rows (same for columns). So they come from a \textcolor{teal!80!black}{copy of $R$ in $A$}: rows $1,2$, columns $1,3$.
 \onslide<4>
 \raggedright
-\textbf{Far stays far:} for large $q$, changing fewer than $\tfrac12q^2D_R(A)$ entries of $A^{(q)}$ leaves a copy of $H$. Pick one row and one column per block at random: the picked $n\times n$ matrix is $A$ with, on average, fewer than $\tfrac12D_R(A)$ entries changed. By Markov's inequality at least half the picks change fewer than $D_R(A)$ and still contain $R$. That makes at least $\tfrac12q^{k_0+l_0}$ copies of $R$, a density that does not depend on $q$, and by (1) a copy of $H$ once $q$ is large.
+Each copy of $R$ in $A$ is counted at most $q^{k_0+l_0}(qn)^{k+l-k_0-l_0}$ times: a line in each of its blocks, and the other lines anywhere. Dividing by $(qn)^{k+l}$ gives (a). Here $N_H(A^{(2)})=24\le3\cdot2^{4}\cdot6^{1}=288$, as $N_R(A)=3$.
 \end{overprint}
 \end{column}
-\begin{column}{0.44\textwidth}
+\begin{column}{0.42\textwidth}
 \centering
 \begin{tikzpicture}[]
 \useasboundingbox (-0.4,0.75) rectangle (4.35,-2.6);
@@ -2997,14 +3401,269 @@ Keep one row and one column per run of equal rows and columns of $H$. They lie i
   \draw[teal!70!black, very thick] (0.84,-0.44) rectangle (1.16,-0.76);
 }
 \end{tikzpicture}
-
-\medskip
-\footnotesize
-\uncover<3->{$N_R(A)=3$ and $N_H(A^{(2)})=24$.}
-
-\uncover<4->{$D_R(A)=1$ and $D_H(A^{(2)})=2$,\\ at least $\tfrac12\cdot2^2\cdot D_R(A)=2$.}
 \end{column}
 \end{columns}
+\end{frame}
+
+\begin{frame}{Duplication, Fact 2(b): far stays far}
+\framesubtitle{Pick one line per block: a cheap repair of $A^{(q)}$ leaves $A$ almost intact}
+\begin{columns}[T]
+\begin{column}{0.54\textwidth}
+\small
+\textbf{Claim.} If $q$ is large, changing at most $\tfrac12q^2D_R(A)$ entries of $A^{(q)}$ leaves a copy of $H$. Call the changed matrix $B'$. \textbf{Example} (right): $q=3$, $D_R(A)=1$, so $4$ changes (green), all in the block of $A(1,1)$, the entry every copy of $R$ in $A$ uses.
+\begin{overprint}
+\onslide<1>
+\raggedright
+\onslide<2>
+\raggedright
+\textbf{Pick} one row from each block of rows and one column from each block of columns, at random. They form an $n\times n$ matrix $B$, which is $A$ unless a changed entry is picked. Here \textcolor{teal!80!black}{rows $2,5,8$ and columns $3,4,9$}: $B=A$.
+\onslide<3>
+\raggedright
+Each changed entry is picked with probability $1/q^2$, so on average $B$ differs from $A$ in at most $\tfrac12D_R(A)$ entries (here $\tfrac{4}{9}$). By Markov's inequality, with probability at least $\tfrac12$ it differs in fewer than $D_R(A)$, and then $B$ contains $R$. Here $405$ of the $729$ picks contain $R$.
+\onslide<4>
+\raggedright
+A given copy of $R$ in $B'$ is picked with probability at most $q^{-(k_0+l_0)}$, one line from each of its blocks. So
+\[ N_R(B')\ \ge\ \tfrac12q^{k_0+l_0}. \]
+Here $N_R(B')=154\ge \tfrac12\cdot 3^{4}$.
+\onslide<5>
+\raggedright
+So at least a fraction $\frac{1}{2n^{k_0+l_0}}$ of all positions hold a copy of $R$ in $B'$, and it does not shrink as $q$ grows. Fact 1, once per repeated row or column, gives the same for $H$ once $q$ is large: \alert{$B'$ contains $H$}. Here $B'$ has $54$ copies of $H$.
+\end{overprint}
+\end{column}
+\begin{column}{0.42\textwidth}
+\centering
+\begin{tikzpicture}[]
+\useasboundingbox (-0.4,0.75) rectangle (4.75,-2.85);
+\node[font=\scriptsize, anchor=south] at (1.35,0.32) {$B'$};
+\only<2->{%
+  \fill[teal!18] (0,-0.3) rectangle (0.3,-0.6);
+  \fill[teal!18] (0.3,-0.3) rectangle (0.6,-0.6);
+  \fill[teal!18] (0.6,-0.3) rectangle (0.9,-0.6);
+  \fill[teal!18] (0.9,-0.3) rectangle (1.2,-0.6);
+  \fill[teal!18] (1.2,-0.3) rectangle (1.5,-0.6);
+  \fill[teal!18] (1.5,-0.3) rectangle (1.8,-0.6);
+  \fill[teal!18] (1.8,-0.3) rectangle (2.1,-0.6);
+  \fill[teal!18] (2.1,-0.3) rectangle (2.4,-0.6);
+  \fill[teal!18] (2.4,-0.3) rectangle (2.7,-0.6);
+  \fill[teal!18] (0,-1.2) rectangle (0.3,-1.5);
+  \fill[teal!18] (0.3,-1.2) rectangle (0.6,-1.5);
+  \fill[teal!18] (0.6,-1.2) rectangle (0.9,-1.5);
+  \fill[teal!18] (0.9,-1.2) rectangle (1.2,-1.5);
+  \fill[teal!18] (1.2,-1.2) rectangle (1.5,-1.5);
+  \fill[teal!18] (1.5,-1.2) rectangle (1.8,-1.5);
+  \fill[teal!18] (1.8,-1.2) rectangle (2.1,-1.5);
+  \fill[teal!18] (2.1,-1.2) rectangle (2.4,-1.5);
+  \fill[teal!18] (2.4,-1.2) rectangle (2.7,-1.5);
+  \fill[teal!18] (0,-2.1) rectangle (0.3,-2.4);
+  \fill[teal!18] (0.3,-2.1) rectangle (0.6,-2.4);
+  \fill[teal!18] (0.6,-2.1) rectangle (0.9,-2.4);
+  \fill[teal!18] (0.9,-2.1) rectangle (1.2,-2.4);
+  \fill[teal!18] (1.2,-2.1) rectangle (1.5,-2.4);
+  \fill[teal!18] (1.5,-2.1) rectangle (1.8,-2.4);
+  \fill[teal!18] (1.8,-2.1) rectangle (2.1,-2.4);
+  \fill[teal!18] (2.1,-2.1) rectangle (2.4,-2.4);
+  \fill[teal!18] (2.4,-2.1) rectangle (2.7,-2.4);
+  \fill[teal!18] (0.6,0) rectangle (0.9,-0.3);
+  \fill[teal!18] (0.9,0) rectangle (1.2,-0.3);
+  \fill[teal!18] (2.4,0) rectangle (2.7,-0.3);
+  \fill[teal!18] (0.6,-0.6) rectangle (0.9,-0.9);
+  \fill[teal!18] (0.9,-0.6) rectangle (1.2,-0.9);
+  \fill[teal!18] (2.4,-0.6) rectangle (2.7,-0.9);
+  \fill[teal!18] (0.6,-0.9) rectangle (0.9,-1.2);
+  \fill[teal!18] (0.9,-0.9) rectangle (1.2,-1.2);
+  \fill[teal!18] (2.4,-0.9) rectangle (2.7,-1.2);
+  \fill[teal!18] (0.6,-1.5) rectangle (0.9,-1.8);
+  \fill[teal!18] (0.9,-1.5) rectangle (1.2,-1.8);
+  \fill[teal!18] (2.4,-1.5) rectangle (2.7,-1.8);
+  \fill[teal!18] (0.6,-1.8) rectangle (0.9,-2.1);
+  \fill[teal!18] (0.9,-1.8) rectangle (1.2,-2.1);
+  \fill[teal!18] (2.4,-1.8) rectangle (2.7,-2.1);
+  \fill[teal!18] (0.6,-2.4) rectangle (0.9,-2.7);
+  \fill[teal!18] (0.9,-2.4) rectangle (1.2,-2.7);
+  \fill[teal!18] (2.4,-2.4) rectangle (2.7,-2.7);
+}
+\only<2->{%
+  \fill[teal!45] (0.6,-0.3) rectangle (0.9,-0.6);
+  \fill[teal!45] (0.9,-0.3) rectangle (1.2,-0.6);
+  \fill[teal!45] (2.4,-0.3) rectangle (2.7,-0.6);
+  \fill[teal!45] (0.6,-1.2) rectangle (0.9,-1.5);
+  \fill[teal!45] (0.9,-1.2) rectangle (1.2,-1.5);
+  \fill[teal!45] (2.4,-1.2) rectangle (2.7,-1.5);
+  \fill[teal!45] (0.6,-2.1) rectangle (0.9,-2.4);
+  \fill[teal!45] (0.9,-2.1) rectangle (1.2,-2.4);
+  \fill[teal!45] (2.4,-2.1) rectangle (2.7,-2.4);
+}
+\fill[green!40] (0,0) rectangle (0.3,-0.3);
+\fill[green!40] (0.3,-0.3) rectangle (0.6,-0.6);
+\fill[green!40] (0.6,-0.6) rectangle (0.9,-0.9);
+\fill[green!40] (0.3,0) rectangle (0.6,-0.3);
+\draw[gray!40] (0,0) -- (2.7,0);
+\draw[gray!40] (0,-0.3) -- (2.7,-0.3);
+\draw[gray!40] (0,-0.6) -- (2.7,-0.6);
+\draw[gray!40] (0,-0.9) -- (2.7,-0.9);
+\draw[gray!40] (0,-1.2) -- (2.7,-1.2);
+\draw[gray!40] (0,-1.5) -- (2.7,-1.5);
+\draw[gray!40] (0,-1.8) -- (2.7,-1.8);
+\draw[gray!40] (0,-2.1) -- (2.7,-2.1);
+\draw[gray!40] (0,-2.4) -- (2.7,-2.4);
+\draw[gray!40] (0,-2.7) -- (2.7,-2.7);
+\draw[gray!40] (0,0) -- (0,-2.7);
+\draw[gray!40] (0.3,0) -- (0.3,-2.7);
+\draw[gray!40] (0.6,0) -- (0.6,-2.7);
+\draw[gray!40] (0.9,0) -- (0.9,-2.7);
+\draw[gray!40] (1.2,0) -- (1.2,-2.7);
+\draw[gray!40] (1.5,0) -- (1.5,-2.7);
+\draw[gray!40] (1.8,0) -- (1.8,-2.7);
+\draw[gray!40] (2.1,0) -- (2.1,-2.7);
+\draw[gray!40] (2.4,0) -- (2.4,-2.7);
+\draw[gray!40] (2.7,0) -- (2.7,-2.7);
+\node[font=\tiny] at (0.15,-0.15) {$0$};
+\node[font=\tiny] at (0.45,-0.15) {$0$};
+\node[font=\tiny] at (0.75,-0.15) {$1$};
+\node[font=\tiny] at (1.05,-0.15) {$0$};
+\node[font=\tiny] at (1.35,-0.15) {$0$};
+\node[font=\tiny] at (1.65,-0.15) {$0$};
+\node[font=\tiny] at (1.95,-0.15) {$0$};
+\node[font=\tiny] at (2.25,-0.15) {$0$};
+\node[font=\tiny] at (2.55,-0.15) {$0$};
+\node[font=\tiny] at (0.15,-0.45) {$1$};
+\node[font=\tiny] at (0.45,-0.45) {$0$};
+\node[font=\tiny] at (0.75,-0.45) {$1$};
+\node[font=\tiny] at (1.05,-0.45) {$0$};
+\node[font=\tiny] at (1.35,-0.45) {$0$};
+\node[font=\tiny] at (1.65,-0.45) {$0$};
+\node[font=\tiny] at (1.95,-0.45) {$0$};
+\node[font=\tiny] at (2.25,-0.45) {$0$};
+\node[font=\tiny] at (2.55,-0.45) {$0$};
+\node[font=\tiny] at (0.15,-0.75) {$1$};
+\node[font=\tiny] at (0.45,-0.75) {$1$};
+\node[font=\tiny] at (0.75,-0.75) {$0$};
+\node[font=\tiny] at (1.05,-0.75) {$0$};
+\node[font=\tiny] at (1.35,-0.75) {$0$};
+\node[font=\tiny] at (1.65,-0.75) {$0$};
+\node[font=\tiny] at (1.95,-0.75) {$0$};
+\node[font=\tiny] at (2.25,-0.75) {$0$};
+\node[font=\tiny] at (2.55,-0.75) {$0$};
+\node[font=\tiny] at (0.15,-1.05) {$1$};
+\node[font=\tiny] at (0.45,-1.05) {$1$};
+\node[font=\tiny] at (0.75,-1.05) {$1$};
+\node[font=\tiny] at (1.05,-1.05) {$1$};
+\node[font=\tiny] at (1.35,-1.05) {$1$};
+\node[font=\tiny] at (1.65,-1.05) {$1$};
+\node[font=\tiny] at (1.95,-1.05) {$1$};
+\node[font=\tiny] at (2.25,-1.05) {$1$};
+\node[font=\tiny] at (2.55,-1.05) {$1$};
+\node[font=\tiny] at (0.15,-1.35) {$1$};
+\node[font=\tiny] at (0.45,-1.35) {$1$};
+\node[font=\tiny] at (0.75,-1.35) {$1$};
+\node[font=\tiny] at (1.05,-1.35) {$1$};
+\node[font=\tiny] at (1.35,-1.35) {$1$};
+\node[font=\tiny] at (1.65,-1.35) {$1$};
+\node[font=\tiny] at (1.95,-1.35) {$1$};
+\node[font=\tiny] at (2.25,-1.35) {$1$};
+\node[font=\tiny] at (2.55,-1.35) {$1$};
+\node[font=\tiny] at (0.15,-1.65) {$1$};
+\node[font=\tiny] at (0.45,-1.65) {$1$};
+\node[font=\tiny] at (0.75,-1.65) {$1$};
+\node[font=\tiny] at (1.05,-1.65) {$1$};
+\node[font=\tiny] at (1.35,-1.65) {$1$};
+\node[font=\tiny] at (1.65,-1.65) {$1$};
+\node[font=\tiny] at (1.95,-1.65) {$1$};
+\node[font=\tiny] at (2.25,-1.65) {$1$};
+\node[font=\tiny] at (2.55,-1.65) {$1$};
+\node[font=\tiny] at (0.15,-1.95) {$1$};
+\node[font=\tiny] at (0.45,-1.95) {$1$};
+\node[font=\tiny] at (0.75,-1.95) {$1$};
+\node[font=\tiny] at (1.05,-1.95) {$0$};
+\node[font=\tiny] at (1.35,-1.95) {$0$};
+\node[font=\tiny] at (1.65,-1.95) {$0$};
+\node[font=\tiny] at (1.95,-1.95) {$1$};
+\node[font=\tiny] at (2.25,-1.95) {$1$};
+\node[font=\tiny] at (2.55,-1.95) {$1$};
+\node[font=\tiny] at (0.15,-2.25) {$1$};
+\node[font=\tiny] at (0.45,-2.25) {$1$};
+\node[font=\tiny] at (0.75,-2.25) {$1$};
+\node[font=\tiny] at (1.05,-2.25) {$0$};
+\node[font=\tiny] at (1.35,-2.25) {$0$};
+\node[font=\tiny] at (1.65,-2.25) {$0$};
+\node[font=\tiny] at (1.95,-2.25) {$1$};
+\node[font=\tiny] at (2.25,-2.25) {$1$};
+\node[font=\tiny] at (2.55,-2.25) {$1$};
+\node[font=\tiny] at (0.15,-2.55) {$1$};
+\node[font=\tiny] at (0.45,-2.55) {$1$};
+\node[font=\tiny] at (0.75,-2.55) {$1$};
+\node[font=\tiny] at (1.05,-2.55) {$0$};
+\node[font=\tiny] at (1.35,-2.55) {$0$};
+\node[font=\tiny] at (1.65,-2.55) {$0$};
+\node[font=\tiny] at (1.95,-2.55) {$1$};
+\node[font=\tiny] at (2.25,-2.55) {$1$};
+\node[font=\tiny] at (2.55,-2.55) {$1$};
+\draw[ink, line width=0.7pt] (0,0) -- (0,-2.7);
+\draw[ink, line width=0.7pt] (0,0) -- (2.7,0);
+\draw[ink, line width=0.7pt] (0.9,0) -- (0.9,-2.7);
+\draw[ink, line width=0.7pt] (0,-0.9) -- (2.7,-0.9);
+\draw[ink, line width=0.7pt] (1.8,0) -- (1.8,-2.7);
+\draw[ink, line width=0.7pt] (0,-1.8) -- (2.7,-1.8);
+\draw[ink, line width=0.7pt] (2.7,0) -- (2.7,-2.7);
+\draw[ink, line width=0.7pt] (0,-2.7) -- (2.7,-2.7);
+\node[font=\tiny, anchor=east] at (-0.08,-0.15) {$1$};
+\node[font=\tiny, anchor=east] at (-0.08,-0.45) {$2$};
+\node[font=\tiny, anchor=east] at (-0.08,-0.75) {$3$};
+\node[font=\tiny, anchor=east] at (-0.08,-1.05) {$4$};
+\node[font=\tiny, anchor=east] at (-0.08,-1.35) {$5$};
+\node[font=\tiny, anchor=east] at (-0.08,-1.65) {$6$};
+\node[font=\tiny, anchor=east] at (-0.08,-1.95) {$7$};
+\node[font=\tiny, anchor=east] at (-0.08,-2.25) {$8$};
+\node[font=\tiny, anchor=east] at (-0.08,-2.55) {$9$};
+\node[font=\tiny, anchor=south] at (0.15,0.05) {$1$};
+\node[font=\tiny, anchor=south] at (0.45,0.05) {$2$};
+\node[font=\tiny, anchor=south] at (0.75,0.05) {$3$};
+\node[font=\tiny, anchor=south] at (1.05,0.05) {$4$};
+\node[font=\tiny, anchor=south] at (1.35,0.05) {$5$};
+\node[font=\tiny, anchor=south] at (1.65,0.05) {$6$};
+\node[font=\tiny, anchor=south] at (1.95,0.05) {$7$};
+\node[font=\tiny, anchor=south] at (2.25,0.05) {$8$};
+\node[font=\tiny, anchor=south] at (2.55,0.05) {$9$};
+\only<2->{%
+  \draw[gray!55] (3.35,-0.75) -- (4.55,-0.75);
+  \draw[gray!55] (3.35,-1.15) -- (4.55,-1.15);
+  \draw[gray!55] (3.35,-1.55) -- (4.55,-1.55);
+  \draw[gray!55] (3.35,-1.95) -- (4.55,-1.95);
+  \draw[gray!55] (3.35,-0.75) -- (3.35,-1.95);
+  \draw[gray!55] (3.75,-0.75) -- (3.75,-1.95);
+  \draw[gray!55] (4.15,-0.75) -- (4.15,-1.95);
+  \draw[gray!55] (4.55,-0.75) -- (4.55,-1.95);
+  \node[font=\scriptsize] at (3.55,-0.95) {$1$};
+  \node[font=\scriptsize] at (3.95,-0.95) {$0$};
+  \node[font=\scriptsize] at (4.35,-0.95) {$0$};
+  \node[font=\scriptsize] at (3.55,-1.35) {$1$};
+  \node[font=\scriptsize] at (3.95,-1.35) {$1$};
+  \node[font=\scriptsize] at (4.35,-1.35) {$1$};
+  \node[font=\scriptsize] at (3.55,-1.75) {$1$};
+  \node[font=\scriptsize] at (3.95,-1.75) {$0$};
+  \node[font=\scriptsize] at (4.35,-1.75) {$1$};
+  \node[font=\scriptsize, anchor=south] at (3.95,-0.7) {$B$};
+  \draw[-{Stealth[length=2mm]}, teal!70!black, thick] (2.8,-1.35) -- (3.3,-1.35);
+}
+\end{tikzpicture}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Duplication: proof of the theorem}
+\framesubtitle{Fact 1 carries many copies up; Fact 2 carries a bad host up}
+\small
+\textbf{Theorem.} $H$ satisfies the conjecture if and only if $R=\operatorname{red}(H)$ does.
+
+\begin{itemize}
+\item<1-> \textbf{If $R$ satisfies it, so does $H$.} Let $\dist_H(A)\ge\epsilon$. $R$ keeps some rows and columns of $H$, so $H$ contains $R$, and every $R$-free matrix is $H$-free: $\dist_R(A)\ge\epsilon$. So $A$ has at least $c\,\epsilon^Cn^{k_0+l_0}$ copies of $R$. Fact 1, once for each repeated row or column, gives at least $c'\epsilon^{C'}n^{k+l}$ copies of $H$. This needs $n$ larger than a fixed power of $1/\epsilon$; for smaller $n$, use $N_H(A)\ge1$ and a larger $C'$.
+\item<2-> \textbf{If $R$ fails, so does $H$.} Let $c',C'>0$ be given. As $R$ fails, some $A$ has $\dist_R(A)\ge\epsilon_0$ and fewer than $c'2^{-C'}\epsilon_0^{C'}n^{k_0+l_0}$ copies of $R$. For large $q$, Fact 2 gives
+\begin{align*}
+\dist_H(A^{(q)})&\ge\tfrac12\dist_R(A)\ge\tfrac{\epsilon_0}2=:\epsilon &&\text{by (b)},\\
+N_H(A^{(q)})&\le\frac{N_R(A)}{n^{k_0+l_0}}(qn)^{k+l}<c'\epsilon^{C'}(qn)^{k+l} &&\text{by (a)}.
+\end{align*}
+So no constants $c',C'$ work for $H$.
+\end{itemize}
 \end{frame}
 
 \begin{frame}{Infinite families}
@@ -3028,6 +3687,99 @@ Keep one row and one column per run of equal rows and columns of $H$. They lie i
 \item \textbf{Agda} (\texttt{--safe}): the special case of one appended zero column, fully proved.
 \item \textbf{Computer checks}: the direct-sum statements on $200$ small hosts; OpenAI's counts for small $h$, including $m^2$ as the exact distance for $h\le5$.
 \end{itemize}
+\end{frame}
+
+\begin{frame}{Lean: the definitions}
+\framesubtitle{The paper's objects in Lean~4, from \texttt{lean/OrderedRemoval/Statements.lean}}
+{\setlength{\fboxsep}{5pt}\fcolorbox{rulecol}{white}{\begin{minipage}{\dimexpr\linewidth-2\fboxsep-0.8pt\relax}
+\ttfamily\fontsize{7}{8.4}\selectfont\setlength{\parskip}{0pt}\setlength{\parindent}{0pt}\raggedright
+\mbox{\textcolor{accent!85!black}{abbrev}\ BMat\ (a\ b\ :\ $\mathbb{N}$)\ :=\ Fin\ a\ $\to$\ Fin\ b\ $\to$\ Bool}\par
+\vspace{0.35em}
+\mbox{\textcolor{accent!85!black}{def}\ IsCopy\ \{k\ l\ n\ m\ :\ $\mathbb{N}$\}\ (H\ :\ BMat\ k\ l)\ (A\ :\ BMat\ n\ m)\ (r\ :\ Fin\ k\ $\to$\ Fin\ n)\ (c\ :\ Fin\ l\ $\to$\ Fin\ m)\ :}\par
+\mbox{\ \ \ \ \textcolor{accent!85!black}{Prop}\ :=}\par
+\mbox{\ \ StrictMono\ r\ $\wedge$\ StrictMono\ c\ $\wedge$\ $\forall$\ i\ j,\ A\ (r\ i)\ (c\ j)\ =\ H\ i\ j}\par
+\vspace{0.35em}
+\mbox{\textcolor{accent!85!black}{noncomputable}\ \textcolor{accent!85!black}{def}\ editDist\ \{k\ l\ n\ m\ :\ $\mathbb{N}$\}\ (H\ :\ BMat\ k\ l)\ (A\ :\ BMat\ n\ m)\ :\ $\mathbb{N}$\ :=}\par
+\mbox{\ \ sInf\ \{d\ \textbar{}\ $\exists$\ B\ :\ BMat\ n\ m,\ Free\ H\ B\ $\wedge$\ hamming\ A\ B\ =\ d\}}\par
+\vspace{0.35em}
+\mbox{\textcolor{accent!85!black}{def}\ PolyRemoval\ \{a\ b\ :\ $\mathbb{N}$\}\ (H\ :\ BMat\ a\ b)\ :\ \textcolor{accent!85!black}{Prop}\ :=}\par
+\mbox{\ \ $\exists$\ c\ C\ :\ $\mathbb{R}$,\ 0\ <\ c\ $\wedge$\ 0\ <\ C\ $\wedge$}\par
+\mbox{\ \ \ \ $\forall$\ (n\ :\ $\mathbb{N}$)\ (A\ :\ BMat\ n\ n)\ ($\varepsilon$\ :\ $\mathbb{R}$),\ 0\ <\ $\varepsilon$\ $\to$\ $\varepsilon$\ $\le$\ 1\ $\to$}\par
+\mbox{\ \ \ \ \ \ $\varepsilon$\ *\ (n\ :\ $\mathbb{R}$)\ \^{}\ 2\ $\le$\ (editDist\ H\ A\ :\ $\mathbb{R}$)\ $\to$}\par
+\mbox{\ \ \ \ \ \ \ \ c\ *\ $\varepsilon$\ \^{}\ C\ *\ (n\ :\ $\mathbb{R}$)\ \^{}\ (a\ +\ b)\ $\le$\ (copyCount\ H\ A\ :\ $\mathbb{R}$)}\par
+\end{minipage}}}
+
+\smallskip
+{\scriptsize
+\begin{tabular}{@{}l@{\hspace{0.6em}}l@{\hspace{1.4em}}l@{\hspace{0.6em}}l@{}}
+$k\times l$ pattern $H$ & \texttt{H : BMat k l}, \texttt{true} $=1$ &
+$\smallmat{H&0\\0&Z}$, $\widehat Z$ & \texttt{blockDiag H Z}, \texttt{blowup Z n}\\
+$N_H(A)$, $D_H(A)$ & \texttt{copyCount H A}, \texttt{editDist H A} &
+no all-zero row or column & \texttt{NoZeroLine H}\\
+the conjecture for $H$ & \texttt{PolyRemoval H} &
+rows of $Z$ pairwise distinct & \texttt{Function.Injective Z}
+\end{tabular}}
+\end{frame}
+
+\begin{frame}{Lean: the direct-sum theorem and its corollary}
+\framesubtitle{Theorem~8 and Corollary~9 of the paper, as stated in Lean}
+{\setlength{\fboxsep}{5pt}\fcolorbox{rulecol}{white}{\begin{minipage}{\dimexpr\linewidth-2\fboxsep-0.8pt\relax}
+\ttfamily\scriptsize\setlength{\parskip}{0pt}\setlength{\parindent}{0pt}\raggedright
+\mbox{\textcolor{accent!85!black}{theorem}\ editDist\_blockDiag\ \{k\ l\ p\ q\ n\ :\ $\mathbb{N}$\}\ (H\ :\ BMat\ k\ l)\ (hH\ :\ NoZeroLine\ H)}\par
+\mbox{\ \ \ \ (hk\ :\ 0\ <\ k)\ (Z\ :\ BMat\ p\ q)\ (hp\ :\ 0\ <\ p)\ (hq\ :\ 0\ <\ q)}\par
+\mbox{\ \ \ \ (hZ\ :\ Function.Injective\ Z\ $\vee$\ Function.Injective\ (\textcolor{accent!85!black}{fun}\ j\ i\ =>\ Z\ i\ j))\ (A\ :\ BMat\ n\ n)\ :}\par
+\mbox{\ \ \ \ editDist\ (blockDiag\ H\ Z)\ (blockDiag\ A\ (blowup\ Z\ n))\ =\ editDist\ H\ A}\par
+\vspace{0.35em}
+\mbox{\textcolor{accent!85!black}{theorem}\ not\_polyRemoval\_blockDiag\ \{k\ l\ p\ q\ :\ $\mathbb{N}$\}\ (H\ :\ BMat\ k\ l)\ (hH\ :\ NoZeroLine\ H)}\par
+\mbox{\ \ \ \ (Z\ :\ BMat\ p\ q)\ (hp\ :\ 0\ <\ p)\ (hq\ :\ 0\ <\ q)}\par
+\mbox{\ \ \ \ (hZ\ :\ Function.Injective\ Z\ $\vee$\ Function.Injective\ (\textcolor{accent!85!black}{fun}\ j\ i\ =>\ Z\ i\ j))}\par
+\mbox{\ \ \ \ (hcounter\ :\ $\neg$\ PolyRemoval\ H)\ :}\par
+\mbox{\ \ \ \ $\neg$\ PolyRemoval\ (blockDiag\ H\ Z)}\par
+\end{minipage}}}
+
+\smallskip
+\footnotesize
+\begin{itemize}
+\item \textbf{Also proved:} the copy bound \texttt{copyCount\_blockDiag}, the zero-column variant, and the family from attaching $(1)$ again and again. Step~3's random picks become sums over all picks: no probability or division.
+\item \textbf{Lean caught three false edge cases} in the first statements: the empty $0\times0$ pattern satisfies \texttt{NoZeroLine} vacuously, and \texttt{editDist} is \texttt{sInf} $\emptyset=0$ when no $H$-free matrix exists. Fixed by the hypotheses \texttt{hk~:~0~<~k} and ``an $H$-free matrix exists''; the corollaries needed no change.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Lean: unconditional, with OpenAI's proof}
+\framesubtitle{\texttt{lean-unconditional/}: OpenAI's Lean proof of the $66\times66$ counterexample, plugged into ours}
+{\setlength{\fboxsep}{5pt}\fcolorbox{rulecol}{white}{\begin{minipage}{\dimexpr\linewidth-2\fboxsep-0.8pt\relax}
+\ttfamily\scriptsize\setlength{\parskip}{0pt}\setlength{\parindent}{0pt}\raggedright
+\mbox{\textcolor{accent!85!black}{theorem}\ oai\_not\_polyRemoval\ :\ $\neg$\ PolyRemoval\ (fixedH\ :\ BMat\ 66\ 66)}\par
+\vspace{0.35em}
+\mbox{\textcolor{accent!85!black}{theorem}\ infinitely\_many\_counterexamples\ :}\par
+\mbox{\ \ \ \ $\exists$\ f\ :\ $\mathbb{N}$\ $\to$\ Pattern,\ Function.Injective\ f\ $\wedge$}\par
+\mbox{\ \ \ \ \ \ $\forall$\ t,\ NoZeroLine\ (f\ t).2\ $\wedge$\ $\neg$\ PolyRemoval\ (f\ t).2}\par
+\end{minipage}}}
+
+\medskip
+\begin{columns}[T]
+\begin{column}{0.54\textwidth}
+\footnotesize
+\begin{itemize}
+\item OpenAI's $61$ files (\texttt{openai/math} at \texttt{4eaee87}, Apache-2.0), unchanged: we checked all $61$ are byte-identical.
+\item A bridge of $8$ theorems: both define the same distances and counts, and OpenAI's bound becomes \texttt{$\neg$ PolyRemoval fixedH}.
+\item Lean, Mathlib v4.35.0 pinned. An axiom audit (only \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}) passes on all $1803$ declarations; no \texttt{sorry}.
+\item Not formalized: the duplication theorem.
+\end{itemize}
+\end{column}
+\begin{column}{0.43\textwidth}
+\centering
+\begin{tikzpicture}[>={Stealth[length=2mm]}]
+\node[leanbox=3.1cm, fill=teal!10] (oai) at (0,0) {OpenAI: $61$ files\\ {\tiny\texttt{no\_polynomial\_removal\_bound}}};
+\node[leanbox, fill=accent!12] (ours) at (3.05,0) {ours: $4059$ lines\\ {\tiny\texttt{infinite\_family\_of\_}}\\[-1pt] {\tiny\texttt{counterexample}}};
+\node[leanbox, fill=paper] (bridge) at (0,-1.35) {bridge: $8$ theorems\\ {\tiny\texttt{oai\_not\_polyRemoval}}};
+\node[leanbox=4.6cm, fill=green!10] (main) at (1.52,-2.55) {{\tiny\texttt{infinitely\_many\_counterexamples}}};
+\draw[->] (oai) -- (bridge);
+\draw[->] (bridge) -- (bridge |- main.north);
+\draw[->] (ours) -- (ours |- main.north);
+\end{tikzpicture}
+\end{column}
+\end{columns}
 \end{frame}
 
 \begin{frame}{Open questions}

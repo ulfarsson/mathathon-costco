@@ -482,9 +482,237 @@ it is a question about the table in Figure~\ref{fig:map}, phrased in node indice
 mode asks one such question, and $A_h$ is built so that the answer is
 negative in every case but one, at the leaf diagonal. 
 
-% \subsection*{Proof}   (an empty heading in the draft: put it back with the proof)
+\subsection*{Proof}
 
+The proof has two halves, one for each half of the intuition above. Removing
+the copies costs $m^2$ changes because the chains are spread out, and the
+copies all pass through the $m$ leaf cells. We make the chains precise, prove
+the two halves, and put them together. Routine details are in~\cite{openai},
+whose numbering we use when we cite it.
 
+\begin{theorem}[{\cite[Theorem~1.1]{openai}}]\label{thm:openai}
+Let $h\ge1$, $m=2^h$, $n=(386h+2)m$ and $\epsilon_h=(386h+2)^{-2}$. Then
+\[
+  D_H(A_h)\ \ge\ m^2=\epsilon_h n^2
+  \qquad\text{and}\qquad
+  N_H(A_h)\ \le\ m\,n^{130}=\epsilon_h2^{-h}\,n^{132}.
+\]
+Consequently $H$ is a counterexample to Conjecture~\ref{conj:poly-removal}.
+\end{theorem}
+
+\subsubsection*{Forced steps}
+
+The arrows of Figure~\ref{fig:tree-matrix} come from the following lemma. It
+holds in \emph{any} matrix $B$, not only in $A_h$, as long as the anchor and
+dummy entries involved are left as they are.
+
+\begin{lemma}[Forced steps]\label{lem:step}
+Let $B$ be an $H$-free $n\times n$ matrix and $t$ a mode. Pick one row and one
+column from each of the $64$ anchor groups of $t$, rows $r_1<r_2$ with
+$r_j\in\mathsf R_j(t)$, and columns $c_1<c_2$ with $c_j\in\mathsf C_j(t)$.
+Suppose $B$ agrees with $A_h$ wherever two of these lines cross and at least
+one of them is an anchor or dummy line. Then a $1$ at the \emph{start} of the
+step forces a $1$ at its \emph{end}:
+\[
+\begin{array}{lll}
+  V\text{ modes }(c_1\in C_*): & B(r_2,c_2)\le B(r_1,c_2) & \text{(a vertical step in column } c_2),\\[2pt]
+  W\text{ modes }(r_2\in R_*): & B(r_1,c_1)\le B(r_1,c_2) & \text{(a horizontal step in row } r_1).
+\end{array}
+\]
+\end{lemma}
+
+\begin{proof}
+The anchor lines read $S$ among themselves, come before all other lines, and
+read $e_1,e_2$ against $r_j,c_j$, as in item~2 above. So everything in $H$
+except the body is in place, and since $B$ is $H$-free the body is not $P$. The
+dummy line contributes two $1$s, so the body is
+$\left(\begin{smallmatrix}1&B(r_1,c_2)\\1&B(r_2,c_2)\end{smallmatrix}\right)$
+in a $V$ mode and
+$\left(\begin{smallmatrix}B(r_1,c_1)&B(r_1,c_2)\\1&1\end{smallmatrix}\right)$
+in a $W$ mode. Each equals $P$ exactly when the stated inequality fails.
+\end{proof}
+
+A step \emph{drops} if its start is $1$ and its end is $0$. The proof shows
+that a drop, together with the anchor lines, is a copy of $H$.
+
+\subsubsection*{Chains}
+
+A \emph{chain} consists of
+\begin{itemize}\itemsep1pt
+\item a leaf $z\in\{0,\dots,m-1\}$ and its ancestors $a_i=\lfloor z/2^{h-i}\rfloor$,
+  so that $a_0=0$, $a_h=z$ and $\pi(a_i)=a_{i-1}$;
+\item for each depth $i$ and sign $\sigma$, a row $x_i^\sigma$ and a column
+  $y_i^\sigma$ with label $(\sigma,i,a_i)$. At depth $h$ the two signs name the
+  single leaf row $x_h$ and leaf column $y_h$;
+\item a dummy row $x_*$, a dummy column $y_*$, and one row and one column from
+  every anchor group of every mode.
+\end{itemize}
+Write $v_i^\sigma=(x_i^\sigma,y_i^\sigma)$ and
+$u_i^\sigma=(x_i^\sigma,y_{i-1}^\sigma)$. The chain runs along the path
+\[
+  v_0^+\to u_1^+\to v_1^+\to\cdots\to u_h^+\to
+  \underbrace{v_h}_{\text{leaf cell of }z}
+  \to u_h^-\to v_{h-1}^-\to\cdots\to u_1^-\to v_0^- ,
+\]
+and every arrow is a forced step of Lemma~\ref{lem:step}. With $d=a_i\bmod 2$:
+\[
+\begin{array}{llll}
+  \text{step} & \text{mode} & \text{rows } r_1<r_2 & \text{columns } c_1<c_2\\[2pt]
+  v_{i-1}^+\to u_i^+ & V_i^+ & x_i^+<x_{i-1}^+ & y_*<y_{i-1}^+\\
+  u_i^+\to v_i^+ & W_{i,d}^+ & x_i^+<x_* & y_{i-1}^+<y_i^+\\
+  v_i^-\to u_i^- & W_{i,d}^- & x_i^-<x_* & y_i^-<y_{i-1}^-\\
+  u_i^-\to v_{i-1}^- & V_i^- & x_{i-1}^-<x_i^- & y_*<y_{i-1}^-
+\end{array}
+\]
+The lines lie in the sets that \eqref{eq:modes} designates, and they come in the
+stated order by \eqref{eq:orders} with $\pi(a_i)=a_{i-1}$. (The dummy row
+comes last and the dummy column first.) For $h=1$ these are exactly the arrows
+of Figure~\ref{fig:tree-matrix}(b).
+
+\emph{The chains of $A_h$.} The plus entries of $A_h$ are comparisons
+$\mathbf 1[\,\cdot\le\cdot\,]$ and the minus entries are comparisons
+$\mathbf 1[\,\cdot<\cdot\,]$. Along a chain the two compared indices are always
+equal ($a_i$ with $a_i$, or $\pi(a_i)$ with $a_{i-1}$). So in $A_h$ every plus
+entry of a chain is $1$, every minus entry is $0$, and the leaf cell is
+$\mathbf 1[z\le z]=1$. Each chain reads $1,\dots,1,0,\dots,0$. It starts in the
+root's block of $1$s, ends in its block of $0$s, and drops exactly once, right
+after its leaf cell.
+
+A chain \emph{relies on} its two ends $v_0^+$ and $v_0^-$, and on every entry
+where one of its rows crosses one of its columns and at least one of the two is
+an anchor or dummy line. These are the only entries that
+Lemma~\ref{lem:step} needs.
+
+\begin{lemma}[Chains cannot be bypassed]\label{lem:bypass}
+An $H$-free matrix $B$ differs from $A_h$ on some entry that each chain relies
+on.
+\end{lemma}
+
+\begin{proof}
+Otherwise, for some chain every step is forced in $B$. Following the path
+gives $1=B(v_0^+)\le\cdots\le B(v_0^-)=0$.
+\end{proof}
+
+Nothing in this argument uses the entries in the middle of the chain, the
+leaf cell included. This is the formal version of
+Figure~\ref{fig:tree-matrix}(c): changing those entries can move the drop, but
+it cannot remove it.
+
+\begin{lemma}[Chains are spread out]\label{lem:spread}
+Choose a random chain: $z$ uniformly, and then every line uniformly within its
+label, all independently. Every entry is relied on by the random chain with
+probability at most $1/m^2$. By contrast, the leaf cell of a fixed leaf $p$ lies
+on the random chain with probability $1/m$.
+\end{lemma}
+
+\begin{proof}
+Each axis splits into $386h+2$ classes of $m$ lines each: the anchor groups, the
+dummy lines, the lines of one sign and one depth $i<h$, and the leaf lines. A
+chain takes exactly one line from each class, and each line of a class with
+probability $1/m$. For a line with label $(\sigma,i,p)$, the node $p$ is the
+ancestor $a_i$ with probability $2^{-i}$, and the line is then one of $2^{h-i}$
+equally likely lines. Now consider an entry $(r,c)$ that a chain can rely on.
+If $r$ is an anchor or dummy line, it is chosen independently of every column,
+so $(r,c)$ is chosen with probability $\frac1m\cdot\frac1m$. The same holds if
+$c$ is an anchor or dummy line. If $(r,c)$ is an end, $r$ and $c$ are root
+lines, which are also chosen independently. In contrast, the leaf row and the
+leaf column of $p$ are chosen together, exactly when $z=p$.
+\end{proof}
+
+\begin{proposition}[Distance; {\cite[Proposition~3.1]{openai}}]\label{prop:distance}
+Every $H$-free matrix differs from $A_h$ in at least $m^2$ entries.
+\end{proposition}
+
+\begin{proof}
+Let $B$ be $H$-free and let $E$ be the set of entries where it differs from
+$A_h$. By Lemma~\ref{lem:bypass} the random chain always relies on an entry of
+$E$. By Lemma~\ref{lem:spread} and the union bound, this happens with
+probability at most $|E|/m^2$. Hence $|E|\ge m^2$.
+\end{proof}
+
+\subsubsection*{Every copy passes through a leaf cell}
+
+The distance bound only had to \emph{find} a copy of $H$ in $B$. The copy
+bound has to find \emph{all} copies of $H$ in $A_h$, so we first make sure
+that $A_h$ has no copies other than the ones the modes plant.
+
+\emph{Step 1: the address is rigid}
+\cite[Lemma~4.4, Corollary~4.5]{openai}. Every copy of $H$ in $A_h$ is
+addressed as in items~1--2 above. The proof uses two features of $S$. First,
+rows $33$--$64$ of $S$ list all $32$ binary words of length five on its last
+five columns. Outside the anchor part, every entry of $A_h$ is a constant or a
+threshold comparison of node indices. So within each label class the $1$s of a row form
+a suffix, and on any five non-anchor columns the non-anchor rows give at most
+$27$ words~\cite[Lemma~4.3]{openai}. A copy of $S$ must therefore use more than
+$32$ anchor lines on one axis. Second, the first $32$ rows and columns of $S$
+are almost all $1$s. Different modes meet only in $0$s, and a variable line has
+at most four $1$s against one line from each anchor group. This pins the copy
+of $S$ to one line from each anchor group of a single mode $t$. Finally, the
+body rows must read $e_1^{\mathsf T},e_2^{\mathsf T}$ against those anchor
+columns, and this happens exactly on $\mathsf R_1(t),\mathsf R_2(t)$. The same
+holds for the columns.
+
+\emph{Step 2: where $A_h$ can drop.} So a copy of $H$ consists of a mode $t$ and
+rows $r_1<r_2$ and columns $c_1<c_2$ in the sets that $t$ designates, on which
+$A_h$ reads $P$. That is, it is a step of Lemma~\ref{lem:step} that drops in
+$A_h$. Unlike in a chain, the nodes involved need not be child and parent. Let
+$p$ and $q$ be the nodes of the depth-$i$ row and column, and let $a$ and $b$ be
+the nodes of the depth-$(i-1)$ row and column. ($V$ modes have no depth-$i$
+column, and $W$ modes have no depth-$(i-1)$ row.) The entries come from
+Figure~\ref{fig:map} and the order of the lines from \eqref{eq:orders}:
+\[
+\begin{array}{llll}
+  \text{mode} & \text{line order} & \text{a drop needs} & \text{but}\\[2pt]
+  V_i^+ & \pi(p)\le a & a\le b,\ \ \pi(p)>b & \pi(p)\le a\le b\\
+  V_i^- & \pi(p)\ge a & a\ge b,\ \ \pi(p)<b & \pi(p)\ge a\ge b\\
+  W_{i,d}^+ & b\le\pi(q) & \pi(p)\le b,\ \ p>q & \pi(p)\le b\le\pi(q),\ \text{so } p\le q\\
+  W_{i,d}^- & \pi(q)\le b & \pi(p)\ge b,\ \ p<q\ \ (i<h) & \pi(p)\ge b\ge\pi(q),\ \text{so } p\ge q
+\end{array}
+\]
+In the $W$ rows, $p\equiv q\equiv d\pmod 2$, so $\pi(p)\le\pi(q)$ implies
+$p\le q$. This is why the $W$ modes are split by parity. Without the split,
+siblings $p=2b+1$ and $q=2b$ would give copies of $H$ at every internal node.
+
+In each case the order of the lines supplies the missing link in a chain of
+inequalities, as along a chain, where the compared indices are equal. There is
+one exception. In the last row the drop needs the top-left entry
+$A_h(r_1,c_1)$ to be $1$, and for $i<h$ that entry is $\mathbf 1[p<q]$. At
+depth $i=h$, however, $r_1$ and $c_1$ are leaves, and between leaves $A_h$ uses
+the plus rule $\mathbf 1[p\le q]$. A drop then needs $p\le q$, and so $p=q$:
+$r_1$ and $c_1$ are the row and column of the same leaf. The drop starts at a leaf cell, which is where the
+chains of $A_h$ drop.
+
+\begin{proposition}[Copies; {\cite[Proposition~4.6]{openai}}]\label{prop:copies}
+Every copy of $H$ in $A_h$ maps the entry $(65,65)$ of $H$ to one of the $m$
+leaf cells. Hence $N_H(A_h)\le m\,n^{2k-2}$.
+\end{proposition}
+
+\begin{proof}
+Entry $(65,65)$ of $H$ is the top-left entry of the body, $(r_1,c_1)$, so by
+Step~2 it lands on a leaf cell. Fixing that cell fixes row $65$ and column $65$
+of the copy. That leaves at most $n^{k-1}$ choices for the other rows and
+$n^{k-1}$ for the other columns.
+\end{proof}
+
+\subsubsection*{Putting it together}
+
+\begin{proof}[Proof of Theorem~\ref{thm:openai}]
+Propositions~\ref{prop:distance} and~\ref{prop:copies} give the two bounds,
+since $m^2=\epsilon_h n^2$ and $m\,n^{130}=(m/n^2)\,n^{132}=\epsilon_h2^{-h}n^{132}$.
+Given $c,C>0$,
+\[
+  \frac{N_H(A_h)}{\epsilon_h^{C}\,n^{132}}\ \le\ \epsilon_h^{1-C}\,2^{-h}
+  =(386h+2)^{2C-2}\,2^{-h}\ \longrightarrow\ 0 \qquad(h\to\infty).
+\]
+So for large $h$ the matrix $A_h$ is $\epsilon_h$-far from being $H$-free and
+has fewer than $c\,\epsilon_h^{C}n^{132}$ copies of $H$.
+\end{proof}
+
+The two halves differ by exactly one factor of $m$. An entry that a chain relies
+on lies on a $1/m^2$ share of the chains, because its row and its column are
+chosen independently. A leaf cell lies on a $1/m$ share, because its row and its
+column are chosen together. So hitting every copy costs only $m$ changes, while
+removing them all costs $m^2$.
 
 
 \clearpage % prints the figures waiting to be placed before the next section
@@ -726,11 +954,78 @@ Let $H'$ be $H$ with column $j$ written twice in a row. Then for every $n\times 
 \]
 The same holds for a repeated row.
 
-\emph{Proof.} Fix the $k$ rows of a copy of $H$ in $B$ and its $l-1$ columns other than the $j$th; call these a \emph{frame}. Let $x$
-be the number of columns that complete the frame to a copy of $H$, as its $j$th column. The frame gives $x$ copies of $H$ and
-$\binom{x}{2}$ copies of $H'$, since the two equal columns of $H'$ can be any two of these $x$ columns. There are
-at most $n^{k+l-1}$ frames, and $\binom{x}{2}$ is convex in $x$, so the bound follows from Jensen's inequality.
-$\square$
+\emph{Proof.} We treat a repeated column; the row case follows by transposing
+both $H$ and $B$, since $N_H(B)=N_{H^{\mathsf T}}(B^{\mathsf T})$. Write
+$N=N_H(B)$ and $N'=N_{H'}(B)$. The pattern $H'$ is $k\times(l+1)$: its columns
+are columns $1,\dots,j$ of $H$, then column $j$ of $H$ again, then columns
+$j+1,\dots,l$ of $H$.
+
+\emph{Step 1: frames.} A \emph{frame} $F$ is a choice of rows
+$r_1<\dots<r_k$ and of columns $c_1<\dots<c_{j-1}<c_{j+1}<\dots<c_l$ of $B$:
+the rows and columns of a would-be copy of $H$, with the $j$th column left out.
+Let $\Phi$ be the set of all frames. A frame is $k$ rows and $l-1$ columns, so
+\[
+ T:=|\Phi|\ \le\ n^k\cdot n^{l-1}=n^{k+l-1}.
+\]
+For a frame $F$, call a column $c$ a \emph{completion} of $F$ if
+$c_{j-1}<c<c_{j+1}$ and the rows $r_1,\dots,r_k$ with the columns
+$c_1,\dots,c_{j-1},c,c_{j+1},\dots,c_l$ form a copy of $H$. (If $j=1$ or
+$j=l$, read $c_0=0$ or $c_{l+1}=n+1$.) Let $x_F$ be the number of completions
+of $F$. This is $0$ if the frame itself does not match $H$ on its own entries.
+
+\emph{Step 2: counting copies of $H$.} Deleting the $j$th column of a copy of
+$H$ leaves a frame $F$, and the deleted column is a completion of $F$.
+Conversely, a frame together with one of its completions is a copy of $H$. So
+copies of $H$ correspond one-to-one to pairs ($F$, completion of $F$), and
+\[
+ \sum_{F\in\Phi}x_F\ =\ N.
+\]
+
+\emph{Step 3: counting copies of $H'$.} Let $c<c'$ be two completions of the
+same frame $F$. Take the rows $r_1,\dots,r_k$ and the columns
+\[
+ c_1<\dots<c_{j-1}<c<c'<c_{j+1}<\dots<c_l .
+\]
+These are in increasing order, since $c$ and $c'$ both lie strictly between
+$c_{j-1}$ and $c_{j+1}$. The entries match $H'$. In the frame's own columns they
+match the corresponding columns of $H$, because $F$ has a completion. In
+columns $c$ and $c'$ they both match column $j$ of $H$, because each is a
+completion. These are exactly what columns $j$ and $j+1$ of $H'$ require. So we
+have a copy of $H'$. Different choices of $F$ and $\{c,c'\}$ give different
+copies: deleting columns $j$ and $j+1$ of the copy recovers $F$, and those two
+columns are $c$ and $c'$. A frame with $x_F$ completions gives
+$\binom{x_F}{2}$ pairs, so
+\[
+ N'\ \ge\ \sum_{F\in\Phi}\binom{x_F}{2}
+ \ =\ \frac12\sum_{F\in\Phi}x_F^2-\frac12\sum_{F\in\Phi}x_F
+ \ =\ \frac12\sum_{F\in\Phi}x_F^2-\frac N2 .
+\]
+
+\emph{Step 4: Cauchy--Schwarz.} If $N=0$, the claim reads $N'\ge0$, which is
+true. Otherwise $T\ge1$, and by the Cauchy--Schwarz inequality
+\[
+ N^2=\Bigl(\sum_{F\in\Phi}1\cdot x_F\Bigr)^2
+ \ \le\ \Bigl(\sum_{F\in\Phi}1\Bigr)\Bigl(\sum_{F\in\Phi}x_F^2\Bigr)
+ \ =\ T\sum_{F\in\Phi}x_F^2 .
+\]
+This is Jensen's inequality for the convex function $x\mapsto x^2$: the sum of
+squares is smallest when all the $x_F$ are equal to the average $N/T$.
+Combining with Step~3 and $T\le n^{k+l-1}$,
+\[
+ N'\ \ge\ \frac{N^2}{2T}-\frac N2\ \ge\ \frac{N^2}{2n^{k+l-1}}-\frac N2 .
+ \qquad\square
+\]
+
+\emph{In particular,} if $N_H(B)\ge\delta n^{k+l}$ for some $\delta>0$ and
+$n\ge2/\delta$, then
+\[
+ N_{H'}(B)\ \ge\ \frac{\delta^2}{2}n^{k+l+1}-\frac{\delta}{2}n^{k+l}
+ \ \ge\ \frac{\delta^2}{4}n^{k+l+1},
+\]
+since $\frac{\delta}{2}n^{k+l}\le\frac{\delta^2}{4}n^{k+l+1}$ exactly when
+$n\ge2/\delta$. So one repeat turns a copy density of $\delta$ into a density of
+at least $\delta^2/4$ (for the larger pattern $H'$, which has $k+l+1$ lines),
+as long as $n$ is not too small. This is how Fact~1 is used below.
 
 \medskip
 \textbf{Fact 2 (blowing up a host).}
