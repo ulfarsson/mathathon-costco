@@ -3986,7 +3986,7 @@ So no constants $c',C'$ work for $H$.
 
 \begin{frame}{Formal verification}
 \begin{itemize}
-\item \textbf{Lean 4} (Mathlib v4.35.0): the direct-sum theorem, the zero-column variant, their corollaries and the infinite family obtained by repeatedly adding $(1)$ are fully proved: no \texttt{sorry}, only the standard axioms. Written with Kimi 3.1 Pro; checked independently.
+\item \textbf{Lean 4} (Mathlib v4.35.0): the direct-sum theorem, the zero-column variant, their corollaries, the infinite family obtained by repeatedly adding $(1)$, and the duplication theorem are fully proved: no \texttt{sorry}, only the standard axioms. Written with Kimi 3.1 Pro (direct sums) and Opus 5.5 (duplication); checked independently.
 \item \textbf{Agda} (\texttt{--safe}): the special case of one appended zero column, fully proved.
 \item \textbf{Computer checks}: the direct-sum statements on $200$ small hosts; OpenAI's counts for small $h$, including $m^2$ as the exact distance for $h\le5$.
 \end{itemize}
@@ -4066,8 +4066,7 @@ rows of $Z$ pairwise distinct & \texttt{Function.Injective Z}
 \begin{itemize}
 \item OpenAI's $61$ files (\texttt{openai/math} at \texttt{4eaee87}, Apache-2.0), unchanged: we checked all $61$ are byte-identical.
 \item A bridge of $8$ theorems: both define the same distances and counts, and OpenAI's bound becomes \texttt{$\neg$ PolyRemoval fixedH}.
-\item Lean, Mathlib v4.35.0 pinned. An axiom audit (only \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}) passes on all $1803$ declarations; no \texttt{sorry}.
-\item Not formalized: the duplication theorem.
+\item Lean, Mathlib v4.35.0 pinned. An axiom audit (only \texttt{propext}, \texttt{Classical.choice}, \texttt{Quot.sound}) passes on all $1803+208$ declarations. Duplication is also proved.
 \end{itemize}
 \end{column}
 \begin{column}{0.43\textwidth}
@@ -4097,7 +4096,7 @@ rows of $Z$ pairwise distinct & \texttt{Function.Injective Z}
 \small
 \begin{itemize}
 \item \textbf{Literature, extensions, smaller counterexamples, proofs}: Opus 5.5 (Max), Fable 5.2 (Medium).
-\item \textbf{Formalization}: planning with GPT-6.1 Sol (Extra High) and Opus 5.5 (Max); the Lean proof with Open Math Kimi 3.1 Pro (Ultramath); the Agda special case with Opus 5.5 (Max).
+\item \textbf{Formalization}: planning with GPT-6.1 Sol (Extra High) and Opus 5.5 (Max); the Lean proof with Open Math Kimi 3.1 Pro (Ultramath), the duplication theorem with Opus 5.5 (Max); the Agda special case with Opus 5.5 (Max).
 \item \textbf{Proofreading, slides, examples}: Opus 5.5 (Max), Open Math DeepSeek V4.1 Flash and Kimi 3.1 Pro.
 \end{itemize}
 \end{frame}
