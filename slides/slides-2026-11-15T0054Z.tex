@@ -3906,7 +3906,6 @@ rows of $Z$ pairwise distinct & \texttt{Function.Injective Z}
 \footnotesize
 \begin{itemize}
 \item \textbf{Also proved:} the copy bound \texttt{copyCount\_blockDiag}, the zero-column variant, and the family from attaching $(1)$ again and again. Step~3's random picks become sums over all picks: no probability or division.
-\item \textbf{Lean caught three false edge cases} in the first statements: the empty $0\times0$ pattern satisfies \texttt{NoZeroLine} vacuously, and \texttt{editDist} is \texttt{sInf} $\emptyset=0$ when no $H$-free matrix exists. Fixed by the hypotheses \texttt{hk~:~0~<~k} and ``an $H$-free matrix exists''; the corollaries needed no change.
 \end{itemize}
 \end{frame}
 
